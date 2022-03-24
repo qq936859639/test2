@@ -1,0 +1,16 @@
+<RCC>
+    <qresource prefix="/image/res">
+        <file>image/main_bg.jpg</file>
+        <file>image/a311d.png</file>
+        <file>image/bg.jpg</file>
+        <file>image/camera.png</file>
+        <file>image/car.png</file>
+        <file>image/keyboard.png</file>
+        <file>image/lcd.png</file>
+        <file>image/mic.png</file>
+        <file>image/sensor.png</file>
+        <file>image/sonar.png</file>
+        <file>image/speaker.png</file>
+        <file>image/wireless_node.png</file>
+    </qresource>
+</RCC>
