@@ -52,6 +52,7 @@ CameraThread::~CameraThread()
    // delete ;
     camera->closeVideo(camera->videofd);
     camera->uninitVideo();
+    startflag = false;
 }
 
 void CameraThread::run(){

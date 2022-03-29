@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QDebug>
 #include "services/camerathread.h"
+#include "services/modbusthread.h"
 
 namespace Ui {
 class MainWindow;
@@ -17,6 +18,7 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
     CameraThread *cameraThread;
+    ModbusThread *modbusThread;
 
 private slots:
     void on_btcamera_clicked();

@@ -23,7 +23,12 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_btcamera_clicked()
 {
-    CameraDemo *camerademo = new CameraDemo(nullptr,cameraThread);
+
+
+    modbusThread = new ModbusThread(this);
+    modbusThread->start();
+
+    CameraDemo *camerademo = new CameraDemo(nullptr,cameraThread,modbusThread);
     camerademo->show();
 }
 
