@@ -10,11 +10,7 @@
 #include <QStandardItemModel>
 #include <QStatusBar>
 #include <QUrl>
-//#include <QModbusRtuSerialMaster>
-//#include <QModbusClient>
-//#include <QModbusReply>
-//class QModbusClient;
-//class QModbusReply;
+
 #define HOST_NAME "192.168.88.132:8232"      //云台IP地址(ESP32)
 //#define HOST_NAME "192.168.88.180:502"      //IP地址
 #define CAMERA_ADDR1 0x000B //舵机1轴旋转角度

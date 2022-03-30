@@ -20,7 +20,6 @@ CameraDemo::CameraDemo(QWidget *parent, CameraThread *camerathread, ModbusThread
 
     connect(modbusThread, SIGNAL(on_change_connet(bool)),this,SLOT(Camera_change_connet(bool)));
 
-
 }
 CameraDemo::~CameraDemo(){
     //disconnect(cameraThread, SIGNAL(errorshow()), this, SLOT(errorshowslot()));
@@ -51,6 +50,7 @@ void CameraDemo::Camera_change_connet(bool data)
         ui->connect->setText(tr("Connect"));
     if(data == true){
         emit Camera_writeRead(CAMERA_ADDR1, 1, H_Angle_num);
+        emit Camera_writeRead(CAMERA_ADDR2, 1, V_Angle_num);
         ui->connect->setText(tr("Disconnect"));
     }
 }
