@@ -18,17 +18,18 @@ public:
     ~CameraDemo();
     CameraThread *cameraThread;
     ModbusThread *modbusThread;
-    quint16 num = 135;
+    quint16 H_Angle_num = 135;
+    quint16 V_Angle_num = 90;
 signals:
     void Show_complete();
 
     void Camera_connect();
     void Camera_write(quint16 data);
     void Camera_read();
-    void Camera_readWrite(quint16 data);
+    void Camera_writeRead(int startAddress, int numberOfEntries, quint16 data);
 private slots:
     void videoDisplay(const QImage img);
-    void Camera_read_data(quint16 data);
+    void Camera_read_data(int startAddress, quint16 data);
     void Camera_change_connet(bool data);
 
     void errorshowslot();

@@ -6,11 +6,7 @@ ModbusThread::ModbusThread(QObject *parent)
     , lastRequest(nullptr)
     , modbusDevice(nullptr)
 {
-    //modbusDevice = new QModbusTcpClient(this);
-    //connect(modbusDevice, &QModbusClient::stateChanged,this, &ModbusThread::onStateChanged);//连接状态发生改变时处理函数（connect or discennect）
-    //connect(modbusDevice, &QModbusClient::stateChanged,this, &ModbusThread::on_connect);
     on_connectType_currentIndexChanged();
-
 }
 ModbusThread::~ModbusThread()
 {
@@ -31,8 +27,8 @@ void ModbusThread::on_connectType_currentIndexChanged()
      qDebug()<<"error cjf";
 
     } else {
-        //connect(modbusDevice, &QModbusClient::stateChanged,
-        //        this, &ModbusThread::onStateChanged);
+        connect(modbusDevice, &QModbusClient::stateChanged,
+                this, &ModbusThread::onStateChanged);
     }
 }
 void ModbusThread::on_connect()
@@ -43,8 +39,8 @@ void ModbusThread::on_connect()
     if(modbusDevice->state() != QModbusDevice::ConnectedState)
     {
         //处于非连接状态，进行连接
-        //TCP连接,端口502，地址192.168.180.502
-        const QUrl url = QUrl::fromUserInput(HOST_NAME); //;//获取IP和端口号
+        //TCP连接,端口502，地址192.168.*.*
+        const QUrl url = QUrl::fromUserInput(HOST_NAME); //获取IP和端口号
         modbusDevice->setConnectionParameter(QModbusDevice::NetworkPortParameter, url.port());
         modbusDevice->setConnectionParameter(QModbusDevice::NetworkAddressParameter, url.host());
 
@@ -52,25 +48,19 @@ void ModbusThread::on_connect()
         modbusDevice->setNumberOfRetries(3);
         if(!modbusDevice->connectDevice()){//连接失败
            isConnected = false;
-           //statusBar()->showMessage(tr("Connect failed: ") + modbusDevice->errorString(), 5000);
-            perror("Connect failed");
+            perror("Camera modbusDevice Connect failed");
         }else {//成功连接
-            isConnected = true;
-            //ui->actionConnect->setEnabled(false);
-            //ui->actionDisconnect->setEnabled(true);
-
-            qDebug() << "Connect ok";
+//            isConnected = true;
+//            qDebug() << "Connect ok";
         }
     }else{
-        isConnected = false;
+//        isConnected = false;
         modbusDevice->disconnectDevice();
-        perror("Connect failed cjf");
-        //emit change2Con();
+        perror("Camera modbusDevice disconnectDevice");
     }
-    emit on_change_connet(isConnected);
 }
 
-void ModbusThread::on_write(quint16 t)
+void ModbusThread::on_write(quint16 data)
 {
     if (!modbusDevice)
         return;
@@ -80,13 +70,12 @@ void ModbusThread::on_write(quint16 t)
         int ii = static_cast<int>(i);
         int j = 4*ii;
         //t = "45";
-     //   QString st = t.mid (j,4);
-      //  bool ok;
-      //  int hex =st.toInt(&ok,10);//将读取到的数据转换为10进制发送
-
+        //  QString st = t.mid (j,4);
+        //  bool ok;
+        //  int hex =st.toInt(&ok,10);//将读取到的数据转换为10进制发送
         //quint16 qhex =static_cast<quint16>(hex);
-       quint16 qhex = t;
-       // qDebug()<<writeUnit.valueCount();
+        quint16 qhex = data;
+        // qDebug()<<writeUnit.valueCount();
         writeUnit.setValue(ii,qhex);
     }
 
@@ -112,6 +101,7 @@ void ModbusThread::on_write(quint16 t)
     }
 
 }
+
 void ModbusThread::on_read()
 {
     if (!modbusDevice)
@@ -129,6 +119,7 @@ void ModbusThread::on_read()
         //emit statusBar(tr("Read error: ") + modbusDevice->errorString());
     }
 }
+
 void ModbusThread::readReady()
 {
     //QModbusReply这个类存储了来自client的数据,sender()返回发送信号的对象的指针
@@ -139,10 +130,11 @@ void ModbusThread::readReady()
     if (reply->error() == QModbusDevice::NoError){
         //处理成功返回的数据
         const QModbusDataUnit unit = reply->result();
-        quint16 stat = unit.value(0);  //状态（位与关系）
+        int address = unit.startAddress();
+        quint16 data = unit.value(0);  //状态（位与关系）
         //待处理
         //qDebug()<<stat;
-        emit on_read_data(stat);
+        emit on_read_data(address, data);
     }else if (reply->error() == QModbusDevice::ProtocolError){
         //emit statusBar(tr("Read response error: %1 (Mobus exception: 0x%2)").
         //                  arg(reply->errorString()).
@@ -154,7 +146,8 @@ void ModbusThread::readReady()
     }
     reply->deleteLater();
 }
-void ModbusThread::on_readWrite(quint16 t)
+
+void ModbusThread::on_readWrite(quint16 data)
 {
     if (!modbusDevice)
         return;
@@ -169,7 +162,7 @@ void ModbusThread::on_readWrite(quint16 t)
 //        bool ok;
 //        int hex =st.toInt(&ok,16);//将读取到的数据转换为16进制发送
 //        quint16 qhex =static_cast<quint16>(hex);
-        quint16 qhex = t;
+        quint16 qhex = data;
        // qDebug()<<writeUnit.valueCount();
         writeUnit.setValue(ii,qhex);
     }
@@ -183,13 +176,14 @@ void ModbusThread::on_readWrite(quint16 t)
         //statusBar()->showMessage(tr("Read error: ") + modbusDevice->errorString(), 5000);
     }
 }
-void ModbusThread::on_writeRead(quint16 t)
+
+void ModbusThread::on_writeRead(int startAddress, int numberOfEntries, quint16 data)
 {
     if (!modbusDevice)
         return;
 
-    QModbusDataUnit writeUnit = QModbusDataUnit(QModbusDataUnit::HoldingRegisters, 0xB, 1);
-    QModbusDataUnit readUnit = QModbusDataUnit(QModbusDataUnit::HoldingRegisters, 0xB, 1);
+    QModbusDataUnit writeUnit = QModbusDataUnit(QModbusDataUnit::HoldingRegisters, startAddress, numberOfEntries);
+    QModbusDataUnit readUnit = QModbusDataUnit(QModbusDataUnit::HoldingRegisters, startAddress, numberOfEntries);
     for (uint i = 0; i < writeUnit.valueCount(); i++) {
         int ii = static_cast<int>(i);
         int j = 4*ii;
@@ -198,7 +192,7 @@ void ModbusThread::on_writeRead(quint16 t)
 //        bool ok;
 //        int hex =st.toInt(&ok,16);//将读取到的数据转换为16进制发送
 //        quint16 qhex =static_cast<quint16>(hex);
-        quint16 qhex = t;
+        quint16 qhex = data;
        // qDebug()<<writeUnit.valueCount();
         writeUnit.setValue(ii,qhex);
     }
@@ -212,21 +206,15 @@ void ModbusThread::on_writeRead(quint16 t)
         //statusBar()->showMessage(tr("Read error: ") + modbusDevice->errorString(), 5000);
     }
 }
+
 void ModbusThread::onStateChanged(int state)//连接状态发生改变时处理函数（connect or discennect）
 {
-
     if (state == QModbusDevice::UnconnectedState)
     {
-        //ui->connectButton_2->setText(tr("Connect"));
-        //isConnected = false;
-        //emit updateCount("0,0");
-        perror("Connet onstate");
-
-    }
-    else if (state == QModbusDevice::ConnectedState)
-    {
-        //ui->connectButton_2->setText(tr("Disconnect"));
-        //isConnected = true;
-        perror("Disconnet onstate");
+        isConnected = false;
+        emit on_change_connet(isConnected);
+    }else if (state == QModbusDevice::ConnectedState){
+        isConnected = true;
+        emit on_change_connet(isConnected);
     }
 }
