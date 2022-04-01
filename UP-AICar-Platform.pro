@@ -11,6 +11,8 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 target.path = /home/uptech/cjf
 INSTALLS += target
 
+INCLUDEPATH += . /usr/include/opencv4/opencv /usr/include/opencv4
+
 TARGET = UP-AICar-Platform
 TEMPLATE = app
 
@@ -53,3 +55,5 @@ FORMS    += mainwindow.ui \
 
 RESOURCES += \
     resource.qrc
+
+LIBS += $(shell pkg-config --libs opencv4) -lstdc++

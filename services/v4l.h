@@ -24,8 +24,8 @@
 #define DEV_NAME "/dev/video0"      //摄像头设备名
 #define DEV_NAME1 "/dev/video1"      //摄像头设备名(备用)
 
-#define IMAGE_WIDTH 640//视频图像宽度
-#define IMAGE_HEIGHT 480//视频图像高度
+#define IMAGE_WIDTH 320//640//视频图像宽度
+#define IMAGE_HEIGHT 240//480//视频图像高度
 #define CLEAR(x) memset(&(x), 0, sizeof(x)) //空间清零
 
 #define CONSTRAIN(amt,low,high) ((amt)<(low)?(low):((amt)>(high)?(high):(amt)))
