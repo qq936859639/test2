@@ -67,8 +67,8 @@ void CameraThread::run(){
             }else{
                 getImage();
             }
-            usleep(20000);
-//              msleep(200);
+//            usleep(20000);
+              msleep(200);
         }
     }
 }

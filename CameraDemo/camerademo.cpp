@@ -34,39 +34,66 @@ void CameraDemo::errorshowslot()
 
 void CameraDemo::videoDisplay(const QImage image)
 {
-    string xmlPath="./haarcascade_frontalface_default.xml";
+    QImage qImage ;
+    vector<Rect> faces;  //创建一个容器保存检测出来的脸
     CascadeClassifier ccf;   //创建分类器对象
-    Mat img;
-    img=Mat(image.height(), image.width(), CV_8UC3, (void*)image.constBits(), image.bytesPerLine());
-    //Mat img=imread(img1);
+    Mat img1, img2, gray;
+    string xmlPath="./haarcascade_frontalface_default.xml";
+
+    img1=Mat(image.height(), image.width(), CV_8UC3, (void*)image.constBits(), image.bytesPerLine());
+    flip(img1,img1,1);
+    cvtColor(img1, img2, COLOR_BGR2RGB);
+
     if(!ccf.load(xmlPath))   //加载训练文件
     {
         perror("不能加载指定的xml文件");
     }
-    vector<Rect> faces;  //创建一个容器保存检测出来的脸
-    Mat gray;
-    cvtColor(img,gray, COLOR_BGR2GRAY); //转换成灰度图，因为harr特征从灰度图中提取
+    cvtColor(img2, gray, COLOR_BGR2GRAY); //转换成灰度图，因为harr特征从灰度图中提取
     equalizeHist(gray,gray);  //直方图均衡行
-    ccf.detectMultiScale(gray,faces,1.1,3,0,Size(10,10),Size(100,100)); //检测人脸
+    ccf.detectMultiScale(gray,faces,1.2,3,0,Size(50,50),Size(200,200)); //检测人脸
     for(vector<Rect>::const_iterator iter=faces.begin();iter!=faces.end();iter++)
     {
-        rectangle(img,*iter,Scalar(0,0,255),2,10); //画出脸部矩形
+        rectangle(img2,*iter,Scalar(0,0,255),2,10); //画出脸部矩形
+        qDebug()<<"cjfx"<<iter->x<<"cpt "<<iter->x + cvRound(iter->width/2.0);
+//        qDebug()<<"cjfy"<<iter->y<<"cpt "<<iter->y + cvRound(iter->height/2.0);
+          if( iter->x > H_Angle_num)
+              H_Angle_num = H_Angle_num +3;
+          if( iter->x < H_Angle_num)
+              H_Angle_num = H_Angle_num -3;
+        if ( iter->y  > V_Angle_num )
+            V_Angle_num = V_Angle_num + 2;
+        if ( iter->y  < V_Angle_num )
+            V_Angle_num = V_Angle_num - 2;
+        if(H_Angle_num < 45)
+            H_Angle_num = 45;
+        if(H_Angle_num > 225)
+            H_Angle_num = 225;
+
+        if(V_Angle_num < 45)
+            V_Angle_num = 45;
+        if(V_Angle_num > 100)
+            V_Angle_num = 100;
+        emit Camera_writeRead(CAMERA_ADDR1, 1, H_Angle_num);
+        emit Camera_writeRead(CAMERA_ADDR2, 1, V_Angle_num);
     }
-    QImage qImage ;
-    Mat img2;
-    cvtColor(img,img2, COLOR_BGR2RGB);
+
+    cvtColor(img2,img2, COLOR_BGR2RGB);
     if(img2.channels() == 3)
     {
-        qImage = QImage((const unsigned char*)(img2.data),img2.cols,img2.rows,
+        qImage = QImage((const unsigned char*)(img2.data),img2.cols,img2.rows,img2.cols * img2.channels(),
                        QImage::Format_RGB888);
     }else{
-        qImage = QImage((const unsigned char*)(img2.data),img2.cols,img2.rows,
+        qImage = QImage((const unsigned char*)(img2.data),img2.cols,img2.rows,img2.cols * img2.channels(),
                        QImage::Format_RGB888);
     }
-ui->labelCamera->setPixmap(QPixmap::fromImage(qImage));
-perror("cjf ok");
-//    QPixmap pixmap = QPixmap::fromImage(img);
-//    ui->labelCamera->setPixmap(pixmap);
+
+    ui->labelCamera->setPixmap(QPixmap::fromImage(qImage));
+//    ui->labelCamera->setPixmap(QPixmap::fromImage(qImage.scaled(ui->labelCamera->size(),Qt::KeepAspectRatio)));
+
+/*
+    QPixmap pixmap = QPixmap::fromImage(image);
+    ui->labelCamera->setPixmap(pixmap);
+*/
 }
 
 void CameraDemo::Camera_read_data(int address, quint16 data)
