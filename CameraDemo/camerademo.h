@@ -30,7 +30,8 @@ public:
     CameraThread *cameraThread;
     ModbusThread *modbusThread;
     quint16 H_Angle_num = 135;
-    quint16 V_Angle_num = 90;
+    quint16 V_Angle_num = 70;
+    bool faces_flag;
 signals:
     void Show_complete();
 
@@ -38,6 +39,7 @@ signals:
     void Camera_write(quint16 data);
     void Camera_read();
     void Camera_writeRead(int startAddress, int numberOfEntries, quint16 data);
+    void Camera_times(bool data);
 private slots:
     void videoDisplay(const QImage img);
     void Camera_read_data(int startAddress, quint16 data);
@@ -51,6 +53,11 @@ private slots:
     void on_right_clicked();
 
     void on_connect_clicked();
+
+    void on_faceTrack_clicked();
+
+protected:
+    void closeEvent(QCloseEvent *event);
 
 private:
     Ui::test *ui;

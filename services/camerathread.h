@@ -18,9 +18,11 @@ public:
 
 signals:
     void Collect_complete(const QImage);
-
+private slots:
+    void Display_times(bool data);
 protected:
     bool startflag;
+    bool timesflag;
     void run();
 
 private:

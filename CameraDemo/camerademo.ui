@@ -160,6 +160,19 @@ background-color: qradialgradient(spread:pad, cx:0.5, cy:0.5, radius:0.5, fx:0.5
     <string>0</string>
    </property>
   </widget>
+  <widget class="QPushButton" name="faceTrack">
+   <property name="geometry">
+    <rect>
+     <x>640</x>
+     <y>170</y>
+     <width>81</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>人脸跟踪</string>
+   </property>
+  </widget>
  </widget>
  <resources/>
  <connections/>

@@ -12,6 +12,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    modbusThread = new ModbusThread(this);
+    modbusThread->start();
+
     cameraThread = new CameraThread(this);
     cameraThread->start();
 }
@@ -23,10 +26,6 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_btcamera_clicked()
 {
-
-
-    modbusThread = new ModbusThread(this);
-    modbusThread->start();
 
     CameraDemo *camerademo = new CameraDemo(nullptr,cameraThread,modbusThread);
     camerademo->show();

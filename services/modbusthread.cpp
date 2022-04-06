@@ -56,7 +56,7 @@ void ModbusThread::on_connect()
     }else{
 //        isConnected = false;
         modbusDevice->disconnectDevice();
-        perror("Camera modbusDevice disconnectDevice");
+        qDebug()<<("Camera modbusDevice disconnectDevice");
     }
 }
 
