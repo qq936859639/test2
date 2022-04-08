@@ -1,10 +1,13 @@
 ﻿#include "camerademo.h"
 #include "ui_camerademo.h"
 #include <QDebug>
+#include <QTimer>
 CameraDemo::CameraDemo(QWidget *parent, CameraThread *camerathread, ModbusThread *modbusthread) :
       QWidget(parent),ui(new Ui::test)
 {
     ui->setupUi(this);
+    faces_flag = false;
+    connect_flag = false;
     this->cameraThread = camerathread;
     this->modbusThread = modbusthread;
 
@@ -13,6 +16,21 @@ CameraDemo::CameraDemo(QWidget *parent, CameraThread *camerathread, ModbusThread
     ui->down->setDisabled(true);
     ui->left->setDisabled(true);
     ui->right->setDisabled(true);
+
+    ui->up->setAutoRepeat(true);
+    ui->up->setAutoRepeatDelay(500);
+    ui->up->setAutoRepeatInterval(200);
+    ui->down->setAutoRepeat(true);
+    ui->down->setAutoRepeatDelay(500);
+    ui->down->setAutoRepeatInterval(200);
+
+    ui->left->setAutoRepeat(true);
+    ui->left->setAutoRepeatDelay(500);
+    ui->left->setAutoRepeatInterval(200);
+    ui->right->setAutoRepeat(true);
+    ui->right->setAutoRepeatDelay(500);
+    ui->right->setAutoRepeatInterval(200);
+
 //    ui->faceTrack->setCheckable(true);
 
 //  connect(cameraThread, SIGNAL(errorshow()), this, SLOT(errorshowslot()));
@@ -32,16 +50,12 @@ CameraDemo::CameraDemo(QWidget *parent, CameraThread *camerathread, ModbusThread
 }
 
 CameraDemo::~CameraDemo(){
-//    faces_flag = false;
 
-//    disconnect(this, SIGNAL(Camera_connect()),modbusThread,SLOT(on_connect()));
-//    disconnect(modbusThread, SIGNAL(on_read_data(int, quint16)),this,SLOT(Camera_read_data(int, quint16)));
-//    disconnect(cameraThread, SIGNAL(Collect_complete(QImage)),this,SLOT(videoDisplay(QImage)));
-//    disconnect(cameraThread, SIGNAL(errorshow()), this, SLOT(errorshowslot()));
 }
 void CameraDemo::closeEvent(QCloseEvent *event)
 {
     faces_flag = false;
+    connect_flag = false;
     emit Camera_connect();
     emit Camera_times(faces_flag);
 
@@ -55,6 +69,37 @@ void CameraDemo::closeEvent(QCloseEvent *event)
     disconnect(modbusThread, SIGNAL(on_change_connet(bool)),this,SLOT(Camera_change_connet(bool)));
 }
 
+void CameraDemo::keyPressEvent(QKeyEvent *event)
+{
+    if(connect_flag == true){
+        if(event->key()==Qt::Key_A)
+            on_left_clicked();
+        if(event->key()==Qt::Key_D)
+            on_right_clicked();
+        if(event->key()==Qt::Key_W)
+            on_up_clicked();
+        if(event->key()==Qt::Key_S)
+            on_down_clicked();
+    }
+}
+bool CameraDemo::eventFilter(QObject *watched, QEvent *event)
+{
+//    qDebug()<<"cjf button JHJ";
+//    if(connect_flag==true){
+//        if(watched == ui->left){
+//            if(event->type()==QEvent::MouseButtonPress){
+//                on_left_clicked();
+//                qDebug()<<"cjf button P";
+//                return  true;
+//                }
+//            if(event->type()==QEvent::MouseButtonRelease){
+//                qDebug()<<"cjf button R";
+//                return true;
+//            }
+//        }
+//    }
+//    return  false;
+}
 void CameraDemo::errorshowslot()
 {
     ui->labelCamera->setText(tr("摄像头初始化失败，请检查是否插好，并重新启动！"));
@@ -68,7 +113,7 @@ void CameraDemo::videoDisplay(const QImage image)
         vector<Rect> faces;  //创建一个容器保存检测出来的脸
         CascadeClassifier ccf;   //创建分类器对象
         Mat img1, img2, gray;
-        string xmlPath="./haarcascade_frontalface_default.xml";
+        string xmlPath="./data/haarcascade_frontalface_default.xml";
         img1=Mat(image1.height(), image1.width(), CV_8UC3, (void*)image1.constBits(), image1.bytesPerLine());
         //flip(img1,img1,1);
 
@@ -140,6 +185,7 @@ void CameraDemo::Camera_change_connet(bool data)
     ui->faceTrack->setText(tr("人脸追踪"));
     if(data == false)
     {
+        connect_flag = false;
         ui->connect->setText(tr("Connect"));
         ui->faceTrack->setDisabled(true);
 
@@ -150,6 +196,7 @@ void CameraDemo::Camera_change_connet(bool data)
 
     }
     if(data == true){
+        connect_flag = true;
         emit Camera_writeRead(CAMERA_ADDR1, 1, H_Angle_num);
         emit Camera_writeRead(CAMERA_ADDR2, 1, V_Angle_num);
         ui->connect->setText(tr("Disconnect"));

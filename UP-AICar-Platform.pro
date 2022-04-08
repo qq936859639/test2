@@ -57,3 +57,6 @@ RESOURCES += \
     resource.qrc
 
 LIBS += $(shell pkg-config --libs opencv4) -lstdc++
+
+DISTFILES += \
+    data/haarcascade_frontalface_default.xml

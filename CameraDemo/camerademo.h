@@ -12,6 +12,8 @@
 #include <opencv2/objdetect/objdetect.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
+#include <QMouseEvent>
+#include <QKeyEvent>
 
 using namespace std;
 using namespace cv;
@@ -32,6 +34,12 @@ public:
     quint16 H_Angle_num = 135;
     quint16 V_Angle_num = 70;
     bool faces_flag;
+    bool connect_flag;
+
+//    void mousePressEvent(QMouseEvent *event) override;  //鼠标按下事件
+    void keyPressEvent(QKeyEvent *event) override;
+    bool eventFilter(QObject *watched, QEvent *event) override;
+
 signals:
     void Show_complete();
 
