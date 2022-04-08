@@ -1,7 +1,7 @@
 ﻿#include "camerademo.h"
 #include "ui_camerademo.h"
 #include <QDebug>
-#include <QTimer>
+
 CameraDemo::CameraDemo(QWidget *parent, CameraThread *camerathread, ModbusThread *modbusthread) :
       QWidget(parent),ui(new Ui::test)
 {
@@ -46,7 +46,6 @@ CameraDemo::CameraDemo(QWidget *parent, CameraThread *camerathread, ModbusThread
     connect(this, SIGNAL(Camera_times(bool)),cameraThread,SLOT(Display_times(bool)));
 
     connect(modbusThread, SIGNAL(on_change_connet(bool)),this,SLOT(Camera_change_connet(bool)));
-
 }
 
 CameraDemo::~CameraDemo(){
@@ -82,24 +81,7 @@ void CameraDemo::keyPressEvent(QKeyEvent *event)
             on_down_clicked();
     }
 }
-bool CameraDemo::eventFilter(QObject *watched, QEvent *event)
-{
-//    qDebug()<<"cjf button JHJ";
-//    if(connect_flag==true){
-//        if(watched == ui->left){
-//            if(event->type()==QEvent::MouseButtonPress){
-//                on_left_clicked();
-//                qDebug()<<"cjf button P";
-//                return  true;
-//                }
-//            if(event->type()==QEvent::MouseButtonRelease){
-//                qDebug()<<"cjf button R";
-//                return true;
-//            }
-//        }
-//    }
-//    return  false;
-}
+
 void CameraDemo::errorshowslot()
 {
     ui->labelCamera->setText(tr("摄像头初始化失败，请检查是否插好，并重新启动！"));

@@ -5,14 +5,11 @@
 #include "services/camerathread.h"
 #include "services/modbusthread.h"
 
-//#include <opencv4/opencv2/opencv.hpp>
-
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/objdetect/objdetect.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
-#include <QMouseEvent>
 #include <QKeyEvent>
 
 using namespace std;
@@ -36,10 +33,7 @@ public:
     bool faces_flag;
     bool connect_flag;
 
-//    void mousePressEvent(QMouseEvent *event) override;  //鼠标按下事件
     void keyPressEvent(QKeyEvent *event) override;
-    bool eventFilter(QObject *watched, QEvent *event) override;
-
 signals:
     void Show_complete();
 
@@ -65,7 +59,7 @@ private slots:
     void on_faceTrack_clicked();
 
 protected:
-    void closeEvent(QCloseEvent *event);
+    void closeEvent(QCloseEvent *event) override;
 
 private:
     Ui::test *ui;
