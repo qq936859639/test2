@@ -16,6 +16,7 @@ public Q_SLOTS:
     void decelerate();
     void turnLeft();
     void turnRight();
+    void reset();
 
 Q_SIGNALS:
     void crashed();

@@ -48,7 +48,7 @@ void ModbusThread::on_connect()
         modbusDevice->setNumberOfRetries(3);
         if(!modbusDevice->connectDevice()){//连接失败
            isConnected = false;
-            perror("Camera modbusDevice Connect failed");
+            perror("modbusDevice Connect failed");
         }else {//成功连接
 //            isConnected = true;
 //            qDebug() << "Connect ok";
@@ -56,7 +56,7 @@ void ModbusThread::on_connect()
     }else{
 //        isConnected = false;
         modbusDevice->disconnectDevice();
-        qDebug()<<("Camera modbusDevice disconnectDevice");
+        qDebug()<<("modbusDevice disconnectDevice");
     }
 }
 
@@ -68,7 +68,7 @@ void ModbusThread::on_write(quint16 data)
     QModbusDataUnit writeUnit = QModbusDataUnit(QModbusDataUnit::HoldingRegisters, 0xB, 1);
     for (uint i = 0; i < writeUnit.valueCount(); i++) {
         int ii = static_cast<int>(i);
-        int j = 4*ii;
+//        int j = 4*ii;
         //t = "45";
         //  QString st = t.mid (j,4);
         //  bool ok;
@@ -102,13 +102,13 @@ void ModbusThread::on_write(quint16 data)
 
 }
 
-void ModbusThread::on_read()
+void ModbusThread::on_read(int startAddress, quint16 numberOfEntries)
 {
     if (!modbusDevice)
         return;
 
-    QModbusDataUnit readUnit = QModbusDataUnit(QModbusDataUnit::HoldingRegisters, 0xB, 1);
-
+//    QModbusDataUnit readUnit = QModbusDataUnit(QModbusDataUnit::HoldingRegisters, startAddress, numberOfEntries);
+    QModbusDataUnit readUnit = QModbusDataUnit(QModbusDataUnit::InputRegisters, startAddress, numberOfEntries);
     if (auto *reply = modbusDevice->sendReadRequest(readUnit, 1)) {  //1->modbus设备地址
         if (!reply->isFinished())
             connect(reply, &QModbusReply::finished, this, &ModbusThread::readReady);
@@ -130,11 +130,15 @@ void ModbusThread::readReady()
     if (reply->error() == QModbusDevice::NoError){
         //处理成功返回的数据
         const QModbusDataUnit unit = reply->result();
-        int address = unit.startAddress();
-        quint16 data = unit.value(0);  //状态（位与关系）
+        for (uint i = 0; i < unit.valueCount(); i++) {
+//        int address = unit.startAddress();
+//        quint16 data = unit.value(0);  //状态（位与关系）
+
         //待处理
-        //qDebug()<<stat;
-        emit on_read_data(address, data);
+//        qDebug()<<i<<"cjf"<<unit.startAddress()+i<<"-cjf-"<<unit.value(i);
+        emit on_read_data(unit.startAddress()+i, unit.value(i));
+
+        }
     }else if (reply->error() == QModbusDevice::ProtocolError){
         //emit statusBar(tr("Read response error: %1 (Mobus exception: 0x%2)").
         //                  arg(reply->errorString()).
@@ -155,8 +159,8 @@ void ModbusThread::on_readWrite(quint16 data)
     QModbusDataUnit writeUnit = QModbusDataUnit(QModbusDataUnit::HoldingRegisters, 0xB, 1);
     QModbusDataUnit readUnit = QModbusDataUnit(QModbusDataUnit::HoldingRegisters, 0xB, 1);
     for (uint i = 0; i < writeUnit.valueCount(); i++) {
-        int ii = static_cast<int>(i);
-        int j = 4*ii;
+//        int ii = static_cast<int>(i);
+//        int j = 4*ii;
 //        QString t = "45";
 //        QString st = t.mid (j,4);
 //        bool ok;
@@ -164,7 +168,7 @@ void ModbusThread::on_readWrite(quint16 data)
 //        quint16 qhex =static_cast<quint16>(hex);
         quint16 qhex = data;
        // qDebug()<<writeUnit.valueCount();
-        writeUnit.setValue(ii,qhex);
+        writeUnit.setValue(i,qhex);
     }
 
     if (auto *reply = modbusDevice->sendReadWriteRequest(readUnit, writeUnit, 1)) {
@@ -177,7 +181,7 @@ void ModbusThread::on_readWrite(quint16 data)
     }
 }
 
-void ModbusThread::on_writeRead(int startAddress, int numberOfEntries, quint16 data)
+void ModbusThread::on_writeRead(int startAddress, quint16 numberOfEntries, quint16 data)
 {
     if (!modbusDevice)
         return;
@@ -185,8 +189,8 @@ void ModbusThread::on_writeRead(int startAddress, int numberOfEntries, quint16 d
     QModbusDataUnit writeUnit = QModbusDataUnit(QModbusDataUnit::HoldingRegisters, startAddress, numberOfEntries);
     QModbusDataUnit readUnit = QModbusDataUnit(QModbusDataUnit::HoldingRegisters, startAddress, numberOfEntries);
     for (uint i = 0; i < writeUnit.valueCount(); i++) {
-        int ii = static_cast<int>(i);
-        int j = 4*ii;
+//        int ii = static_cast<int>(i);
+//        int j = 4*ii;
 //        QString t = "45";
 //        QString st = t.mid (j,4);
 //        bool ok;
@@ -194,7 +198,7 @@ void ModbusThread::on_writeRead(int startAddress, int numberOfEntries, quint16 d
 //        quint16 qhex =static_cast<quint16>(hex);
         quint16 qhex = data;
        // qDebug()<<writeUnit.valueCount();
-        writeUnit.setValue(ii,qhex);
+        writeUnit.setValue(i,qhex);
     }
 
     if (auto *reply = modbusDevice->sendWriteRequest(writeUnit, 1)) {

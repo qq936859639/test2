@@ -37,12 +37,12 @@ CameraDemo::CameraDemo(QWidget *parent, CameraThread *camerathread, ModbusThread
 //  connect(this,SIGNAL(Show_complete()),cameraThread,SLOT(startCapture()));
 
     connect(cameraThread, SIGNAL(Collect_complete(QImage)),this,SLOT(videoDisplay(QImage)));
-    connect(modbusThread, SIGNAL(on_read_data(int, quint16)),this,SLOT(Camera_read_data(int, quint16)));
+    connect(modbusThread, SIGNAL(on_read_data(int, quint32)),this,SLOT(Camera_read_data(int, quint32)));
 
     connect(this, SIGNAL(Camera_connect()),modbusThread,SLOT(on_connect()));
 //    connect(this, SIGNAL(Camera_write(quint16)),modbusThread,SLOT(on_write(quint16)));//only write
-//    connect(this, SIGNAL(Camera_read()),modbusThread,SLOT(on_read()));//only read
-    connect(this, SIGNAL(Camera_writeRead(int, int, quint16)),modbusThread,SLOT(on_writeRead(int, int, quint16)));
+//    connect(this, SIGNAL(Camera_read(int,int)),modbusThread,SLOT(on_read(int,int)));//only read
+    connect(this, SIGNAL(Camera_writeRead(int, quint16, quint16)),modbusThread,SLOT(on_writeRead(int, quint16, quint16)));
     connect(this, SIGNAL(Camera_times(bool)),cameraThread,SLOT(Display_times(bool)));
 
     connect(modbusThread, SIGNAL(on_change_connet(bool)),this,SLOT(Camera_change_connet(bool)));
@@ -59,10 +59,10 @@ void CameraDemo::closeEvent(QCloseEvent *event)
     emit Camera_times(faces_flag);
 
     disconnect(cameraThread, SIGNAL(Collect_complete(QImage)),this,SLOT(videoDisplay(QImage)));
-    disconnect(modbusThread, SIGNAL(on_read_data(int, quint16)),this,SLOT(Camera_read_data(int, quint16)));
+    disconnect(modbusThread, SIGNAL(on_read_data(int, quint32)),this,SLOT(Camera_read_data(int, quint32)));
 
     disconnect(this, SIGNAL(Camera_connect()),modbusThread,SLOT(on_connect()));
-    disconnect(this, SIGNAL(Camera_writeRead(int, int, quint16)),modbusThread,SLOT(on_writeRead(int, int, quint16)));
+    disconnect(this, SIGNAL(Camera_writeRead(int, quint16, quint16)),modbusThread,SLOT(on_writeRead(int, int, quint16)));
     disconnect(this, SIGNAL(Camera_times(bool)),cameraThread,SLOT(Display_times(bool)));
 
     disconnect(modbusThread, SIGNAL(on_change_connet(bool)),this,SLOT(Camera_change_connet(bool)));
@@ -153,7 +153,7 @@ void CameraDemo::videoDisplay(const QImage image)
 
 }
 
-void CameraDemo::Camera_read_data(int address, quint16 data)
+void CameraDemo::Camera_read_data(int address, quint32 data)
 {
     if(address == CAMERA_ADDR1)
         ui->HorizontalValue->setText(QString::number(data));

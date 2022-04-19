@@ -33,7 +33,7 @@ void MainWindow::on_btcamera_clicked()
 
 void MainWindow::on_btcar_clicked()
 {
-    AICarDemo *aicardemo = new AICarDemo(nullptr);
+    AICarDemo *aicardemo = new AICarDemo(nullptr,modbusThread);
     aicardemo->show();
 }
 
