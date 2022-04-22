@@ -27,6 +27,16 @@ AICarDemo::AICarDemo(QWidget *parent, CameraThread *camerathread, ModbusThread *
     connect(car_camera_state,SIGNAL(timeout()),this,SLOT(Car_videoDisplay1()));
     car_camera_state->start();
 
+
+    car_rgy_light_play = new QTimer(this);
+    car_rgy_light_play->setInterval(3000);
+    connect(car_rgy_light_play,SIGNAL(timeout()),this,SLOT(Car_traffic_light_Play()));
+//    car_rgy_light_play->start();
+    rgy_light_play_flag = 0;
+
+
+//    lower_red = Scalar(0, 100, 100);
+//    upper_red = Scalar(10, 255, 255);
     lower_red = Scalar(0, 100, 100);
     upper_red = Scalar(10, 255, 255);
     lower_green = Scalar(40, 50, 50);
@@ -45,8 +55,7 @@ AICarDemo::AICarDemo(QWidget *parent, CameraThread *camerathread, ModbusThread *
     connect(modbusThread, SIGNAL(on_read_data(int, int)),this,SLOT(Car_read_data(int, int)));
 
     connect(cameraThread, SIGNAL(Collect_complete(QImage)),this,SLOT(Car_videoDisplay(QImage)));
-    QSound *success = new QSound("./mp3/red_light.wav", this);
-    success->play();
+
 }
 
 AICarDemo::~AICarDemo()
@@ -354,6 +363,7 @@ void AICarDemo::Car_videoDisplay1()
         ui->red_light->setStyleSheet("");
         ui->green_light->setStyleSheet("");
         ui->yellow_light->setStyleSheet("");
+
         QImage qImage;
         Mat src,src1, mout, hsv;
         vector<Vec3f>  circles;  //创建一个容器保存检测出来的几个圆
@@ -364,32 +374,32 @@ void AICarDemo::Car_videoDisplay1()
         medianBlur(src, mout, 7);//中值滤波/百分比滤波器
         cvtColor(mout, mout, COLOR_BGR2GRAY);//转化为灰度图
 
-//        HoughCircles(mout, circles, HOUGH_GRADIENT, 1, 10, 100, 35, 15, 60);//霍夫变换圆检测
-                HoughCircles(mout, circles, HOUGH_GRADIENT, 1, 10, 100, 40, 5, 60);//霍夫变换圆检测
+        //HoughCircles(mout, circles, HOUGH_GRADIENT, 1, 10, 100, 35, 15, 60);//霍夫变换圆检测
+        HoughCircles(mout, circles, HOUGH_GRADIENT, 1, 10, 100, 40, 15, 60);//霍夫变换圆检测
         Scalar circleColor = Scalar(0,0,255);//圆形的边缘颜色
-//      Scalar centerColor = Scalar(0, 0, 255);//圆心的颜色
+        //Scalar centerColor = Scalar(0, 0, 255);//圆心的颜色
         for (size_t i = 0; i < circles.size(); i++) {
             Vec3f c = circles[i];
             circle(src, Point(c[0], c[1]),c[2], circleColor, 2, LINE_AA);//画边缘
-//          circle(src, Point(c[0], c[1]), 2, centerColor, 2, LINE_AA);//画圆心
-             Point center(c[0], c[1]);
-             int radius = c[2];
-             Mat split_circle(src.rows, src.cols, src.type(), Scalar(0, 0, 0));
-             int count = 0;
-             for (int x = 0; x < src.cols; x++)
-             {
-                 for (int y = 0; y < src.rows; y++)
-                 {
-                     int temp = ((x - center.x) * (x - center.x) + (y - center.y) * (y - center.y));
-                     if (temp < (radius * radius))
-                     {
-                         split_circle.at<Vec3b>(Point(x, y))[0] = src.at<Vec3b>(Point(x, y))[0];//b
-                         split_circle.at<Vec3b>(Point(x, y))[1] = src.at<Vec3b>(Point(x, y))[1];//g
-                         split_circle.at<Vec3b>(Point(x, y))[2] = src.at<Vec3b>(Point(x, y))[2];//r
-                         count++;
-                     }
-                 }
-             }
+            //circle(src, Point(c[0], c[1]), 2, centerColor, 2, LINE_AA);//画圆心
+            Point center(c[0], c[1]);
+            int radius = c[2];
+            Mat split_circle(src.rows, src.cols, src.type(), Scalar(0, 0, 0));
+            int count = 0;
+            for (int x = 0; x < src.cols; x++)
+            {
+                for (int y = 0; y < src.rows; y++)
+                {
+                    int temp = ((x - center.x) * (x - center.x) + (y - center.y) * (y - center.y));
+                    if (temp < (radius * radius))
+                    {
+                        split_circle.at<Vec3b>(Point(x, y))[0] = src.at<Vec3b>(Point(x, y))[0];//b
+                        split_circle.at<Vec3b>(Point(x, y))[1] = src.at<Vec3b>(Point(x, y))[1];//g
+                        split_circle.at<Vec3b>(Point(x, y))[2] = src.at<Vec3b>(Point(x, y))[2];//r
+                        count++;
+                    }
+                }
+            }
             src1=split_circle;
             //转化为hsv模型
             cvtColor(src1, hsv, COLOR_BGR2HSV);
@@ -414,19 +424,42 @@ void AICarDemo::Car_videoDisplay1()
             if ((yellow*1.0 >= 0.5)|| (red*1.0  >=0.5 )||  (green*1.0 >= 0.5))//判断红绿黄三色的像素占比是否过半
             {
                 if (green > red && green > yellow && green > 50){
-                    qDebug()<<"green";
                     ui->green_light->setStyleSheet("border-image:url(:/image/res/image/green_light.png);");
+                    rgy_light_play_flag  |= 0x02;
                 }
                 else if (red > yellow && red >50){
-                    qDebug()<<"red";
                     ui->red_light->setStyleSheet("border-image:url(:/image/res/image/red_light.png);");
+                    rgy_light_play_flag  |= 0x01;
+
                 }else{
                     if(yellow > 50){
-                    qDebug()<<"yellow";
-                    ui->yellow_light->setStyleSheet("border-image:url(:/image/res/image/yellow_light.png);");
+                        ui->yellow_light->setStyleSheet("border-image:url(:/image/res/image/yellow_light.png);");
+                        rgy_light_play_flag  |= 0x04;
                     }
                 }
             }
+        }
+
+        if(rgy_light_play_flag == 0x01){
+            QSound *success = new QSound("./mp3/red_light.wav", this);
+            success->play();
+            rgy_light_play_flag = 8;
+            car_rgy_light_play->start();
+        }else if(rgy_light_play_flag == 0x02){
+            QSound *success = new QSound("./mp3/green_light.wav", this);
+            success->play();
+            rgy_light_play_flag = 8;
+            car_rgy_light_play->start();
+        }else if(rgy_light_play_flag == 0x04){
+            QSound *success = new QSound("./mp3/yellow_light.wav", this);
+            success->play();
+            rgy_light_play_flag = 8;
+            car_rgy_light_play->start();
+        }else if(rgy_light_play_flag==0x05 || rgy_light_play_flag==0x6 ||rgy_light_play_flag==0x7||rgy_light_play_flag==0x3){
+            QSound *success = new QSound("./mp3/more_light.wav", this);
+            success->play();
+            rgy_light_play_flag = 8;
+            car_rgy_light_play->start();
         }
 
         cvtColor(src,src, COLOR_BGR2RGB);
@@ -441,7 +474,11 @@ void AICarDemo::Car_videoDisplay1()
 
         QPixmap pixmap = QPixmap::fromImage(qImage);
         ui->Car_videoDisplay->setPixmap(pixmap.scaled(ui->Car_videoDisplay->size(),Qt::IgnoreAspectRatio));
+
     }
 }
-
+void AICarDemo::Car_traffic_light_Play()
+{
+     rgy_light_play_flag = 0;
+}
 

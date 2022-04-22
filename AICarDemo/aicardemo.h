@@ -65,6 +65,7 @@ private slots:
     void Car_videoDisplay(const QImage image);
 
     void Car_videoDisplay1();
+    void Car_traffic_light_Play();
 
     void on_Car_reset_clicked();
 
@@ -75,7 +76,9 @@ private:
     QTimer *car_state;
 
     QTimer *car_camera_state;
+    QTimer *car_rgy_light_play;
     QImage image_tmp;
+
 
     Scalar lower_red;
     Scalar upper_red;
@@ -83,6 +86,9 @@ private:
     Scalar upper_green;
     Scalar lower_yellow;
     Scalar upper_yellow;
+
+    quint8 rgy_light_play_flag;
+
 };
 
 #endif // AICARDEMO_H
