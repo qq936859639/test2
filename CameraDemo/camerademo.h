@@ -44,7 +44,7 @@ signals:
     void Camera_times(bool data);
 private slots:
     void videoDisplay(const QImage img);
-    void Camera_read_data(int startAddress, quint32 data);
+    void Camera_read_data(int startAddress, int data);
     void Camera_change_connet(bool data);
 
     void errorshowslot();

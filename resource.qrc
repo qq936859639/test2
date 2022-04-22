@@ -12,5 +12,9 @@
         <file>image/sonar.png</file>
         <file>image/speaker.png</file>
         <file>image/wireless_node.png</file>
+        <file>image/green_light.png</file>
+        <file>image/red_light.png</file>
+        <file>image/yellow_light.png</file>
+        <file>image/rgb_light_no.png</file>
     </qresource>
 </RCC>

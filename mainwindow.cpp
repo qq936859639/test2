@@ -27,13 +27,13 @@ MainWindow::~MainWindow()
 void MainWindow::on_btcamera_clicked()
 {
 
-    CameraDemo *camerademo = new CameraDemo(nullptr,cameraThread,modbusThread);
+    CameraDemo *camerademo = new CameraDemo(nullptr, cameraThread, modbusThread);
     camerademo->show();
 }
 
 void MainWindow::on_btcar_clicked()
 {
-    AICarDemo *aicardemo = new AICarDemo(nullptr,modbusThread);
+    AICarDemo *aicardemo = new AICarDemo(nullptr, cameraThread, modbusThread);
     aicardemo->show();
 }
 
