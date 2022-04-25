@@ -34,10 +34,9 @@ AICarDemo::AICarDemo(QWidget *parent, CameraThread *camerathread, ModbusThread *
 //    car_rgy_light_play->start();
     rgy_light_play_flag = 0;
 
-
 //    lower_red = Scalar(0, 100, 100);
 //    upper_red = Scalar(10, 255, 255);
-    lower_red = Scalar(0, 100, 100);
+    lower_red = Scalar(2, 100, 100);
     upper_red = Scalar(10, 255, 255);
     lower_green = Scalar(40, 50, 50);
     upper_green = Scalar(90, 255, 255);
@@ -359,121 +358,7 @@ void AICarDemo::Car_videoDisplay(const QImage image)
 void AICarDemo::Car_videoDisplay1()
 {
     if(!image_tmp.isNull()){
-
-        ui->red_light->setStyleSheet("");
-        ui->green_light->setStyleSheet("");
-        ui->yellow_light->setStyleSheet("");
-
-        QImage qImage;
-        Mat src,src1, mout, hsv;
-        vector<Vec3f>  circles;  //创建一个容器保存检测出来的几个圆
-        src=Mat(image_tmp.height(), image_tmp.width(), CV_8UC3, (void*)image_tmp.constBits(), image_tmp.bytesPerLine());
-        cv::resize(src,src,Size(320, 240));
-
-        cvtColor(src, src, COLOR_RGB2BGR);
-        medianBlur(src, mout, 7);//中值滤波/百分比滤波器
-        cvtColor(mout, mout, COLOR_BGR2GRAY);//转化为灰度图
-
-        //HoughCircles(mout, circles, HOUGH_GRADIENT, 1, 10, 100, 35, 15, 60);//霍夫变换圆检测
-        HoughCircles(mout, circles, HOUGH_GRADIENT, 1, 10, 100, 40, 15, 60);//霍夫变换圆检测
-        Scalar circleColor = Scalar(0,0,255);//圆形的边缘颜色
-        //Scalar centerColor = Scalar(0, 0, 255);//圆心的颜色
-        for (size_t i = 0; i < circles.size(); i++) {
-            Vec3f c = circles[i];
-            circle(src, Point(c[0], c[1]),c[2], circleColor, 2, LINE_AA);//画边缘
-            //circle(src, Point(c[0], c[1]), 2, centerColor, 2, LINE_AA);//画圆心
-            Point center(c[0], c[1]);
-            int radius = c[2];
-            Mat split_circle(src.rows, src.cols, src.type(), Scalar(0, 0, 0));
-            int count = 0;
-            for (int x = 0; x < src.cols; x++)
-            {
-                for (int y = 0; y < src.rows; y++)
-                {
-                    int temp = ((x - center.x) * (x - center.x) + (y - center.y) * (y - center.y));
-                    if (temp < (radius * radius))
-                    {
-                        split_circle.at<Vec3b>(Point(x, y))[0] = src.at<Vec3b>(Point(x, y))[0];//b
-                        split_circle.at<Vec3b>(Point(x, y))[1] = src.at<Vec3b>(Point(x, y))[1];//g
-                        split_circle.at<Vec3b>(Point(x, y))[2] = src.at<Vec3b>(Point(x, y))[2];//r
-                        count++;
-                    }
-                }
-            }
-            src1=split_circle;
-            //转化为hsv模型
-            cvtColor(src1, hsv, COLOR_BGR2HSV);
-
-            Mat maskGreen,maskRed,maskYellow,green_result,red_result,yellow_result;
-            int red,green,yellow;
-            //根据颜色阈值分别得到掩膜
-            inRange(hsv, lower_green, upper_green, maskGreen);
-            inRange(hsv, lower_red, upper_red, maskRed);
-            inRange(hsv, lower_yellow, upper_yellow, maskYellow);
-            //用掩膜进行二值化处理，并统计识别出的像素数目
-            medianBlur(maskGreen, green_result, 5);
-            green = countNonZero(green_result);
-
-            medianBlur(maskRed, red_result, 5);
-            red = countNonZero(red_result);
-
-            medianBlur(maskYellow, yellow_result, 5);
-            yellow = countNonZero(yellow_result);
-            qDebug()<<"rgb:"<<red<<green<<yellow;
-            //颜色判决
-            if ((yellow*1.0 >= 0.5)|| (red*1.0  >=0.5 )||  (green*1.0 >= 0.5))//判断红绿黄三色的像素占比是否过半
-            {
-                if (green > red && green > yellow && green > 50){
-                    ui->green_light->setStyleSheet("border-image:url(:/image/res/image/green_light.png);");
-                    rgy_light_play_flag  |= 0x02;
-                }
-                else if (red > yellow && red >50){
-                    ui->red_light->setStyleSheet("border-image:url(:/image/res/image/red_light.png);");
-                    rgy_light_play_flag  |= 0x01;
-
-                }else{
-                    if(yellow > 50){
-                        ui->yellow_light->setStyleSheet("border-image:url(:/image/res/image/yellow_light.png);");
-                        rgy_light_play_flag  |= 0x04;
-                    }
-                }
-            }
-        }
-
-        if(rgy_light_play_flag == 0x01){
-            QSound *success = new QSound("./mp3/red_light.wav", this);
-            success->play();
-            rgy_light_play_flag = 8;
-            car_rgy_light_play->start();
-        }else if(rgy_light_play_flag == 0x02){
-            QSound *success = new QSound("./mp3/green_light.wav", this);
-            success->play();
-            rgy_light_play_flag = 8;
-            car_rgy_light_play->start();
-        }else if(rgy_light_play_flag == 0x04){
-            QSound *success = new QSound("./mp3/yellow_light.wav", this);
-            success->play();
-            rgy_light_play_flag = 8;
-            car_rgy_light_play->start();
-        }else if(rgy_light_play_flag==0x05 || rgy_light_play_flag==0x6 ||rgy_light_play_flag==0x7||rgy_light_play_flag==0x3){
-            QSound *success = new QSound("./mp3/more_light.wav", this);
-            success->play();
-            rgy_light_play_flag = 8;
-            car_rgy_light_play->start();
-        }
-
-        cvtColor(src,src, COLOR_BGR2RGB);
-        if(src.channels() == 3)
-        {
-            qImage = QImage((const unsigned char*)(src.data),src.cols,src.rows,src.cols * src.channels(),
-                            QImage::Format_RGB888);
-        }else{
-            qImage = QImage((const unsigned char*)(src.data),src.cols,src.rows,src.cols * src.channels(),
-                            QImage::Format_RGB888);
-        }
-
-        QPixmap pixmap = QPixmap::fromImage(qImage);
-        ui->Car_videoDisplay->setPixmap(pixmap.scaled(ui->Car_videoDisplay->size(),Qt::IgnoreAspectRatio));
+//        rgy_light_identification();//红绿黄交通灯识别
 
     }
 }
@@ -481,4 +366,124 @@ void AICarDemo::Car_traffic_light_Play()
 {
      rgy_light_play_flag = 0;
 }
+void AICarDemo::rgy_light_identification()
+{
+    ui->red_light->setStyleSheet("");
+    ui->green_light->setStyleSheet("");
+    ui->yellow_light->setStyleSheet("");
 
+    QImage qImage;
+    Mat src,src1, mout, hsv;
+    vector<Vec3f>  circles;  //创建一个容器保存检测出来的几个圆
+    src=Mat(image_tmp.height(), image_tmp.width(), CV_8UC3, (void*)image_tmp.constBits(), image_tmp.bytesPerLine());
+    cv::resize(src,src,Size(320, 240));
+
+    cvtColor(src, src, COLOR_RGB2BGR);
+    medianBlur(src, mout, 7);//中值滤波/百分比滤波器
+    cvtColor(mout, mout, COLOR_BGR2GRAY);//转化为灰度图
+
+    //HoughCircles(mout, circles, HOUGH_GRADIENT, 1, 10, 100, 35, 15, 60);//霍夫变换圆检测
+    HoughCircles(mout, circles, HOUGH_GRADIENT, 1, 10, 100, 40, 15, 60);//霍夫变换圆检测
+    Scalar circleColor = Scalar(0,0,255);//圆形的边缘颜色
+    //Scalar centerColor = Scalar(0, 0, 255);//圆心的颜色
+    for (size_t i = 0; i < circles.size(); i++) {
+        Vec3f c = circles[i];
+        circle(src, Point(c[0], c[1]),c[2], circleColor, 2, LINE_AA);//画边缘
+        //circle(src, Point(c[0], c[1]), 2, centerColor, 2, LINE_AA);//画圆心
+        Point center(c[0], c[1]);
+        int radius = c[2];
+        Mat split_circle(src.rows, src.cols, src.type(), Scalar(0, 0, 0));
+        int count = 0;
+        for (int x = 0; x < src.cols; x++)
+        {
+            for (int y = 0; y < src.rows; y++)
+            {
+                int temp = ((x - center.x) * (x - center.x) + (y - center.y) * (y - center.y));
+                if (temp < (radius * radius))
+                {
+                    split_circle.at<Vec3b>(Point(x, y))[0] = src.at<Vec3b>(Point(x, y))[0];//b
+                    split_circle.at<Vec3b>(Point(x, y))[1] = src.at<Vec3b>(Point(x, y))[1];//g
+                    split_circle.at<Vec3b>(Point(x, y))[2] = src.at<Vec3b>(Point(x, y))[2];//r
+                    count++;
+                }
+            }
+        }
+        src1=split_circle;
+        //转化为hsv模型
+        cvtColor(src1, hsv, COLOR_BGR2HSV);
+
+        Mat maskGreen,maskRed,maskYellow,green_result,red_result,yellow_result;
+        int red,green,yellow;
+        //根据颜色阈值分别得到掩膜
+        inRange(hsv, lower_green, upper_green, maskGreen);
+        inRange(hsv, lower_red, upper_red, maskRed);
+        inRange(hsv, lower_yellow, upper_yellow, maskYellow);
+        //用掩膜进行二值化处理，并统计识别出的像素数目
+        medianBlur(maskGreen, green_result, 5);
+        green = countNonZero(green_result);
+
+        medianBlur(maskRed, red_result, 5);
+        red = countNonZero(red_result);
+
+        medianBlur(maskYellow, yellow_result, 5);
+        yellow = countNonZero(yellow_result);
+        qDebug()<<"rgb:"<<red<<green<<yellow;
+        //颜色判决
+        if ((yellow*1.0 >= 0.5)|| (red*1.0  >=0.5 )||  (green*1.0 >= 0.5))//判断红绿黄三色的像素占比是否过半
+        {
+            if (green > red && green > yellow && green > 50){
+                ui->green_light->setStyleSheet("border-image:url(:/image/res/image/green_light.png);");
+                rgy_light_play_flag  |= 0x02;
+            }
+            else if (red > yellow && red >50){
+                ui->red_light->setStyleSheet("border-image:url(:/image/res/image/red_light.png);");
+                rgy_light_play_flag  |= 0x01;
+
+            }else{
+                if(yellow > 50){
+                    ui->yellow_light->setStyleSheet("border-image:url(:/image/res/image/yellow_light.png);");
+                    rgy_light_play_flag  |= 0x04;
+                }
+            }
+        }
+    }
+
+    if(rgy_light_play_flag == 0x01){
+        QSound *success = new QSound("./mp3/red_light.wav", this);
+        success->play();
+        rgy_light_play_flag = 8;
+        car_rgy_light_play->start();
+    }else if(rgy_light_play_flag == 0x02){
+        QSound *success = new QSound("./mp3/green_light.wav", this);
+        success->play();
+        rgy_light_play_flag = 8;
+        car_rgy_light_play->start();
+    }else if(rgy_light_play_flag == 0x04){
+        QSound *success = new QSound("./mp3/yellow_light.wav", this);
+        success->play();
+        rgy_light_play_flag = 8;
+        car_rgy_light_play->start();
+    }else if(rgy_light_play_flag==0x05 || rgy_light_play_flag==0x6 ||rgy_light_play_flag==0x7||rgy_light_play_flag==0x3){
+        QSound *success = new QSound("./mp3/more_light.wav", this);
+        success->play();
+        rgy_light_play_flag = 8;
+        car_rgy_light_play->start();
+    }
+
+    cvtColor(src,src, COLOR_BGR2RGB);
+    if(src.channels() == 3)
+    {
+        qImage = QImage((const unsigned char*)(src.data),src.cols,src.rows,src.cols * src.channels(),
+                        QImage::Format_RGB888);
+    }else{
+        qImage = QImage((const unsigned char*)(src.data),src.cols,src.rows,src.cols * src.channels(),
+                        QImage::Format_RGB888);
+    }
+
+    QPixmap pixmap = QPixmap::fromImage(qImage);
+    ui->Car_videoDisplay->setPixmap(pixmap.scaled(ui->Car_videoDisplay->size(),Qt::IgnoreAspectRatio));
+}
+void AICarDemo::license_plate_recognition()
+{
+
+}

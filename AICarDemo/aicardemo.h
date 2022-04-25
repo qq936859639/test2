@@ -71,6 +71,8 @@ private slots:
 
 protected:
     void closeEvent(QCloseEvent *event);
+    void rgy_light_identification();
+    void license_plate_recognition();
 private:
     Ui::AICarDemo *ui;
     QTimer *car_state;

@@ -494,7 +494,7 @@
     <attribute name="title">
      <string>自动驾驶</string>
     </attribute>
-    <widget class="QGroupBox" name="groupBox_2">
+    <widget class="QGroupBox" name="RGYLightBox">
      <property name="geometry">
       <rect>
        <x>10</x>
