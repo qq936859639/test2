@@ -353,7 +353,8 @@ void AICarDemo::Car_read_data(int address, int data)
 void AICarDemo::Car_videoDisplay(const QImage image)
 {
     QImage image1 = image.copy();
-    image_tmp = image1.mirrored(true, false);
+    image_tmp=image1;
+//    image_tmp = image1.mirrored(true, false);
 
 //    QPixmap pixmap = QPixmap::fromImage(image1);
 //    ui->Car_videoDisplay->setPixmap(pixmap.scaled(ui->Car_videoDisplay->size(),Qt::IgnoreAspectRatio));//, Qt::SmoothTransformation 保持比例
@@ -494,12 +495,12 @@ void AICarDemo::license_plate_recognition()
     QImage qImage;
     Mat src;
 
-//    src=Mat(image_tmp.height(), image_tmp.width(), CV_8UC3, (void*)image_tmp.constBits(), image_tmp.bytesPerLine());
-    src = cv::imread("2.jpg");
-/*    Mat img_gray;
-    cv::resize(src,src,Size(320, 240));
+    src=Mat(image_tmp.height(), image_tmp.width(), CV_8UC3, (void*)image_tmp.constBits(), image_tmp.bytesPerLine());
+//    src = cv::imread("2.jpg");
+    //Mat img_gray;
+    //cv::resize(src,src,Size(320, 240));
     cvtColor(src, src, COLOR_RGB2BGR);
-
+/*
     cvtColor(src, img_gray, COLOR_BGR2GRAY);//转化为灰度图
 
     threshold(img_gray, img_gray, 150, 255, THRESH_BINARY);//二值化处理
@@ -511,12 +512,14 @@ void AICarDemo::license_plate_recognition()
     dilate(img_gray, img_gray, element);//膨胀
     Mat element1 = getStructuringElement(MORPH_RECT, Size(3, 3));
     erode(img_gray, img_gray, element1);//腐蚀
+*/
+
     Mat gray;
     cvtColor(src, gray, COLOR_BGR2GRAY);
 
     Mat thresh;
-    threshold(gray, thresh, 0, 255, THRESH_BINARY_INV | THRESH_OTSU);
-
+//    threshold(gray, thresh, 0, 255, THRESH_BINARY_INV | THRESH_OTSU);
+adaptiveThreshold(gray, thresh,255, ADAPTIVE_THRESH_MEAN_C, THRESH_BINARY, 15, 9);
     //使用形态学开操作去除一些小轮廓
     Mat kernel = getStructuringElement(MORPH_RECT, Size(3, 3));
     Mat open;
@@ -531,14 +534,14 @@ void AICarDemo::license_plate_recognition()
     {
         double area = contourArea(contours[i]);
         double peri = arcLength(contours[i], true);
-//        //计算每个轮廓的面积
-//        float temp = fabs(contourArea(contours[i]));
-//        if(temp>1000)
-//        {
-//            //绘制出contours向量内第i个轮廓
-//            drawContours(src,contours,i,Scalar(255),1,8,hierarchy);
-//            qDebug()<<"cjf  "<<temp;
-//        }
+        //计算每个轮廓的面积
+        float temp = fabs(contourArea(contours[i]));
+        if(temp>1000)
+        {
+            //绘制出contours向量内第i个轮廓
+            drawContours(src,contours,i,Scalar(255),1,8,hierarchy);
+            qDebug()<<"cjf  "<<temp;
+        }
 
         //根据面积筛选出可能属于车牌区域的轮廓
         if (area > 1000)
@@ -554,22 +557,33 @@ void AICarDemo::license_plate_recognition()
                 {
                     //截取ROI区域
                     Rect rect = boundingRect(contours[i]);
-                    src = src(rect);
+//                    src = src(rect);
+                    License_ROI = { src(rect),rect };
+                    imshow("a",License_ROI.mat);
                 }
             }
         }
     }
-    */
-    Get_License_ROI(src, License_ROI);//获取车牌所在ROI区域--车牌定位
 
-    vector<License> Character_ROI;
+//    Get_License_ROI(src, License_ROI);//获取车牌所在ROI区域--车牌定位
 
-    Get_Character_ROI(License_ROI, Character_ROI);//获取车牌每一个字符ROI区域
-
-    vector<int>result_index;
-    License_Recognition(Character_ROI, result_index);
-
-    Draw_Result(src, License_ROI, Character_ROI,result_index);
+    if (!License_ROI.mat.empty()){
+        vector<License> Character_ROI;
+        if(Get_Character_ROI(License_ROI, Character_ROI))//获取车牌每一个字符ROI区域
+        {
+            vector<int>result_index;
+            if(License_Recognition(Character_ROI, result_index))
+            {
+                Draw_Result(src, License_ROI, Character_ROI,result_index);
+            }else{
+                qDebug()<<"未能识别字符";
+            }
+        }else{
+            qDebug()<<"未能切割出字符";
+        }
+    }else{
+        qDebug()<<"未定位到车牌位置";
+    }
 
     cvtColor(src,src, COLOR_BGR2RGB);
     if(src.channels() == 3)
@@ -583,6 +597,7 @@ void AICarDemo::license_plate_recognition()
 
     QPixmap pixmap = QPixmap::fromImage(qImage);
     ui->Car_videoDisplay->setPixmap(pixmap.scaled(ui->Car_videoDisplay->size(),Qt::IgnoreAspectRatio));
+
 
 }
 //获取车牌所在ROI区域--车牌定位
@@ -615,8 +630,7 @@ bool AICarDemo::Get_License_ROI(Mat src, License &License_ROI)
         {
             //使用多边形近似，进一步确定车牌区域轮廓
             approxPolyDP(contours[i], conPoly[i], 0.02*peri, true);
-
-            if (conPoly[i].size() == 4)
+//            if (conPoly[i].size() == 4)
             {
                 //计算矩形区域宽高比
                 Rect box = boundingRect(contours[i]);
@@ -673,6 +687,8 @@ bool AICarDemo::Get_Character_ROI(License &License_ROI, vector<License>&Characte
 
     //将筛选出来的字符轮廓 按照其左上角点坐标从左到右依次顺序排列
     //冒泡排序
+    qDebug()<<"cjf1   "<<Character_ROI.size();
+    if(Character_ROI.size() > 6){
     for (size_t i = 0; i < Character_ROI.size()-1; i++)
     {
         for (size_t j = 0; j < Character_ROI.size() - 1 - i; j++)
@@ -682,10 +698,9 @@ bool AICarDemo::Get_Character_ROI(License &License_ROI, vector<License>&Characte
                 License temp = Character_ROI[j];
                 Character_ROI[j] = Character_ROI[j + 1];
                 Character_ROI[j + 1] = temp;
-
             }
         }
-    }
+    }}
 //    for(int i=0;i<7;i++)
 //         cv::imshow(QString("a%1").arg(i).toLocal8Bit().data(),Character_ROI[i].mat);
     if (Character_ROI.size() != 7)
@@ -794,7 +809,7 @@ bool AICarDemo::License_Recognition(vector<License>&Character_ROI, vector<int>&r
         Mat roi_thresh;
         threshold(roi_gray, roi_thresh, 0, 255, THRESH_BINARY | THRESH_OTSU);
 
-        int minCount = 10;
+        int minCount = 20;
         int index = 0;
         for (int j = 0; j < dataset.size(); j++)
         {
@@ -811,10 +826,9 @@ bool AICarDemo::License_Recognition(vector<License>&Character_ROI, vector<int>&r
             int count = pixCount(dst);
             if (count > minCount)//如果模板是黑字count < 100000
             {
-                cv::imshow(QString("a%1").arg(i).toLocal8Bit().data(),dst);
+cv::imshow(QString("a%1").arg(i).toLocal8Bit().data(),dst);
                 minCount = count;
                 index = j;
-
             }
         }
 
