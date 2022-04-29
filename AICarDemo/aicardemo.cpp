@@ -4,6 +4,10 @@
 #include <QDebug>
 #include <math.h>
 #include <QSound>//声音
+
+#include <fstream>   //文本读写
+
+
 AICarDemo::AICarDemo(QWidget *parent, CameraThread *camerathread, ModbusThread *modbusthread) :
     QWidget(parent),
     ui(new Ui::AICarDemo)
@@ -359,7 +363,7 @@ void AICarDemo::Car_videoDisplay1()
 {
     if(!image_tmp.isNull()){
 //        rgy_light_identification();//红绿黄交通灯识别
-
+license_plate_recognition();//车牌识别
     }
 }
 void AICarDemo::Car_traffic_light_Play()
@@ -483,7 +487,363 @@ void AICarDemo::rgy_light_identification()
     QPixmap pixmap = QPixmap::fromImage(qImage);
     ui->Car_videoDisplay->setPixmap(pixmap.scaled(ui->Car_videoDisplay->size(),Qt::IgnoreAspectRatio));
 }
+
+
 void AICarDemo::license_plate_recognition()
 {
+    QImage qImage;
+    Mat src;
+
+//    src=Mat(image_tmp.height(), image_tmp.width(), CV_8UC3, (void*)image_tmp.constBits(), image_tmp.bytesPerLine());
+    src = cv::imread("2.jpg");
+/*    Mat img_gray;
+    cv::resize(src,src,Size(320, 240));
+    cvtColor(src, src, COLOR_RGB2BGR);
+
+    cvtColor(src, img_gray, COLOR_BGR2GRAY);//转化为灰度图
+
+    threshold(img_gray, img_gray, 150, 255, THRESH_BINARY);//二值化处理
+    threshold(img_gray, img_gray, 0, 255, THRESH_BINARY_INV | THRESH_OTSU);//二值化处理
+
+    Canny(img_gray,img_gray,120,100,3);//边缘检测（膨胀腐蚀）
+    //Mat element = getStructuringElement(MORPH_RECT, Size(3, 3), Point(1, 1));
+    Mat element = getStructuringElement(MORPH_RECT, Size(3, 3));
+    dilate(img_gray, img_gray, element);//膨胀
+    Mat element1 = getStructuringElement(MORPH_RECT, Size(3, 3));
+    erode(img_gray, img_gray, element1);//腐蚀
+    Mat gray;
+    cvtColor(src, gray, COLOR_BGR2GRAY);
+
+    Mat thresh;
+    threshold(gray, thresh, 0, 255, THRESH_BINARY_INV | THRESH_OTSU);
+
+    //使用形态学开操作去除一些小轮廓
+    Mat kernel = getStructuringElement(MORPH_RECT, Size(3, 3));
+    Mat open;
+    morphologyEx(thresh, open, MORPH_OPEN, kernel);
+
+    //使用 RETR_EXTERNAL 找到最外轮廓
+    vector<Vec4i> hierarchy;
+    vector<vector<Point>>contours;
+    findContours(open, contours, hierarchy,RETR_EXTERNAL, CHAIN_APPROX_SIMPLE,Point(0,0));
+    vector<vector<Point>>conPoly(contours.size());
+    for (size_t i = 0; i < contours.size(); i++)
+    {
+        double area = contourArea(contours[i]);
+        double peri = arcLength(contours[i], true);
+//        //计算每个轮廓的面积
+//        float temp = fabs(contourArea(contours[i]));
+//        if(temp>1000)
+//        {
+//            //绘制出contours向量内第i个轮廓
+//            drawContours(src,contours,i,Scalar(255),1,8,hierarchy);
+//            qDebug()<<"cjf  "<<temp;
+//        }
+
+        //根据面积筛选出可能属于车牌区域的轮廓
+        if (area > 1000)
+        {
+            //使用多边形近似，进一步确定车牌区域轮廓
+            approxPolyDP(contours[i], conPoly[i], 0.02*peri, true);
+            if (conPoly[i].size() == 4)
+            {
+                //计算矩形区域宽高比
+                Rect box = boundingRect(contours[i]);
+                double ratio = double(box.width) / double(box.height);
+                if (ratio > 2 && ratio < 4)
+                {
+                    //截取ROI区域
+                    Rect rect = boundingRect(contours[i]);
+                    src = src(rect);
+                }
+            }
+        }
+    }
+    */
+    Get_License_ROI(src, License_ROI);//获取车牌所在ROI区域--车牌定位
+
+    vector<License> Character_ROI;
+
+    Get_Character_ROI(License_ROI, Character_ROI);//获取车牌每一个字符ROI区域
+
+    vector<int>result_index;
+    License_Recognition(Character_ROI, result_index);
+
+    Draw_Result(src, License_ROI, Character_ROI,result_index);
+
+    cvtColor(src,src, COLOR_BGR2RGB);
+    if(src.channels() == 3)
+    {
+        qImage = QImage((const unsigned char*)(src.data),src.cols,src.rows,src.step,
+                        QImage::Format_RGB888);
+    }else{
+        qImage = QImage((const unsigned char*)(src.data),src.cols,src.rows,src.step,
+                        QImage::Format_RGB888);
+    }
+
+    QPixmap pixmap = QPixmap::fromImage(qImage);
+    ui->Car_videoDisplay->setPixmap(pixmap.scaled(ui->Car_videoDisplay->size(),Qt::IgnoreAspectRatio));
 
 }
+//获取车牌所在ROI区域--车牌定位
+bool AICarDemo::Get_License_ROI(Mat src, License &License_ROI)
+{
+    Mat gray, dst;
+    cvtColor(src, gray, COLOR_BGR2GRAY);
+
+    //阈值滤波得到黑白图像， CV_THRESH_OTSU是自适应阈值
+    Mat thresh;
+    threshold(gray, thresh, 0, 255, THRESH_BINARY_INV | THRESH_OTSU);
+
+    //使用形态学开操作去除一些小轮廓
+    Mat kernel = getStructuringElement(MORPH_RECT, Size(3, 3));
+    Mat open;
+    morphologyEx(thresh, open, MORPH_OPEN, kernel);
+
+    //使用 RETR_EXTERNAL 找到最外轮廓
+    vector<vector<Point>>contours;
+    findContours(open, contours, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
+    vector<vector<Point>>conPoly(contours.size());
+
+    for (size_t i = 0; i < contours.size(); i++)
+    {
+        double area = contourArea(contours[i]);
+        double peri = arcLength(contours[i], true);
+
+        //根据面积筛选出可能属于车牌区域的轮廓
+        if (area > 1000)
+        {
+            //使用多边形近似，进一步确定车牌区域轮廓
+            approxPolyDP(contours[i], conPoly[i], 0.02*peri, true);
+
+            if (conPoly[i].size() == 4)
+            {
+                //计算矩形区域宽高比
+                Rect box = boundingRect(contours[i]);
+
+                double ratio = double(box.width) / double(box.height);
+                if (ratio > 2 && ratio < 4)
+                {
+                    //截取ROI区域
+                    Rect rect = boundingRect(contours[i]);
+                    License_ROI = { src(rect),rect };
+                }
+            }
+        }
+    }
+
+    if (License_ROI.mat.empty())
+    {
+        return false;
+    }
+    return true;
+}
+//获取车牌每一个字符ROI区域
+bool AICarDemo::Get_Character_ROI(License &License_ROI, vector<License>&Character_ROI)
+{
+    Mat gray;
+    cvtColor(License_ROI.mat, gray, COLOR_BGR2GRAY);
+
+    Mat thresh;
+    threshold(gray, thresh, 0, 255, THRESH_BINARY | THRESH_OTSU);
+
+    Mat kernel = getStructuringElement(MORPH_RECT, Size(3, 3));
+    Mat close;
+    morphologyEx(thresh, close, MORPH_CLOSE, kernel);
+
+    vector<vector<Point>>contours;
+    findContours(close, contours, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
+    for (size_t i = 0; i < contours.size(); i++)
+    {
+        double area = contourArea(contours[i]);
+        //由于我们筛选出来的轮廓是无序的，故后续我们需要将字符重新排序
+        if (area > 200)
+        {
+            Rect rect = boundingRect(contours[i]);
+            //计算外接矩形宽高比
+            double ratio = double(rect.height) / double(rect.width);
+            if (ratio > 1)
+            {
+                Mat roi = License_ROI.mat(rect);
+                cv::resize(roi, roi, Size(50, 100), 1, 1, INTER_LINEAR);
+                Character_ROI.push_back({ roi ,rect });
+            }
+        }
+    }
+
+    //将筛选出来的字符轮廓 按照其左上角点坐标从左到右依次顺序排列
+    //冒泡排序
+    for (size_t i = 0; i < Character_ROI.size()-1; i++)
+    {
+        for (size_t j = 0; j < Character_ROI.size() - 1 - i; j++)
+        {
+            if (Character_ROI[j].rect.x > Character_ROI[j + 1].rect.x)
+            {
+                License temp = Character_ROI[j];
+                Character_ROI[j] = Character_ROI[j + 1];
+                Character_ROI[j + 1] = temp;
+
+            }
+        }
+    }
+//    for(int i=0;i<7;i++)
+//         cv::imshow(QString("a%1").arg(i).toLocal8Bit().data(),Character_ROI[i].mat);
+    if (Character_ROI.size() != 7)
+    {
+        return false;
+    }
+    return true;
+}
+//计算像素点个数
+int pixCount(Mat image)
+{
+    int count = 0;
+    if (image.channels() == 1)
+    {
+        for (int i = 0; i < image.rows; i++)
+        {
+            for (int j = 0; j < image.cols; j++)
+            {
+                if (image.at<uchar>(i, j) == 0)
+                {
+                    count++;
+                }
+            }
+        }
+
+        return count;
+    }
+    else
+    {
+        return -1;
+    }
+}
+//读取文件  图片
+bool Read_Data(string filename,vector<Mat>&dataset)
+{
+    vector<String>imagePathList;
+    glob(filename, imagePathList);
+    if (imagePathList.empty())return false;
+
+    for (int i = 0; i < imagePathList.size(); i++)
+    {
+        Mat image = imread(imagePathList[i]);
+        resize(image, image, Size(50, 100), 1, 1, INTER_LINEAR);
+        dataset.push_back(image);
+    }
+
+    return true;
+}
+//从txt文件中读取中文，防止乱码
+string UTF8ToGB(const char* str)
+{
+    string result;
+    wchar_t *strSrc;
+    char *szRes;
+qDebug()<<"cjf UTF8 0";
+    //获得临时变量的大小
+//    int i = mbstowcs(strSrc, str, 100);
+//    strSrc = new wchar_t[i + 1];
+//    mbstowcs(strSrc,str, 10);
+
+    //获得临时变量的大小
+//    i = wcstombs(szRes, strSrc, 100);
+//    szRes = new char[i + 1];
+//    wcstombs(szRes, strSrc, 100);
+
+    result = szRes;
+    delete[]strSrc;
+    delete[]szRes;
+
+    return result;
+}
+//读取文件 标签
+bool Read_Data(string filename, vector<string>&data_name)
+{
+    fstream fin;
+    fin.open("./data_name.txt", ios::in);
+    if (!fin.is_open())
+    {
+//        cout << "can not open the file!" << endl;
+        return false;
+    }
+
+//    string s;
+//    while (std::getline(fin, s))
+//    {qDebug()<<"cjf read data 2";
+//        string str = UTF8ToGB(s.c_str()).c_str();
+//        data_name.push_back(str);
+//        qDebug()<<"cjf read data 3";
+//    }
+    fin.close();
+
+    return true;
+}
+//识别车牌字符
+bool AICarDemo::License_Recognition(vector<License>&Character_ROI, vector<int>&result_index)
+{
+    string filename = "data/";
+    vector<Mat>dataset;
+    if (!Read_Data(filename, dataset)) return false;
+
+    for (int i = 0; i < Character_ROI.size(); i++)
+    {
+        Mat roi_gray;
+        cvtColor(Character_ROI[i].mat, roi_gray, COLOR_BGR2GRAY);
+
+        Mat roi_thresh;
+        threshold(roi_gray, roi_thresh, 0, 255, THRESH_BINARY | THRESH_OTSU);
+
+        int minCount = 10;
+        int index = 0;
+        for (int j = 0; j < dataset.size(); j++)
+        {
+            Mat temp_gray;
+            cvtColor(dataset[j], temp_gray, COLOR_BGR2GRAY);
+
+            Mat temp_thresh;
+            threshold(temp_gray, temp_thresh, 0, 255, THRESH_BINARY | THRESH_OTSU);
+
+            //计算两张图片的像素差，以此判断两张图片是否相同
+            Mat dst;
+            absdiff(roi_thresh, temp_thresh, dst);
+
+            int count = pixCount(dst);
+            if (count > minCount)//如果模板是黑字count < 100000
+            {
+                cv::imshow(QString("a%1").arg(i).toLocal8Bit().data(),dst);
+                minCount = count;
+                index = j;
+
+            }
+        }
+
+        result_index.push_back(index);
+    }
+    return true;
+}
+
+//显示最终效果
+bool AICarDemo::Draw_Result(Mat src, License &License_ROI, vector<License>&Character_ROI,vector<int>&result_index)
+{
+    rectangle(src, License_ROI.rect, Scalar(0, 255, 0), 2);
+
+//    vector<string>data_name;
+//    if (!Read_Data("data_name.txt", data_name))return false;
+
+    for (size_t i = 0; i < Character_ROI.size(); i++)
+    {
+        qDebug()<<"cjf Draw "<<i<<result_index[i];
+        //putText 中文显示会乱码，所以采用下面代码
+//        CvText text("C://Windows/Fonts/方正粗黑宋简体.ttf");//字体
+//        string str = data_name[result_index[i]];  //string 转 char
+//qDebug()<<QString::fromLocal8Bit(str.data());
+//        const char * msg = str.data();
+//        IplImage *temp;  //Mat 转 IplImage
+//        temp = &IplImage(src);
+//        text.putText(temp, msg, Point(License_ROI.rect.x + Character_ROI[i].rect.x, License_ROI.rect.y + Character_ROI[i].rect.y),Scalar(0,0,255));
+
+    }
+    return true;
+}
+

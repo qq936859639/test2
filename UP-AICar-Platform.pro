@@ -17,6 +17,7 @@ TARGET = UP-AICar-Platform
 TEMPLATE = app
 
 
+
 SOURCES += main.cpp\
         AICarDemo/aicardemo.cpp \
         AICarDemo/car/car.cpp \
@@ -59,4 +60,4 @@ RESOURCES += \
 LIBS += $(shell pkg-config --libs opencv4) -lstdc++
 
 DISTFILES += \
-    data/haarcascade_frontalface_default.xml
+    data/haarcascade_frontalface_default.xml \

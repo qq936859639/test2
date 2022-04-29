@@ -14,6 +14,8 @@
 #include <opencv2/objdetect/objdetect.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
+//#include <opencv2/imgproc/imgproc_c.h>
+
 using namespace std;
 using namespace cv;
 
@@ -41,6 +43,7 @@ public:
     float accx=0, accy=0, accz=0;
     QString radar_data;
     bool Car_RGB_flag;
+
 signals:
     void Car_connect();
     void Car_writeRead(int startAddress, quint16 numberOfEntries, quint16 data);
@@ -73,6 +76,21 @@ protected:
     void closeEvent(QCloseEvent *event);
     void rgy_light_identification();
     void license_plate_recognition();
+//自定义车牌结构体
+struct License
+{
+    Mat mat;  //ROI图片
+    Rect rect; //ROI所在矩形
+}License_ROI;
+
+//获取车牌所在ROI区域--车牌定位
+bool Get_License_ROI(Mat src, License &License_ROI);
+//获取车牌每一个字符ROI区域
+bool Get_Character_ROI(License &License_ROI, vector<License>&Character_ROI);
+//识别车牌字符
+bool License_Recognition(vector<License>&Character_ROI, vector<int>&result_index);
+//显示最终效果
+bool Draw_Result(Mat src, License &License_ROI, vector<License>&Character_ROI,vector<int>&result_index);
 private:
     Ui::AICarDemo *ui;
     QTimer *car_state;

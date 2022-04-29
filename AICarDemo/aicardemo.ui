@@ -61,10 +61,10 @@
   <widget class="QLabel" name="Car_videoDisplay">
    <property name="geometry">
     <rect>
-     <x>800</x>
-     <y>410</y>
-     <width>200</width>
-     <height>130</height>
+     <x>419</x>
+     <y>169</y>
+     <width>581</width>
+     <height>371</height>
     </rect>
    </property>
    <property name="styleSheet">
@@ -125,7 +125,7 @@
       <rect>
        <x>10</x>
        <y>10</y>
-       <width>221</width>
+       <width>256</width>
        <height>101</height>
       </rect>
      </property>
@@ -576,6 +576,11 @@
     </widget>
    </widget>
   </widget>
+  <zorder>graphicsView</zorder>
+  <zorder>connect</zorder>
+  <zorder>Car_reset</zorder>
+  <zorder>tabWidget</zorder>
+  <zorder>Car_videoDisplay</zorder>
  </widget>
  <resources/>
  <connections/>
