@@ -1,0 +1,2 @@
+/usr/bin/ar qc libcvunitext.a  CMakeFiles/cvunitext.dir/cvUniText.cpp.o
+/usr/bin/ranlib libcvunitext.a

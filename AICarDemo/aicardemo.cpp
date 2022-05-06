@@ -5,7 +5,7 @@
 #include <math.h>
 #include <QSound>//声音
 
-#include <fstream>   //文本读写
+//#include <fstream>   //文本读写
 
 
 AICarDemo::AICarDemo(QWidget *parent, CameraThread *camerathread, ModbusThread *modbusthread) :

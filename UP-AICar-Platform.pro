@@ -22,6 +22,8 @@ SOURCES += main.cpp\
         AICarDemo/aicardemo.cpp \
         AICarDemo/car/car.cpp \
         CameraDemo/camerademo.cpp \
+        plr/cvUniText.cpp \
+        plr/plr.cpp \
         services/camerathread.cpp \
         CoreModule/coremodule.cpp \
         GPSDemo/gpsdemo.cpp \
@@ -36,6 +38,16 @@ HEADERS  += mainwindow.h \
     AICarDemo/aicardemo.h \
     AICarDemo/car/car.h \
     CameraDemo/camerademo.h \
+    plr/cvUniText.hpp \
+    plr/include/detector_creator.h \
+    plr/include/lpc_recognizer.h \
+    plr/include/lpr_recognizer.h \
+    plr/include/plate_detectors.h \
+    plr/include/plate_info.h \
+    plr/include/plate_petector.h \
+    plr/include/plate_recognizers.h \
+    plr/plr.h \
+    plr/timing.h \
     services/camerathread.h \
     CoreModule/coremodule.h \
     GPSDemo/gpsdemo.h \
@@ -57,7 +69,22 @@ FORMS    += mainwindow.ui \
 RESOURCES += \
     resource.qrc
 
-LIBS += $(shell pkg-config --libs opencv4) -lstdc++
-
 DISTFILES += \
     data/haarcascade_frontalface_default.xml \
+
+#CONFIG += c++11
+
+INCLUDEPATH += \
+    /usr/include/opencv4 \
+    /usr/include/ncnn \
+    /usr/include/freetype2
+
+LIBS += $(shell pkg-config --libs opencv4) \
+    -fopenmp \
+    -lfreetype \
+    -lgomp  \
+    -lstdc++ \
+    -lm \
+    -lmlpr \
+    -lncnn \
+    -lpthread
