@@ -497,9 +497,9 @@
     <widget class="QGroupBox" name="RGYLightBox">
      <property name="geometry">
       <rect>
-       <x>10</x>
-       <y>10</y>
-       <width>221</width>
+       <x>40</x>
+       <y>110</y>
+       <width>191</width>
        <height>61</height>
       </rect>
      </property>
@@ -512,7 +512,7 @@
      <widget class="QLabel" name="rgb_light">
       <property name="geometry">
        <rect>
-        <x>83</x>
+        <x>63</x>
         <y>20</y>
         <width>131</width>
         <height>41</height>
@@ -528,7 +528,7 @@
      <widget class="QLabel" name="red_light">
       <property name="geometry">
        <rect>
-        <x>91</x>
+        <x>71</x>
         <y>30</y>
         <width>21</width>
         <height>21</height>
@@ -544,7 +544,7 @@
      <widget class="QLabel" name="yellow_light">
       <property name="geometry">
        <rect>
-        <x>126</x>
+        <x>106</x>
         <y>30</y>
         <width>21</width>
         <height>21</height>
@@ -560,7 +560,7 @@
      <widget class="QLabel" name="green_light">
       <property name="geometry">
        <rect>
-        <x>160</x>
+        <x>140</x>
         <y>30</y>
         <width>21</width>
         <height>21</height>
@@ -577,9 +577,9 @@
     <widget class="QGroupBox" name="LPRBox">
      <property name="geometry">
       <rect>
-       <x>10</x>
-       <y>80</y>
-       <width>221</width>
+       <x>40</x>
+       <y>170</y>
+       <width>191</width>
        <height>61</height>
       </rect>
      </property>
@@ -605,6 +605,48 @@
        <string/>
       </property>
      </widget>
+    </widget>
+    <widget class="QRadioButton" name="LPRButton">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>200</y>
+       <width>16</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QRadioButton" name="RGYButton">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>140</y>
+       <width>16</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QGroupBox" name="faces">
+     <property name="geometry">
+      <rect>
+       <x>70</x>
+       <y>0</y>
+       <width>111</width>
+       <height>111</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
+     <property name="title">
+      <string>驾驶员</string>
+     </property>
     </widget>
    </widget>
   </widget>

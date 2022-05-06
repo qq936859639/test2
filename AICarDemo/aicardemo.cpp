@@ -47,6 +47,7 @@ AICarDemo::AICarDemo(QWidget *parent, CameraThread *camerathread, ModbusThread *
     lower_yellow = Scalar(15, 100, 100);
     upper_yellow = Scalar(35, 255, 255);
 
+    ui->RGYButton->setChecked(true);
     this->cameraThread = camerathread;
     this->modbusThread = modbusthread;
     connect(this, SIGNAL(Car_connect()),modbusThread,SLOT(on_connect()));
@@ -254,34 +255,16 @@ void AICarDemo::on_connect_clicked()
 }
 void AICarDemo::Car_change_connet(bool data)
 {
-//    faces_flag = false;
-//    ui->faceTrack->setText(tr("人脸追踪"));
     if(data == false)
     {
-//        connect_flag = false;
-
         ui->connect->setText(tr("Connect"));
         car_state->stop();
-
-//        ui->faceTrack->setDisabled(true);
-//        ui->up->setDisabled(true);
-//        ui->down->setDisabled(true);
-//        ui->left->setDisabled(true);
-//        ui->right->setDisabled(true);
     }
     if(data == true){
-//        connect_flag = true;
-//        emit Camera_writeRead(CAMERA_ADDR1, 1, H_Angle_num);
-//        emit Camera_writeRead(CAMERA_ADDR2, 1, V_Angle_num);
         ui->connect->setText(tr("Disconnect"));
         car_state->start();
-//        ui->faceTrack->setDisabled(false);
-//        ui->up->setDisabled(false);
-//        ui->down->setDisabled(false);
-//        ui->left->setDisabled(false);
-//        ui->right->setDisabled(false);
+
     }
-//    emit Camera_times(faces_flag);
 
 }
 void AICarDemo::on_Car_reset_clicked()
@@ -354,8 +337,8 @@ void AICarDemo::Car_videoDisplay(const QImage image)
 {
     QImage image1 = image.copy();
     image_tmp=image1;
-//    image_tmp = image1.mirrored(true, false);
 
+//    image_tmp = image1.mirrored(true, false);
 //    QPixmap pixmap = QPixmap::fromImage(image1);
 //    ui->Car_videoDisplay->setPixmap(pixmap.scaled(ui->Car_videoDisplay->size(),Qt::IgnoreAspectRatio));//, Qt::SmoothTransformation 保持比例
 }
@@ -363,8 +346,12 @@ void AICarDemo::Car_videoDisplay(const QImage image)
 void AICarDemo::Car_videoDisplay1()
 {
     if(!image_tmp.isNull()){
-//        rgy_light_identification();//红绿黄交通灯识别
-        license_plate_recognition();//车牌识别
+        if(ui->RGYButton->isChecked()){
+            rgy_light_identification();//红绿黄交通灯识别
+        }
+        if(ui->LPRButton->isChecked()){
+            license_plate_recognition();//车牌识别
+        }
     }
 }
 void AICarDemo::Car_traffic_light_Play()
@@ -503,42 +490,40 @@ void AICarDemo::license_plate_recognition()
 
     if(Get_License_ROI(src, License_ROI))//获取车牌所在ROI区域--车牌定位
     {
+        if (!License_ROI.mat.empty()){
 
-    }
-    if (!License_ROI.mat.empty()){
-
-        vector<License> Character_ROI;
-        if(Get_Character_ROI(License_ROI, Character_ROI))//获取车牌每一个字符ROI区域
-        {
-            vector<int>result_index;
-            if(License_Recognition(Character_ROI, result_index))
+            vector<License> Character_ROI;
+            if(Get_Character_ROI(License_ROI, Character_ROI))//获取车牌每一个字符ROI区域
             {
-                Draw_Result(src, License_ROI, Character_ROI,result_index);
-
-                src1 = License_ROI.mat;
-                cvtColor(src1,src1, COLOR_BGR2RGB);
-                if(src1.channels() == 3)
+                vector<int>result_index;
+                if(License_Recognition(Character_ROI, result_index))
                 {
-                    qImage = QImage((const unsigned char*)(src1.data),src1.cols,src1.rows,src1.step,
-                                    QImage::Format_RGB888);
+                    Draw_Result(src, License_ROI, Character_ROI,result_index);
+
+                    src1 = License_ROI.mat;
+                    cvtColor(src1,src1, COLOR_BGR2RGB);
+                    if(src1.channels() == 3)
+                    {
+                        qImage = QImage((const unsigned char*)(src1.data),src1.cols,src1.rows,src1.step,
+                                        QImage::Format_RGB888);
+                    }else{
+                        qImage = QImage((const unsigned char*)(src1.data),src1.cols,src1.rows,src1.step,
+                                        QImage::Format_RGB888);
+                    }
+
+                    QPixmap pixmap = QPixmap::fromImage(qImage);
+                    ui->LPR->setPixmap(pixmap.scaled(ui->LPR->size(),Qt::IgnoreAspectRatio));
+
                 }else{
-                    qImage = QImage((const unsigned char*)(src1.data),src1.cols,src1.rows,src1.step,
-                                    QImage::Format_RGB888);
+                    qDebug()<<"未能识别字符";
                 }
-
-                QPixmap pixmap = QPixmap::fromImage(qImage);
-                ui->LPR->setPixmap(pixmap.scaled(ui->LPR->size(),Qt::IgnoreAspectRatio));
-
             }else{
-                qDebug()<<"未能识别字符";
+                qDebug()<<"未能切割出字符";
             }
         }else{
-            qDebug()<<"未能切割出字符";
+            qDebug()<<"未定位到车牌位置";
         }
-    }else{
-        qDebug()<<"未定位到车牌位置";
     }
-
     cvtColor(src,src, COLOR_BGR2RGB);
     if(src.channels() == 3)
     {
