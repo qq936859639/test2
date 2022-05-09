@@ -59,8 +59,9 @@ static double now() {
     }
     return (nanotimer() - epoch) / 1e9;
 };
-
+/*
 double calcElapsed(double start, double end) {
     double took = -start;
     return took + end;
 }
+*/

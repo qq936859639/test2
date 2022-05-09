@@ -79,8 +79,9 @@ private slots:
 
 protected:
     void closeEvent(QCloseEvent *event);
-    void rgy_light_identification();
-    void license_plate_recognition();
+
+    Mat rgy_light_identification(const Mat &mat);
+    Mat FaceRecognition(const Mat &mat);
 
 private:
     Ui::AICarDemo *ui;

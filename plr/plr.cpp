@@ -27,8 +27,10 @@ cv::Mat PLR::draw_plate_results(std::vector<PlateInfo> &objects, cv::Mat &image)
                 cv::Scalar(255, 255, 255), cv::FILLED);
 
         uniText.PutText(image, pi.plate_no, cv::Point(x, y + label_size.height), cv::Scalar(0,255,0), false);
+        LPR_Data = pi.plate_color + pi.plate_no;
     }
     //cv::imwrite("test.jpg", image);
+
     return image;
 }
 

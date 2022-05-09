@@ -72,7 +72,7 @@ RESOURCES += \
 DISTFILES += \
     data/haarcascade_frontalface_default.xml \
 
-#CONFIG += c++11
+CONFIG += c++11
 
 INCLUDEPATH += \
     /usr/include/opencv4 \

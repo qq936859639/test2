@@ -18,7 +18,7 @@ class PLR {
 public:
     PLR();
     Mat  test_mtcnn_plate(Mat img);
-
+    string LPR_Data;
 private:
     PlateDetector detector;
     LPRRecognizer lpr ;
