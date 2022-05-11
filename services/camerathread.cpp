@@ -4,7 +4,7 @@ CameraThread::CameraThread(QObject *parent) : QThread(parent)
 {
     camera = new V4L();
     startflag = false;
-    timesflag = false;
+
     if(-1 == camera->openVideo(DEV_NAME)){//打开摄像头设备
         //emit errorshow();
         perror("openVideo fail");
@@ -68,10 +68,7 @@ void CameraThread::run(){
             }else{
                 getImage();
             }
-            if(timesflag ==false)
-                usleep(20000);
-            else
-                msleep(200);
+            usleep(2000);
         }
     }
 }
@@ -82,8 +79,4 @@ QImage CameraThread::getImage()
     image = QImage((const unsigned char *)camera->frame_buffer,IMAGE_WIDTH,IMAGE_HEIGHT,QImage::Format_RGB888).mirrored(false, false);
     emit Collect_complete(image);
     return image;
-}
-void CameraThread::Display_times(bool data)
-{
-    timesflag = data;
 }

@@ -41,7 +41,7 @@ signals:
     void Camera_write(quint16 data);
 //    void Camera_read(int, int);
     void Camera_writeRead(int startAddress, quint16 numberOfEntries, quint16 data);
-    void Camera_times(bool data);
+
 private slots:
     void videoDisplay(const QImage img);
     void Camera_read_data(int startAddress, int data);
@@ -63,6 +63,8 @@ protected:
 
 private:
     Ui::test *ui;
+    CascadeClassifier ccf;   //创建分类器对象
+    QImage image_tmp;
 };
 
 #endif // CAMERADEMO_H

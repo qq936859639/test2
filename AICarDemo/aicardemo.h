@@ -19,6 +19,8 @@
 #include "plr/cvUniText.hpp"
 #include "plr/plr.h"
 
+#include "faces/faces.h"
+
 using namespace std;
 using namespace cv;
 
@@ -77,20 +79,20 @@ private slots:
 
     void on_Car_reset_clicked();
 
+    void on_pushButton_clicked();
+
 protected:
     void closeEvent(QCloseEvent *event);
 
     Mat rgy_light_identification(const Mat &mat);
     Mat FaceRecognition(const Mat &mat);
-
+CascadeClassifier ccf;   //创建分类器对象
 private:
     Ui::AICarDemo *ui;
     QTimer *car_state;
 
-    QTimer *car_camera_state;
     QTimer *car_rgy_light_play;
     QImage image_tmp;
-
 
     Scalar lower_red;
     Scalar upper_red;
@@ -101,6 +103,7 @@ private:
 
     quint8 rgy_light_play_flag;
     PLR *plr;
+    FACES *faces;
 };
 
 #endif // AICARDEMO_H

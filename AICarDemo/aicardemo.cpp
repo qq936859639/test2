@@ -58,6 +58,12 @@ AICarDemo::AICarDemo(QWidget *parent, CameraThread *camerathread, ModbusThread *
 
     connect(cameraThread, SIGNAL(Collect_complete(QImage)),this,SLOT(Car_videoDisplay(QImage)));
     plr = new PLR();
+    faces = new FACES();
+    string xmlPath="./data/haarcascade_frontalface_default.xml";
+    if(!ccf.load(xmlPath))   //加载训练文件
+    {
+        perror("不能加载指定的xml文件");
+    }
 }
 
 AICarDemo::~AICarDemo()
@@ -408,6 +414,7 @@ void AICarDemo::Car_videoDisplay(const QImage image)
     Mat img1 = img;
     if(ui->FACEButton->isChecked()){
         img1 = FaceRecognition(img);//人脸识别
+//    img1 = faces->face_recognition(img);
     }else if(ui->RGYButton->isChecked()){
         img1 = rgy_light_identification(img);//红绿黄交通灯识别
     }else if(ui->LPRButton->isChecked()){
@@ -457,12 +464,13 @@ Mat AICarDemo::rgy_light_identification(const Mat &mat)
     //Scalar centerColor = Scalar(0, 0, 255);//圆心的颜色
     for (size_t i = 0; i < circles.size(); i++) {
         Vec3f c = circles[i];
-        circle(src, Point(c[0], c[1]),c[2], circleColor, 2, LINE_AA);//画边缘
+//        circle(src, Point(c[0], c[1]),c[2], circleColor, 2, LINE_AA);//画边缘
         //circle(src, Point(c[0], c[1]), 2, centerColor, 2, LINE_AA);//画圆心
+
         Point center(c[0], c[1]);
         int radius = c[2];
         Mat split_circle(src.rows, src.cols, src.type(), Scalar(0, 0, 0));
-        int count = 0;
+
         for (int x = 0; x < src.cols; x++)
         {
             for (int y = 0; y < src.rows; y++)
@@ -473,7 +481,10 @@ Mat AICarDemo::rgy_light_identification(const Mat &mat)
                     split_circle.at<Vec3b>(Point(x, y))[0] = src.at<Vec3b>(Point(x, y))[0];//b
                     split_circle.at<Vec3b>(Point(x, y))[1] = src.at<Vec3b>(Point(x, y))[1];//g
                     split_circle.at<Vec3b>(Point(x, y))[2] = src.at<Vec3b>(Point(x, y))[2];//r
-                    count++;
+                }else{//圆轮廓外
+//                    split_circle.at<Vec3b>(Point(x, y))[0] = src.at<Vec3b>(Point(x, y))[0];//b
+//                    split_circle.at<Vec3b>(Point(x, y))[1] = src.at<Vec3b>(Point(x, y))[1];//g
+//                    split_circle.at<Vec3b>(Point(x, y))[2] = src.at<Vec3b>(Point(x, y))[2];//r
                 }
             }
         }
@@ -481,8 +492,8 @@ Mat AICarDemo::rgy_light_identification(const Mat &mat)
         //转化为hsv模型
         cvtColor(src1, hsv, COLOR_BGR2HSV);
 
-        Mat maskGreen,maskRed,maskYellow,green_result,red_result,yellow_result;
-        int red,green,yellow;
+        Mat maskGreen, maskRed, maskYellow, green_result, red_result, yellow_result;
+        int red, green, yellow;
         //根据颜色阈值分别得到掩膜
         inRange(hsv, lower_green, upper_green, maskGreen);
         inRange(hsv, lower_red, upper_red, maskRed);
@@ -500,11 +511,11 @@ Mat AICarDemo::rgy_light_identification(const Mat &mat)
         //颜色判决
         if ((yellow*1.0 >= 0.5)|| (red*1.0  >=0.5 )||  (green*1.0 >= 0.5))//判断红绿黄三色的像素占比是否过半
         {
-            if (green > red && green > yellow && green > 50){
+            circle(src, Point(c[0], c[1]),c[2], circleColor, 2, LINE_AA);//画边缘
+            if(green > red && green > yellow && green > 50){
                 ui->green_light->setStyleSheet("border-image:url(:/image/res/image/green_light.png);");
                 rgy_light_play_flag  |= 0x02;
-            }
-            else if (red > yellow && red >50){
+            }else if(red > yellow && red >50){
                 ui->red_light->setStyleSheet("border-image:url(:/image/res/image/red_light.png);");
                 rgy_light_play_flag  |= 0x01;
 
@@ -546,23 +557,39 @@ Mat AICarDemo::rgy_light_identification(const Mat &mat)
 Mat AICarDemo::FaceRecognition(const Mat &mat)
 {
         vector<Rect> faces;  //创建一个容器保存检测出来的脸
-        CascadeClassifier ccf;   //创建分类器对象
         Mat img1, gray;
-        string xmlPath="./data/haarcascade_frontalface_default.xml";
+
         img1 = mat;
         cv::resize(img1,img1,Size(320, 240));
-        if(!ccf.load(xmlPath))   //加载训练文件
-        {
-            perror("不能加载指定的xml文件");
-        }
 
         cvtColor(img1, gray, COLOR_BGR2GRAY); //转换成灰度图，因为harr特征从灰度图中提取
         equalizeHist(gray,gray);  //直方图均衡行
-        ccf.detectMultiScale(gray,faces,1.3,3,0,Size(50,50),Size(200,200)); //检测人脸
+        ccf.detectMultiScale(gray,faces,1.1,3,0,Size(50,50),Size(200,200)); //检测人脸
         for(vector<Rect>::const_iterator iter=faces.begin();iter!=faces.end();iter++)
         {
-   //         rectangle(img1,*iter,Scalar(0,0,255),2,10); //画出脸部矩形
-//            qDebug()<<"cjfx"<<iter->x<<"y:"<<iter->y<<"w:"<<iter->width<<"h:"<<iter->height;
+            Mat img2, m;
+            img1.copyTo(img2);
+
+            rectangle(img1,*iter,Scalar(0,0,255),2,10); //画出脸部矩形
+            qDebug()<<"cjfx"<<iter->x<<"y:"<<iter->y<<"w:"<<iter->width<<"h:"<<iter->height;
+cv::Rect area(iter->x-10, iter->y-10, iter->width+10, iter->height+10); //需要裁减的矩形区域
+           m= img2(area);
+
+//            img2(*iter).copyTo(m);
+
+            QImage qimg = this->Mat2QImage(m);
+            QPixmap pixmap = QPixmap::fromImage(qimg);
+            ui->faces_data->setPixmap(pixmap.scaled(ui->faces_data->size(),Qt::IgnoreAspectRatio));//Qt::SmoothTransformation 保持比例
         }
         return img1;
+}
+
+void AICarDemo::on_pushButton_clicked()
+{
+    Mat img = this->QImage2Mat(image_tmp);
+    Mat m = faces->face_recognition(img);
+    m = faces->face_data;
+    QImage qimg = this->Mat2QImage(m);
+    QPixmap pixmap = QPixmap::fromImage(qimg);
+    ui->faces_data->setPixmap(pixmap.scaled(ui->faces_data->size(),Qt::IgnoreAspectRatio));//Qt::SmoothTransformation 保持比例
 }

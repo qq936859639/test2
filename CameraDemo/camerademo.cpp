@@ -32,7 +32,6 @@ CameraDemo::CameraDemo(QWidget *parent, CameraThread *camerathread, ModbusThread
     ui->right->setAutoRepeatInterval(200);
 
 //    ui->faceTrack->setCheckable(true);
-
 //  connect(cameraThread, SIGNAL(errorshow()), this, SLOT(errorshowslot()));
 //  connect(this,SIGNAL(Show_complete()),cameraThread,SLOT(startCapture()));
 
@@ -43,9 +42,13 @@ CameraDemo::CameraDemo(QWidget *parent, CameraThread *camerathread, ModbusThread
 //    connect(this, SIGNAL(Camera_write(quint16)),modbusThread,SLOT(on_write(quint16)));//only write
 //    connect(this, SIGNAL(Camera_read(int,int)),modbusThread,SLOT(on_read(int,int)));//only read
     connect(this, SIGNAL(Camera_writeRead(int, quint16, quint16)),modbusThread,SLOT(on_writeRead(int, quint16, quint16)));
-    connect(this, SIGNAL(Camera_times(bool)),cameraThread,SLOT(Display_times(bool)));
 
     connect(modbusThread, SIGNAL(on_change_connet(bool)),this,SLOT(Camera_change_connet(bool)));
+    string xmlPath="./data/haarcascade_frontalface_default.xml";
+    if(!ccf.load(xmlPath))   //加载训练文件
+    {
+        perror("不能加载指定的xml文件");
+    }
 }
 
 CameraDemo::~CameraDemo(){
@@ -56,14 +59,12 @@ void CameraDemo::closeEvent(QCloseEvent *event)
     faces_flag = false;
     connect_flag = false;
     emit Camera_connect();
-    emit Camera_times(faces_flag);
 
     disconnect(cameraThread, SIGNAL(Collect_complete(QImage)),this,SLOT(videoDisplay(QImage)));
     disconnect(modbusThread, SIGNAL(on_read_data(int, int)),this,SLOT(Camera_read_data(int, int)));
 
     disconnect(this, SIGNAL(Camera_connect()),modbusThread,SLOT(on_connect()));
     disconnect(this, SIGNAL(Camera_writeRead(int, quint16, quint16)),modbusThread,SLOT(on_writeRead(int, quint16, quint16)));
-    disconnect(this, SIGNAL(Camera_times(bool)),cameraThread,SLOT(Display_times(bool)));
 
     disconnect(modbusThread, SIGNAL(on_change_connet(bool)),this,SLOT(Camera_change_connet(bool)));
 }
@@ -89,22 +90,18 @@ void CameraDemo::errorshowslot()
 
 void CameraDemo::videoDisplay(const QImage image)
 {
-    QImage image1 = image.mirrored(true, false);
+    image_tmp = image.copy().mirrored(true, false);
+
     if(faces_flag == true){
         QImage qImage ;
         vector<Rect> faces;  //创建一个容器保存检测出来的脸
-        CascadeClassifier ccf;   //创建分类器对象
+
         Mat img1, img2, gray;
-        string xmlPath="./data/haarcascade_frontalface_default.xml";
-        img1=Mat(image1.height(), image1.width(), CV_8UC3, (void*)image1.constBits(), image1.bytesPerLine());
+        img1=Mat(image_tmp.height(), image_tmp.width(), CV_8UC3, (void*)image_tmp.constBits(), image_tmp.bytesPerLine());
         //flip(img1,img1,1);
+        cv::resize(img1,img2,Size(320, 240));
 
-        if(!ccf.load(xmlPath))   //加载训练文件
-        {
-            perror("不能加载指定的xml文件");
-        }
-
-        cvtColor(img1, img2, COLOR_BGR2RGB);
+        cvtColor(img2, img2, COLOR_BGR2RGB);
         cvtColor(img2, gray, COLOR_BGR2GRAY); //转换成灰度图，因为harr特征从灰度图中提取
         equalizeHist(gray,gray);  //直方图均衡行
         ccf.detectMultiScale(gray,faces,1.3,3,0,Size(50,50),Size(200,200)); //检测人脸
@@ -112,13 +109,13 @@ void CameraDemo::videoDisplay(const QImage image)
         {
             rectangle(img2,*iter,Scalar(0,0,255),2,10); //画出脸部矩形
 //            qDebug()<<"cjfx"<<iter->x<<"y:"<<iter->y<<"w:"<<iter->width<<"h:"<<iter->height;
-            if( iter->x > 300)
+            if( iter->x > 300/2)
                 H_Angle_num = H_Angle_num +2;//right
-            if( iter->x < 180)
+            if( iter->x < 180/2)
                 H_Angle_num = H_Angle_num -2;//left
-            if ( iter->y  > 150)
+            if ( iter->y  > 150/2)
                 V_Angle_num = V_Angle_num + 2;//down
-            if ( iter->y  < 50)
+            if ( iter->y  < 50/2)
                 V_Angle_num = V_Angle_num - 2;//up
 
             if(H_Angle_num < 45)
@@ -144,11 +141,14 @@ void CameraDemo::videoDisplay(const QImage image)
                             QImage::Format_RGB888);
         }
 
-        ui->labelCamera->setPixmap(QPixmap::fromImage(qImage));
-  //    ui->labelCamera->setPixmap(QPixmap::fromImage(qImage.scaled(ui->labelCamera->size(),Qt::KeepAspectRatio)));//全屏显示
-    }else {
-        QPixmap pixmap = QPixmap::fromImage(image1);
-        ui->labelCamera->setPixmap(pixmap);
+//        ui->labelCamera->setPixmap(QPixmap::fromImage(qImage));
+        ui->labelCamera->setPixmap(QPixmap::fromImage(qImage.scaled(ui->labelCamera->size(),Qt::KeepAspectRatio)));//全屏显示
+    }
+    else
+    {
+//        QPixmap pixmap = QPixmap::fromImage(image_tmp);
+//        ui->labelCamera->setPixmap(pixmap);
+        ui->labelCamera->setPixmap(QPixmap::fromImage(image_tmp.scaled(ui->labelCamera->size(),Qt::KeepAspectRatio)));//全屏显示
     }
 
 }
@@ -189,7 +189,6 @@ void CameraDemo::Camera_change_connet(bool data)
         ui->left->setDisabled(false);
         ui->right->setDisabled(false);
     }
-    emit Camera_times(faces_flag);
 
 }
 
@@ -237,5 +236,4 @@ void CameraDemo::on_faceTrack_clicked()
         ui->faceTrack->setText(tr("人脸追踪"));
     else
         ui->faceTrack->setText(tr("取消追踪"));
-    emit Camera_times(faces_flag);
 }
