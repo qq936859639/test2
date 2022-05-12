@@ -22,8 +22,6 @@ SOURCES += main.cpp\
         AICarDemo/aicardemo.cpp \
         AICarDemo/car/car.cpp \
         CameraDemo/camerademo.cpp \
-        faces/faces.cpp \
-        faces/mtcnn.cpp \
         plr/cvUniText.cpp \
         plr/plr.cpp \
         services/camerathread.cpp \
@@ -40,10 +38,6 @@ HEADERS  += mainwindow.h \
     AICarDemo/aicardemo.h \
     AICarDemo/car/car.h \
     CameraDemo/camerademo.h \
-    faces/faces.h \
-    faces/mtcnn.h \
-    faces/stb_image.h \
-    faces/stb_image_write.h \
     plr/cvUniText.hpp \
     plr/include/detector_creator.h \
     plr/include/lpc_recognizer.h \

@@ -58,7 +58,7 @@ AICarDemo::AICarDemo(QWidget *parent, CameraThread *camerathread, ModbusThread *
 
     connect(cameraThread, SIGNAL(Collect_complete(QImage)),this,SLOT(Car_videoDisplay(QImage)));
     plr = new PLR();
-    faces = new FACES();
+
     string xmlPath="./data/haarcascade_frontalface_default.xml";
     if(!ccf.load(xmlPath))   //加载训练文件
     {
@@ -556,40 +556,30 @@ Mat AICarDemo::rgy_light_identification(const Mat &mat)
 
 Mat AICarDemo::FaceRecognition(const Mat &mat)
 {
-        vector<Rect> faces;  //创建一个容器保存检测出来的脸
-        Mat img1, gray;
+    vector<Rect> faces;  //创建一个容器保存检测出来的脸
+    Mat img1, gray;
 
-        img1 = mat;
-        cv::resize(img1,img1,Size(320, 240));
+    img1 = mat;
+    cv::resize(img1,img1,Size(320, 240));
 
-        cvtColor(img1, gray, COLOR_BGR2GRAY); //转换成灰度图，因为harr特征从灰度图中提取
-        equalizeHist(gray,gray);  //直方图均衡行
-        ccf.detectMultiScale(gray,faces,1.1,3,0,Size(50,50),Size(200,200)); //检测人脸
-        for(vector<Rect>::const_iterator iter=faces.begin();iter!=faces.end();iter++)
-        {
-            Mat img2, m;
-            img1.copyTo(img2);
+    cvtColor(img1, gray, COLOR_BGR2GRAY); //转换成灰度图，因为harr特征从灰度图中提取
+    equalizeHist(gray,gray);  //直方图均衡行
+    ccf.detectMultiScale(gray,faces,1.1,3,0,Size(50,50),Size(200,200)); //检测人脸
+    for(vector<Rect>::const_iterator iter=faces.begin();iter!=faces.end();iter++)
+    {
+        Mat img2, m;
+        img1.copyTo(img2);
 
-            rectangle(img1,*iter,Scalar(0,0,255),2,10); //画出脸部矩形
-            qDebug()<<"cjfx"<<iter->x<<"y:"<<iter->y<<"w:"<<iter->width<<"h:"<<iter->height;
-cv::Rect area(iter->x-10, iter->y-10, iter->width+10, iter->height+10); //需要裁减的矩形区域
-           m= img2(area);
-
-//            img2(*iter).copyTo(m);
-
-            QImage qimg = this->Mat2QImage(m);
-            QPixmap pixmap = QPixmap::fromImage(qimg);
-            ui->faces_data->setPixmap(pixmap.scaled(ui->faces_data->size(),Qt::IgnoreAspectRatio));//Qt::SmoothTransformation 保持比例
+        rectangle(img1,*iter,Scalar(0,0,255),2,10); //画出脸部矩形
+        //qDebug()<<"cjfx"<<iter->x<<"y:"<<iter->y<<"w:"<<iter->width<<"h:"<<iter->height;
+        if(iter->x-5 > 0 && iter->y-5 >0){
+            cv::Rect area(iter->x-5, iter->y-5, iter->width+5, iter->height+5); //需要裁减的矩形区域
+            m = img2(area);//img2(*iter).copyTo(m);
         }
-        return img1;
-}
 
-void AICarDemo::on_pushButton_clicked()
-{
-    Mat img = this->QImage2Mat(image_tmp);
-    Mat m = faces->face_recognition(img);
-    m = faces->face_data;
-    QImage qimg = this->Mat2QImage(m);
-    QPixmap pixmap = QPixmap::fromImage(qimg);
-    ui->faces_data->setPixmap(pixmap.scaled(ui->faces_data->size(),Qt::IgnoreAspectRatio));//Qt::SmoothTransformation 保持比例
+        QImage qimg = this->Mat2QImage(m);
+        QPixmap pixmap = QPixmap::fromImage(qimg);
+        ui->faces_data->setPixmap(pixmap.scaled(ui->faces_data->size(),Qt::IgnoreAspectRatio));//Qt::SmoothTransformation 保持比例
+    }
+    return img1;
 }

@@ -19,8 +19,6 @@
 #include "plr/cvUniText.hpp"
 #include "plr/plr.h"
 
-#include "faces/faces.h"
-
 using namespace std;
 using namespace cv;
 
@@ -79,8 +77,6 @@ private slots:
 
     void on_Car_reset_clicked();
 
-    void on_pushButton_clicked();
-
 protected:
     void closeEvent(QCloseEvent *event);
 
@@ -103,7 +99,7 @@ private:
 
     quint8 rgy_light_play_flag;
     PLR *plr;
-    FACES *faces;
+
 };
 
 #endif // AICARDEMO_H
