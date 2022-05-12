@@ -418,6 +418,7 @@ void AICarDemo::Car_videoDisplay(const QImage image)
     }else if(ui->RGYButton->isChecked()){
         img1 = rgy_light_identification(img);//红绿黄交通灯识别
     }else if(ui->LPRButton->isChecked()){
+        cv::resize(img,img,Size(320, 240));
         img1 = plr->test_mtcnn_plate(img);//车牌识别
 
         ui->LPR->setText(QString::fromStdString(plr->LPR_Data));

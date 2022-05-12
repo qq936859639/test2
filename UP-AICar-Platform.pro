@@ -88,3 +88,7 @@ LIBS += $(shell pkg-config --libs opencv4) \
     -lmlpr \
     -lncnn \
     -lpthread
+#------A311D
+#-lvulkan -lglslang -lSPIRV -lMachineIndependent -lOGLCompiler -lOSDependent -lGenericCodeGen
+# or LIBS += ./plr/deps/ncnn/lib/libncnn_imx8.a -lncnn
+#------end
