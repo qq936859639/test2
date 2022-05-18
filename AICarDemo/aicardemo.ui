@@ -125,7 +125,7 @@
       <rect>
        <x>20</x>
        <y>10</y>
-       <width>191</width>
+       <width>201</width>
        <height>101</height>
       </rect>
      </property>
@@ -679,6 +679,77 @@
      <property name="text">
       <string/>
      </property>
+    </widget>
+    <widget class="QGroupBox" name="URBox">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>240</y>
+       <width>221</width>
+       <height>61</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
+     <property name="title">
+      <string>超声波测距</string>
+     </property>
+     <widget class="QLabel" name="LPR_2">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>20</y>
+        <width>131</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true"/>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>30</y>
+        <width>51</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>连接</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="ultrasound_data_3">
+      <property name="geometry">
+       <rect>
+        <x>70</x>
+        <y>20</y>
+        <width>71</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>距离(mm):</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="ultrasound_data">
+      <property name="geometry">
+       <rect>
+        <x>150</x>
+        <y>20</y>
+        <width>71</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>0</string>
+      </property>
+     </widget>
     </widget>
    </widget>
   </widget>

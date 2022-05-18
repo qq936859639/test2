@@ -19,6 +19,9 @@
 #include "plr/cvUniText.hpp"
 #include "plr/plr.h"
 
+#include<QSerialPortInfo>
+#include <QSerialPort>
+
 using namespace std;
 using namespace cv;
 
@@ -56,11 +59,8 @@ signals:
     void Car_times(bool data);
 private slots:
     void on_turnLeft_clicked();
-
     void on_turnRight_clicked();
-
     void on_accelerate_clicked();
-
     void on_decelerate_clicked();
 
     void on_connect_clicked();
@@ -68,26 +68,30 @@ private slots:
     void Car_change_connet(bool data);
     void Car_read_data(int, int data);
 
-
     void Car_state_data();
     void Car_videoDisplay(const QImage image);
 
-    void Car_videoDisplay1();
     void Car_traffic_light_Play();
-
     void on_Car_reset_clicked();
+
+    void Uart_ReadData();//串口读取接口槽函数
+    void on_pushButton_clicked();
 
 protected:
     void closeEvent(QCloseEvent *event);
 
     Mat rgy_light_identification(const Mat &mat);
     Mat FaceRecognition(const Mat &mat);
+
+    void Uart_Connect();
+    void Uart_WriteData();
+    void Uart_Close();
 CascadeClassifier ccf;   //创建分类器对象
 private:
     Ui::AICarDemo *ui;
     QTimer *car_state;
 
-    QTimer *car_rgy_light_play;
+    QTimer *video_play;
     QImage image_tmp;
 
     Scalar lower_red;
@@ -98,8 +102,11 @@ private:
     Scalar upper_yellow;
 
     quint8 rgy_light_play_flag;
+    quint8 ul_play_flag;
     PLR *plr;
 
+    QSerialPortInfo *SerialPortInfo=NULL;
+    QSerialPort SerialPort;
 };
 
 #endif // AICARDEMO_H

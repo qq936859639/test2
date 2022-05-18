@@ -18,6 +18,7 @@ AICarDemo::AICarDemo(QWidget *parent, CameraThread *camerathread, ModbusThread *
 
     car = new Car();
     scene->addItem(car);
+
     ui->graphicsView->setScene(scene);
     ui->graphicsView->show();
 
@@ -25,14 +26,9 @@ AICarDemo::AICarDemo(QWidget *parent, CameraThread *camerathread, ModbusThread *
     car_state->setInterval(500);
     connect(car_state,SIGNAL(timeout()),this,SLOT(Car_state_data()));
 
-//    car_camera_state = new QTimer(this);
-//    car_camera_state->setInterval(1000/20*5);
-//    connect(car_camera_state,SIGNAL(timeout()),this,SLOT(Car_videoDisplay1()));
-//    car_camera_state->start();
-
-    car_rgy_light_play = new QTimer(this);
-    car_rgy_light_play->setInterval(3000);
-    connect(car_rgy_light_play,SIGNAL(timeout()),this,SLOT(Car_traffic_light_Play()));
+    video_play = new QTimer(this);
+    video_play->setInterval(3000);
+    connect(video_play,SIGNAL(timeout()),this,SLOT(Car_traffic_light_Play()));
 //    car_rgy_light_play->start();
     rgy_light_play_flag = 0;
 
@@ -45,7 +41,7 @@ AICarDemo::AICarDemo(QWidget *parent, CameraThread *camerathread, ModbusThread *
     lower_yellow = Scalar(15, 100, 100);
     upper_yellow = Scalar(35, 255, 255);
 
-    ui->RGYButton->setChecked(true);
+    ui->FACEButton->setChecked(true);
     this->cameraThread = camerathread;
     this->modbusThread = modbusthread;
     connect(this, SIGNAL(Car_connect()),modbusThread,SLOT(on_connect()));
@@ -64,6 +60,7 @@ AICarDemo::AICarDemo(QWidget *parent, CameraThread *camerathread, ModbusThread *
     {
         perror("不能加载指定的xml文件");
     }
+
 }
 
 AICarDemo::~AICarDemo()
@@ -75,7 +72,7 @@ void AICarDemo::closeEvent(QCloseEvent *event)
     car_state->stop();
     emit Car_connect();
     emit Car_writeRead(CAR_COMMAND_ADDR, 1, 0);//小车复位
-//    car_camera_state->stop();
+    Uart_Close();//关闭串口
     disconnect(this, SIGNAL(Car_connect()),modbusThread,SLOT(on_connect()));
     disconnect(modbusThread, SIGNAL(on_change_connet(bool)),this,SLOT(Car_change_connet(bool)));
 
@@ -413,14 +410,12 @@ void AICarDemo::Car_videoDisplay(const QImage image)
     Mat img = this->QImage2Mat(image_tmp);
     Mat img1 = img;
     if(ui->FACEButton->isChecked()){
-        img1 = FaceRecognition(img);//人脸识别
-//    img1 = faces->face_recognition(img);
+        img1 = FaceRecognition(img);            //人脸识别
     }else if(ui->RGYButton->isChecked()){
-        img1 = rgy_light_identification(img);//红绿黄交通灯识别
+        img1 = rgy_light_identification(img);   //红绿黄交通灯识别
     }else if(ui->LPRButton->isChecked()){
         cv::resize(img,img,Size(320, 240));
-        img1 = plr->test_mtcnn_plate(img);//车牌识别
-
+        img1 = plr->test_mtcnn_plate(img);      //车牌识别
         ui->LPR->setText(QString::fromStdString(plr->LPR_Data));
     }
     QImage qimg = this->Mat2QImage(img1);
@@ -429,20 +424,10 @@ void AICarDemo::Car_videoDisplay(const QImage image)
     ui->Car_videoDisplay->setPixmap(pixmap.scaled(ui->Car_videoDisplay->size(),Qt::IgnoreAspectRatio));//, Qt::SmoothTransformation 保持比例
 }
 
-void AICarDemo::Car_videoDisplay1()
-{
-    if(!image_tmp.isNull()){
-//        if(ui->RGYButton->isChecked()){
-//            rgy_light_identification();//红绿黄交通灯识别
-//        }
-//        if(ui->LPRButton->isChecked()){
-//            license_plate_recognition();//车牌识别
-//        }
-    }
-}
 void AICarDemo::Car_traffic_light_Play()
 {
      rgy_light_play_flag = 0;
+     ul_play_flag = 0;
 }
 Mat AICarDemo::rgy_light_identification(const Mat &mat)
 {
@@ -533,27 +518,26 @@ Mat AICarDemo::rgy_light_identification(const Mat &mat)
         QSound *success = new QSound("./mp3/red_light.wav", this);
         success->play();
         rgy_light_play_flag = 8;
-        car_rgy_light_play->start();
+        video_play->start();
     }else if(rgy_light_play_flag == 0x02){
         QSound *success = new QSound("./mp3/green_light.wav", this);
         success->play();
         rgy_light_play_flag = 8;
-        car_rgy_light_play->start();
+        video_play->start();
     }else if(rgy_light_play_flag == 0x04){
         QSound *success = new QSound("./mp3/yellow_light.wav", this);
         success->play();
         rgy_light_play_flag = 8;
-        car_rgy_light_play->start();
+        video_play->start();
     }else if(rgy_light_play_flag==0x05 || rgy_light_play_flag==0x6 ||rgy_light_play_flag==0x7||rgy_light_play_flag==0x3){
         QSound *success = new QSound("./mp3/more_light.wav", this);
         success->play();
         rgy_light_play_flag = 8;
-        car_rgy_light_play->start();
+        video_play->start();
     }
 
     return src;
 }
-
 
 Mat AICarDemo::FaceRecognition(const Mat &mat)
 {
@@ -583,4 +567,117 @@ Mat AICarDemo::FaceRecognition(const Mat &mat)
         ui->faces_data->setPixmap(pixmap.scaled(ui->faces_data->size(),Qt::IgnoreAspectRatio));//Qt::SmoothTransformation 保持比例
     }
     return img1;
+}
+
+
+void AICarDemo::Uart_Connect()
+{
+    QList<QSerialPortInfo> list3;//获取串口列表
+    list3=QSerialPortInfo::availablePorts();
+    for(int i=0;i<list3.size();i++)
+        qDebug()<<list3[i].portName();//打印串口信息
+
+    foreach (const QSerialPortInfo &info, QSerialPortInfo::availablePorts())//搜索串口，获取串口列表
+    {qDebug()<<"cjf";
+        if(info.portName() == "ttyS3"){//在串口列表中查找
+            qDebug() << "所需串口已找到，具体信息如下：";
+            qDebug() << "Name : " << info.portName();//串口名称，比如com3
+            qDebug() << "Description : " << info.description();//串口描述说明
+            qDebug() << "Manufacturer: " << info.manufacturer();
+            qDebug() << "Serial Number: " << info.serialNumber();//串口号
+            qDebug() << "System Location: " << info.systemLocation();//系统位置
+            SerialPort.setPort(info);//设置串口
+            break;//找到所需要的串口信息，退出循环
+        }//使用if语句判断是否所需串口
+    }
+    SerialPort.open(QIODevice::ReadOnly);//打开串口，并设置串口为只读模式
+    SerialPort.setBaudRate(QSerialPort::Baud9600);//设置串口波特率（9600）
+    SerialPort.setDataBits(QSerialPort::Data8);//设置数据位（8）
+    SerialPort.setParity(QSerialPort::NoParity); //设置奇偶校检（无）
+    SerialPort.setStopBits(QSerialPort::OneStop);//设置停止位(一位)
+    SerialPort.setFlowControl(QSerialPort::NoFlowControl);//设置流控制（无）
+
+    if(SerialPort.isOpen()){
+            qDebug()<<"串口已经打开";
+    }
+
+    connect(&SerialPort, SIGNAL(readyRead()), this, SLOT(Uart_ReadData()));//读取数据的函数
+}
+
+void AICarDemo::Uart_ReadData()
+{
+    if(SerialPort.bytesAvailable() < 4)
+        return;
+    QByteArray data = SerialPort.readAll();
+
+    int len = data.length();
+    int i = 0, status=0, temp[3];
+    quint8 ch;
+
+    if (!data.isEmpty()){
+        while(len--)
+        {
+            ch = data.at(i);
+            switch(status){
+            case 0:
+                if(ch == 0xFF)
+                    status = 1;
+                break;
+            case 1:
+                temp[0] = ch;
+                status = 2;
+                break;
+            case 2:
+                temp[1] = ch;
+                status = 3;
+                break;
+            case 3:
+                temp[2] = (temp[0] + temp[1] + 0xFF)&0x00FF;
+                if(ch == temp[2])
+                {
+                    int temp_data = temp[0]<<8 | temp[1];
+                    ui->ultrasound_data->setText(QString::number(temp_data));
+                    qDebug()<<temp_data;
+                    if(temp_data <240)
+                    {
+                        //ui->ultrasound_data->setText(tr("数据无效"));
+                    }else if (240 < temp_data && temp_data<500){
+                        if(ul_play_flag == 0){
+                            QSound *success = new QSound("./mp3/ur_obstacles.wav", this);
+                            success->play();
+                            ul_play_flag = 1;
+                            video_play->start();
+                        }
+                    }
+                }
+                status = 0;
+                break;
+            }
+            i++;
+        }
+    }
+}
+
+void AICarDemo::Uart_Close()
+{
+    if(!SerialPort.isOpen())
+        return ;
+    SerialPort.close();
+}
+
+void AICarDemo::Uart_WriteData()
+{
+    QString sendData = "write test";
+    QByteArray Send_temp=sendData.toLatin1();
+    SerialPort.write(Send_temp);
+}
+
+void AICarDemo::on_pushButton_clicked()
+{
+    //Uart_Connect();
+
+//   QPoint k = ui->X->pos();
+//qDebug()<<"k="<<k;
+//QPointF k1 = scene->p;
+//qDebug()<<"k="<<k1;
 }
