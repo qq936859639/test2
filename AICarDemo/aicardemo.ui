@@ -24,12 +24,12 @@
     <rect>
      <x>9</x>
      <y>9</y>
-     <width>761</width>
-     <height>531</height>
+     <width>720</width>
+     <height>530</height>
     </rect>
    </property>
-   <property name="styleSheet">
-    <string notr="true"/>
+   <property name="autoFillBackground">
+    <bool>false</bool>
    </property>
   </widget>
   <widget class="QPushButton" name="connect">
@@ -711,19 +711,6 @@
        <string/>
       </property>
      </widget>
-     <widget class="QPushButton" name="pushButton">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>30</y>
-        <width>51</width>
-        <height>25</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>连接</string>
-      </property>
-     </widget>
      <widget class="QLabel" name="ultrasound_data_3">
       <property name="geometry">
        <rect>
@@ -748,6 +735,19 @@
       </property>
       <property name="text">
        <string>0</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>30</y>
+        <width>51</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>连接</string>
       </property>
      </widget>
     </widget>

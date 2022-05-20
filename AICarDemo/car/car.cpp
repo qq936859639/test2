@@ -28,14 +28,14 @@ void Car::decelerate()
 
 void Car::turnLeft()
 {
-    if (wheelsAngle > -30)
-        wheelsAngle -= 6;
+    if (wheelsAngle > -30*2)
+        wheelsAngle -= 6*2;
 }
 
 void Car::turnRight()
 {
-    if (wheelsAngle < 30)
-       wheelsAngle += 6;
+    if (wheelsAngle < 30*2)
+       wheelsAngle += 6*2;
 }
 void Car::reset()
 {

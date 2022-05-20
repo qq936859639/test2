@@ -52,6 +52,7 @@ public:
 
     QImage Mat2QImage(const Mat &mat);
     Mat QImage2Mat(const QImage& image);
+
 signals:
     void Car_connect();
     void Car_writeRead(int startAddress, quint16 numberOfEntries, quint16 data);
@@ -77,6 +78,8 @@ private slots:
     void Uart_ReadData();//串口读取接口槽函数
     void on_pushButton_clicked();
 
+    void AutoPilotSystem();
+
 protected:
     void closeEvent(QCloseEvent *event);
 
@@ -90,8 +93,9 @@ CascadeClassifier ccf;   //创建分类器对象
 private:
     Ui::AICarDemo *ui;
     QTimer *car_state;
-
     QTimer *video_play;
+    QTimer *AutoPilot;
+
     QImage image_tmp;
 
     Scalar lower_red;
@@ -107,6 +111,10 @@ private:
 
     QSerialPortInfo *SerialPortInfo=NULL;
     QSerialPort SerialPort;
+
+    void Car_Map_Home(QPointF point);
+    void Car_Map_Mall(QPointF point);
+    void Car_Map_TownHall(QPointF point);
 };
 
 #endif // AICARDEMO_H

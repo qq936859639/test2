@@ -13,14 +13,17 @@ AICarDemo::AICarDemo(QWidget *parent, CameraThread *camerathread, ModbusThread *
 {
     ui->setupUi(this);
     scene = new QGraphicsScene(this);
-    scene->setSceneRect(-500, -500, 1000, 1000);
+    scene->setSceneRect(-500+180, -500+174, 720, 530);
     scene->setItemIndexMethod(QGraphicsScene::NoIndex);
 
     car = new Car();
+    car->setScale(0.5);//小车缩小0.5倍
     scene->addItem(car);
 
     ui->graphicsView->setScene(scene);
     ui->graphicsView->show();
+
+    ui->graphicsView->setStyleSheet("border-image:url(:/image/res/image/car_map.png);");
 
     car_state = new QTimer(this);
     car_state->setInterval(500);
@@ -31,6 +34,10 @@ AICarDemo::AICarDemo(QWidget *parent, CameraThread *camerathread, ModbusThread *
     connect(video_play,SIGNAL(timeout()),this,SLOT(Car_traffic_light_Play()));
 //    car_rgy_light_play->start();
     rgy_light_play_flag = 0;
+
+    AutoPilot = new QTimer(this);
+    AutoPilot->setInterval(1000);
+    connect(AutoPilot,SIGNAL(timeout()),this,SLOT(AutoPilotSystem()));
 
 //    lower_red = Scalar(0, 100, 100);
 //    upper_red = Scalar(10, 255, 255);
@@ -82,6 +89,7 @@ void AICarDemo::closeEvent(QCloseEvent *event)
     disconnect(modbusThread, SIGNAL(on_read_data(int, int)),this,SLOT(Car_read_data(int, int)));
 
     disconnect(cameraThread, SIGNAL(Collect_complete(QImage)),this,SLOT(Car_videoDisplay(QImage)));
+    disconnect(AutoPilot,SIGNAL(timeout()),this,SLOT(AutoPilotSystem()));
 }
 
 void AICarDemo::on_turnLeft_clicked()
@@ -277,6 +285,10 @@ void AICarDemo::on_Car_reset_clicked()
     car->reset();
     emit Car_writeRead(CAR_COMMAND_ADDR, 1, 0);//小车复位
     emit Car_writeRead(CAR_COMMAND_LED_ADDR, 1, 0);//小车LED复位
+
+
+    QPointF point = car->mapToScene(scene->sceneRect().x(),scene->sceneRect().y());
+    qDebug()<<"cjf debug"<<point.x()<<point.y();
 
 }
 void AICarDemo::Car_state_data(){
@@ -675,9 +687,285 @@ void AICarDemo::Uart_WriteData()
 void AICarDemo::on_pushButton_clicked()
 {
     //Uart_Connect();
+    car->reset();
+    car->resetTransform();  //car->resetMatrix();
+    car->setPos(0,0);       //初始化小车位置
 
-//   QPoint k = ui->X->pos();
-//qDebug()<<"k="<<k;
-//QPointF k1 = scene->p;
-//qDebug()<<"k="<<k1;
+    AutoPilot->setInterval(1000/33);
+    AutoPilot->start();
+}
+void AICarDemo::AutoPilotSystem()
+{
+    QPointF point = car->mapToScene(scene->sceneRect().x(),scene->sceneRect().y());
+    qDebug()<<point.x()<<point.y();
+
+//    Car_Map_Home(point);
+//    Car_Map_Mall(point);
+    Car_Map_TownHall(point);
+}
+void AICarDemo::Car_Map_Home(QPointF point)
+{
+    if(point.x()==-160&&point.y()==-163)//起始坐标
+    {
+        on_accelerate_clicked();
+    }
+
+    if(point.x()==-160&&point.y()==-334)//右转
+    {
+        on_turnRight_clicked();
+        on_turnRight_clicked();
+        on_turnRight_clicked();
+        on_turnRight_clicked();
+        on_turnRight_clicked();
+    }
+
+    if((int)point.x()==215&&(int)point.y()==-382)//前行
+    {
+        car->reset();
+        on_accelerate_clicked();
+    }
+
+    if((int)point.x()==442&&(int)point.y()==-382)//右上角坐标点
+    {
+        on_turnRight_clicked();
+        on_turnRight_clicked();
+        on_turnRight_clicked();
+        on_turnRight_clicked();
+        on_turnRight_clicked();
+    }
+    if((int)point.x()==490&&(int)point.y()==-6)
+    {
+        car->reset();
+        on_accelerate_clicked();
+    }
+    if((int)point.x()==490&&(int)point.y()==40)//右边中间坐标点
+    {
+        on_turnRight_clicked();
+        on_turnRight_clicked();
+        on_turnRight_clicked();
+        on_turnRight_clicked();
+        on_turnRight_clicked();
+    }
+    if((int)point.x()==115&&(int)point.y()==88)
+    {
+        car->reset();
+        on_accelerate_clicked();
+    }
+    if((int)point.x()==-210&&(int)point.y()==88)//自动泊车-左转
+    {
+        car->reset();
+        on_decelerate_clicked();
+
+        on_turnLeft_clicked();
+        on_turnLeft_clicked();
+        on_turnLeft_clicked();
+        on_turnLeft_clicked();
+        on_turnLeft_clicked();
+    }
+    if((int)point.x()==-156&&(int)point.y()==-182)//自动泊车-左转
+    {
+        car->reset();
+        on_decelerate_clicked();
+    }
+    if((int)point.x()==-156&&(int)point.y()==-160)//自动泊车-左转
+    {
+        car->reset();
+    }
+}
+
+void AICarDemo::Car_Map_Mall(QPointF point)
+{
+    if(point.x()==-160&&point.y()==-163)//起始坐标
+    {
+        on_accelerate_clicked();
+    }
+
+    if(point.x()==-160&&point.y()==-334)//右转
+    {
+        on_turnRight_clicked();
+        on_turnRight_clicked();
+        on_turnRight_clicked();
+        on_turnRight_clicked();
+        on_turnRight_clicked();
+    }
+
+    if((int)point.x()==215&&(int)point.y()==-382)//前行
+    {
+        car->reset();
+        on_accelerate_clicked();
+    }
+
+    if((int)point.x()==445&&(int)point.y()==-382)//右上角坐标点
+    {
+        on_turnRight_clicked();
+        on_turnRight_clicked();
+        on_turnRight_clicked();
+        on_turnRight_clicked();
+        on_turnRight_clicked();
+    }
+
+    if((int)point.x()==493&&(int)point.y()==-6)
+    {
+        car->reset();
+        on_accelerate_clicked();
+    }
+
+    if((int)point.x()==493&&(int)point.y()==250)//右下角坐标点
+    {
+        on_turnRight_clicked();
+        on_turnRight_clicked();
+        on_turnRight_clicked();
+        on_turnRight_clicked();
+        on_turnRight_clicked();
+    }
+    if((int)point.x()==118&&(int)point.y()==298)
+    {
+        car->reset();
+        on_accelerate_clicked();
+    }
+
+    if((int)point.x()==-363&&(int)point.y()==298)//左下角坐标点
+    {
+        on_turnRight_clicked();
+        on_turnRight_clicked();
+        on_turnRight_clicked();
+        on_turnRight_clicked();
+        on_turnRight_clicked();
+    }
+
+    if((int)point.x()==-412&&(int)point.y()==-76)
+    {
+        car->reset();
+        on_accelerate_clicked();
+    }
+    if((int)point.x()==-412&&(int)point.y()==-175)//左中间坐标点
+    {
+        on_turnRight_clicked();
+        on_turnRight_clicked();
+        on_turnRight_clicked();
+        on_turnRight_clicked();
+        on_turnRight_clicked();
+    }
+    if((int)point.x()==-36&&(int)point.y()==-224)
+    {
+        car->reset();
+        on_accelerate_clicked();
+    }
+
+    if((int)point.x()==214&&(int)point.y()==-224)//自动泊车-右转倒车
+    {
+        car->reset();
+        on_decelerate_clicked();
+        on_turnRight_clicked();
+        on_turnRight_clicked();
+        on_turnRight_clicked();
+        on_turnRight_clicked();
+        on_turnRight_clicked();
+    }
+
+    if((int)point.x()==-163&&(int)point.y()==-170)//小车倒车
+    {
+        car->reset();
+        on_decelerate_clicked();
+    }
+    if((int)point.x()==-162&&(int)point.y()==-157)//小车停止
+    {
+        car->reset();
+    }
+}
+void AICarDemo::Car_Map_TownHall(QPointF point)
+{
+    if(point.x()==-160&&point.y()==-163)//起始坐标
+    {
+        on_accelerate_clicked();
+    }
+
+    if(point.x()==-160&&point.y()==-180)//右转
+    {
+        on_turnRight_clicked();
+        on_turnRight_clicked();
+        on_turnRight_clicked();
+        on_turnRight_clicked();
+        on_turnRight_clicked();
+    }
+
+    if((int)point.x()==215&&(int)point.y()==-228)
+    {
+        car->reset();
+        on_accelerate_clicked();
+    }
+
+    if((int)point.x()==476&&(int)point.y()==-228)//右边中间坐标点
+    {
+        on_turnLeft_clicked();
+        on_turnLeft_clicked();
+        on_turnLeft_clicked();
+        on_turnLeft_clicked();
+        on_turnLeft_clicked();
+    }
+
+    if((int)point.x()==204&&(int)point.y()==-283)
+    {
+        car->reset();
+        on_accelerate_clicked();
+    }
+
+    if((int)point.x()==204&&(int)point.y()==-367)//右边上坐标点
+    {
+        on_turnLeft_clicked();
+        on_turnLeft_clicked();
+        on_turnLeft_clicked();
+        on_turnLeft_clicked();
+        on_turnLeft_clicked();
+    }
+    if((int)point.x()==149&&(int)point.y()==-95)
+    {
+        car->reset();
+        on_accelerate_clicked();
+    }
+    if((int)point.x()==-396&&(int)point.y()==-95)//左边上坐标点
+    {
+        on_turnLeft_clicked();
+        on_turnLeft_clicked();
+        on_turnLeft_clicked();
+        on_turnLeft_clicked();
+        on_turnLeft_clicked();
+    }
+    if((int)point.x()==-124&&(int)point.y()==-40)
+    {
+        car->reset();
+        on_accelerate_clicked();
+    }
+    if((int)point.x()==-124&&(int)point.y()==40)//左边中间坐标点
+    {
+        on_turnLeft_clicked();
+        on_turnLeft_clicked();
+        on_turnLeft_clicked();
+        on_turnLeft_clicked();
+        on_turnLeft_clicked();
+    }
+    if((int)point.x()==-69&&(int)point.y()==-231)
+    {
+        car->reset();
+        on_accelerate_clicked();
+    }
+    if((int)point.x()==212&&(int)point.y()==-231)
+    {
+        car->reset();
+        on_decelerate_clicked();
+        on_turnRight_clicked();
+        on_turnRight_clicked();
+        on_turnRight_clicked();
+        on_turnRight_clicked();
+        on_turnRight_clicked();
+    }
+    if((int)point.x()==-161&&(int)point.y()==-181)
+    {
+        car->reset();
+        on_decelerate_clicked();
+    }
+    if((int)point.x()==-161&&(int)point.y()==-160)
+    {
+        car->reset();
+    }
 }
