@@ -22,8 +22,14 @@ AICarDemo::AICarDemo(QWidget *parent, CameraThread *camerathread, ModbusThread *
 
     ui->graphicsView->setScene(scene);
     ui->graphicsView->show();
-
     ui->graphicsView->setStyleSheet("border-image:url(:/image/res/image/car_map.png);");
+
+    ui->home->setStyleSheet("border-image:url(:/image/res/image/home.png);");
+    ui->mall->setStyleSheet("border-image:url(:/image/res/image/mall.png);");
+    ui->school->setStyleSheet("border-image:url(:/image/res/image/school.png);");
+    ui->gym->setStyleSheet("border-image:url(:/image/res/image/gym.png);");
+    ui->townhall->setStyleSheet("border-image:url(:/image/res/image/townhall.png);");
+    ui->school_rgy_light->setStyleSheet("border-image:url(:/image/res/image/school_rgy_light.png);");
 
     car_state = new QTimer(this);
     car_state->setInterval(500);
