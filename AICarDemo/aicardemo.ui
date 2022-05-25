@@ -31,6 +31,9 @@
    <property name="autoFillBackground">
     <bool>false</bool>
    </property>
+   <property name="styleSheet">
+    <string notr="true">border-image: url(:/image/res/image/car_map.png);</string>
+   </property>
   </widget>
   <widget class="QPushButton" name="connect">
    <property name="geometry">
@@ -376,12 +379,12 @@
        <rect>
         <x>10</x>
         <y>170</y>
-        <width>67</width>
+        <width>101</width>
         <height>17</height>
        </rect>
       </property>
       <property name="text">
-       <string>雷达:</string>
+       <string>毫米波雷达:</string>
       </property>
      </widget>
      <widget class="QLabel" name="temp_data">
@@ -400,10 +403,10 @@
      <widget class="QLabel" name="radar_data">
       <property name="geometry">
        <rect>
-        <x>80</x>
+        <x>120</x>
         <y>170</y>
-        <width>151</width>
-        <height>17</height>
+        <width>111</width>
+        <height>20</height>
        </rect>
       </property>
       <property name="text">
@@ -498,8 +501,8 @@
      <property name="geometry">
       <rect>
        <x>40</x>
-       <y>110</y>
-       <width>191</width>
+       <y>170</y>
+       <width>131</width>
        <height>61</height>
       </rect>
      </property>
@@ -578,8 +581,8 @@
      <property name="geometry">
       <rect>
        <x>40</x>
-       <y>170</y>
-       <width>191</width>
+       <y>0</y>
+       <width>131</width>
        <height>61</height>
       </rect>
      </property>
@@ -594,7 +597,7 @@
        <rect>
         <x>0</x>
         <y>20</y>
-        <width>131</width>
+        <width>111</width>
         <height>41</height>
        </rect>
       </property>
@@ -610,7 +613,7 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>200</y>
+       <y>30</y>
        <width>16</width>
        <height>23</height>
       </rect>
@@ -623,7 +626,7 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>140</y>
+       <y>200</y>
        <width>16</width>
        <height>23</height>
       </rect>
@@ -636,8 +639,8 @@
      <property name="geometry">
       <rect>
        <x>40</x>
-       <y>0</y>
-       <width>111</width>
+       <y>60</y>
+       <width>131</width>
        <height>111</height>
       </rect>
      </property>
@@ -652,7 +655,7 @@
        <rect>
         <x>0</x>
         <y>20</y>
-        <width>111</width>
+        <width>131</width>
         <height>91</height>
        </rect>
       </property>
@@ -671,7 +674,7 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>50</y>
+       <y>110</y>
        <width>16</width>
        <height>23</height>
       </rect>
@@ -683,9 +686,9 @@
     <widget class="QGroupBox" name="URBox">
      <property name="geometry">
       <rect>
-       <x>10</x>
+       <x>40</x>
        <y>240</y>
-       <width>221</width>
+       <width>191</width>
        <height>61</height>
       </rect>
      </property>
@@ -693,7 +696,7 @@
       <string notr="true"/>
      </property>
      <property name="title">
-      <string>超声波测距</string>
+      <string>超声波雷达</string>
      </property>
      <widget class="QLabel" name="LPR_2">
       <property name="geometry">
@@ -727,9 +730,9 @@
      <widget class="QLabel" name="ultrasound_data">
       <property name="geometry">
        <rect>
-        <x>150</x>
+        <x>140</x>
         <y>20</y>
-        <width>71</width>
+        <width>51</width>
         <height>41</height>
        </rect>
       </property>
@@ -737,7 +740,7 @@
        <string>0</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="pushButton">
+     <widget class="QPushButton" name="ul">
       <property name="geometry">
        <rect>
         <x>10</x>
@@ -747,76 +750,24 @@
        </rect>
       </property>
       <property name="text">
-       <string>连接</string>
+       <string>打开</string>
       </property>
      </widget>
     </widget>
+    <widget class="QPushButton" name="pushButton">
+     <property name="geometry">
+      <rect>
+       <x>180</x>
+       <y>25</y>
+       <width>51</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>开始</string>
+     </property>
+    </widget>
    </widget>
-  </widget>
-  <widget class="QLabel" name="gym">
-   <property name="geometry">
-    <rect>
-     <x>100</x>
-     <y>370</y>
-     <width>121</width>
-     <height>81</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
-  </widget>
-  <widget class="QLabel" name="townhall">
-   <property name="geometry">
-    <rect>
-     <x>100</x>
-     <y>130</y>
-     <width>150</width>
-     <height>70</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
-  </widget>
-  <widget class="QLabel" name="mall">
-   <property name="geometry">
-    <rect>
-     <x>499</x>
-     <y>380</y>
-     <width>141</width>
-     <height>76</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
-  </widget>
-  <widget class="QLabel" name="school">
-   <property name="geometry">
-    <rect>
-     <x>290</x>
-     <y>380</y>
-     <width>140</width>
-     <height>76</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
-  </widget>
-  <widget class="QLabel" name="home">
-   <property name="geometry">
-    <rect>
-     <x>490</x>
-     <y>140</y>
-     <width>151</width>
-     <height>91</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
   </widget>
   <widget class="QLabel" name="school_rgy_light">
    <property name="geometry">
@@ -826,6 +777,197 @@
      <width>21</width>
      <height>61</height>
     </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">border-image: url(:/image/res/image/school_rgy_light.png);</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QLabel" name="school_yellow_light">
+   <property name="geometry">
+    <rect>
+     <x>313</x>
+     <y>482</y>
+     <width>16</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QLabel" name="school_red_light">
+   <property name="geometry">
+    <rect>
+     <x>313</x>
+     <y>463</y>
+     <width>16</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QLabel" name="school_green_light">
+   <property name="geometry">
+    <rect>
+     <x>313</x>
+     <y>500</y>
+     <width>16</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="townhall">
+   <property name="geometry">
+    <rect>
+     <x>90</x>
+     <y>130</y>
+     <width>150</width>
+     <height>70</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">border-image: url(:/image/res/image/townhall_balck.png);</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="autoExclusive">
+    <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="home">
+   <property name="geometry">
+    <rect>
+     <x>495</x>
+     <y>130</y>
+     <width>150</width>
+     <height>70</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">border-image: url(:/image/res/image/home.png);</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="mall">
+   <property name="geometry">
+    <rect>
+     <x>490</x>
+     <y>385</y>
+     <width>151</width>
+     <height>71</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">border-image: url(:/image/res/image/mall_balck.png);</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="autoExclusive">
+    <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="school">
+   <property name="geometry">
+    <rect>
+     <x>290</x>
+     <y>385</y>
+     <width>151</width>
+     <height>71</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">border-image: url(:/image/res/image/school_balck.png);</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="autoExclusive">
+    <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="gym">
+   <property name="geometry">
+    <rect>
+     <x>95</x>
+     <y>385</y>
+     <width>151</width>
+     <height>71</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">border-image: url(:/image/res/image/gym_balck.png);</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="autoExclusive">
+    <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="car_pole_3">
+   <property name="geometry">
+    <rect>
+     <x>240</x>
+     <y>240</y>
+     <width>5</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">border-image: url(:/image/res/image/car_pole_1.png);</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="car_pole_1">
+   <property name="geometry">
+    <rect>
+     <x>470</x>
+     <y>240</y>
+     <width>5</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">border-image: url(:/image/res/image/car_pole_1.png);</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="car_pole_2">
+   <property name="geometry">
+    <rect>
+     <x>305</x>
+     <y>150</y>
+     <width>50</width>
+     <height>5</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">border-image: url(:/image/res/image/car_pole_2.png);</string>
    </property>
    <property name="text">
     <string/>

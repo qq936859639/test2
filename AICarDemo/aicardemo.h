@@ -80,6 +80,17 @@ private slots:
 
     void AutoPilotSystem();
 
+
+    void on_townhall_clicked();
+
+    void on_mall_clicked();
+
+    void on_school_clicked();
+
+    void on_gym_clicked();
+
+    void on_ul_clicked();
+
 protected:
     void closeEvent(QCloseEvent *event);
 
@@ -107,14 +118,21 @@ private:
 
     quint8 rgy_light_play_flag;
     quint8 ul_play_flag;
+    quint8 car_play_flag;
+    quint8 car_face_flag;
+    quint8 car_lpr_flag;
+    quint8 car_rgy_flag;
+
     PLR *plr;
 
     QSerialPortInfo *SerialPortInfo=NULL;
     QSerialPort SerialPort;
 
+    void Car_Reset();
     void Car_Map_Home(QPointF point);
     void Car_Map_Mall(QPointF point);
     void Car_Map_TownHall(QPointF point);
+    quint16 Car_END_flag;
 };
 
 #endif // AICARDEMO_H

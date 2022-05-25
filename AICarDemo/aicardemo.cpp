@@ -24,12 +24,14 @@ AICarDemo::AICarDemo(QWidget *parent, CameraThread *camerathread, ModbusThread *
     ui->graphicsView->show();
     ui->graphicsView->setStyleSheet("border-image:url(:/image/res/image/car_map.png);");
 
-    ui->home->setStyleSheet("border-image:url(:/image/res/image/home.png);");
-    ui->mall->setStyleSheet("border-image:url(:/image/res/image/mall.png);");
-    ui->school->setStyleSheet("border-image:url(:/image/res/image/school.png);");
-    ui->gym->setStyleSheet("border-image:url(:/image/res/image/gym.png);");
-    ui->townhall->setStyleSheet("border-image:url(:/image/res/image/townhall.png);");
-    ui->school_rgy_light->setStyleSheet("border-image:url(:/image/res/image/school_rgy_light.png);");
+    ui->townhall->setCheckable(true);
+    ui->mall->setCheckable(true);
+    ui->school->setCheckable(true);
+    ui->gym->setCheckable(true);
+    ui->ul->setCheckable(true);
+    car_play_flag = 0;
+    ul_play_flag = 0;
+    Car_END_flag = 0;
 
     car_state = new QTimer(this);
     car_state->setInterval(500);
@@ -45,8 +47,7 @@ AICarDemo::AICarDemo(QWidget *parent, CameraThread *camerathread, ModbusThread *
     AutoPilot->setInterval(1000);
     connect(AutoPilot,SIGNAL(timeout()),this,SLOT(AutoPilotSystem()));
 
-//    lower_red = Scalar(0, 100, 100);
-//    upper_red = Scalar(10, 255, 255);
+//    lower_red = Scalar(2, 100, 100);
     lower_red = Scalar(0, 100, 100);
     upper_red = Scalar(10, 255, 255);
     lower_green = Scalar(40, 50, 50);
@@ -54,7 +55,6 @@ AICarDemo::AICarDemo(QWidget *parent, CameraThread *camerathread, ModbusThread *
     lower_yellow = Scalar(15, 100, 100);
     upper_yellow = Scalar(35, 255, 255);
 
-    ui->FACEButton->setChecked(true);
     this->cameraThread = camerathread;
     this->modbusThread = modbusthread;
     connect(this, SIGNAL(Car_connect()),modbusThread,SLOT(on_connect()));
@@ -73,7 +73,8 @@ AICarDemo::AICarDemo(QWidget *parent, CameraThread *camerathread, ModbusThread *
     {
         perror("不能加载指定的xml文件");
     }
-
+    ui->tabWidget->setDisabled(true);
+    ui->Car_reset->setDisabled(true);
 }
 
 AICarDemo::~AICarDemo()
@@ -82,9 +83,8 @@ AICarDemo::~AICarDemo()
 }
 void AICarDemo::closeEvent(QCloseEvent *event)
 {
-    car_state->stop();
-    emit Car_connect();
-    emit Car_writeRead(CAR_COMMAND_ADDR, 1, 0);//小车复位
+//    emit Car_connect();
+    Car_Reset();
     Uart_Close();//关闭串口
     disconnect(this, SIGNAL(Car_connect()),modbusThread,SLOT(on_connect()));
     disconnect(modbusThread, SIGNAL(on_change_connet(bool)),this,SLOT(Car_change_connet(bool)));
@@ -112,7 +112,6 @@ void AICarDemo::on_turnLeft_clicked()
     if(Car_turn_flag == 0){
         Car_turn_LR_Angle_num -= 50;
         emit Car_writeRead(CAR_COMMAND_ADDR, 1, (CAR_ACCELERATE_DATA | CAR_DECELERATE_DATA) & 0xF0);//小车右转向复位
-//        qDebug()<<"cjf"<< ((CAR_ACCELERATE_DATA | CAR_DECELERATE_DATA) & 0xF0);
 
         emit Car_writeRead(CAR_RIGHT_HEAD_LED_DATA, 1, 0);
         emit Car_writeRead(CAR_RIGHT_REAR_LED_DATA, 1, 0);
@@ -213,7 +212,6 @@ void AICarDemo::on_accelerate_clicked()
             Car_AD_Rate_num = 550;
         emit Car_writeRead(CAR_ACCELERATE_ADDR_DATA, 1, Car_AD_Rate_num);
         emit Car_writeRead(CAR_COMMAND_ADDR, 1, CAR_ACCELERATE_DATA | CAR_LEFT_DATA | CAR_RIGHT_DATA);
-//        qDebug()<<"cjf LL1 num"<<Car_turnLeft_Angle_num <<"time"<<Car_turn_flag;
     }
 
     if(Car_AD_flag > 0){
@@ -273,16 +271,20 @@ void AICarDemo::Car_change_connet(bool data)
     if(data == false)
     {
         ui->connect->setText(tr("Connect"));
+        ui->tabWidget->setDisabled(true);
+        ui->Car_reset->setDisabled(true);
         car_state->stop();
     }
     if(data == true){
         ui->connect->setText(tr("Disconnect"));
+        ui->tabWidget->setDisabled(false);
+        ui->Car_reset->setDisabled(false);
+        Car_Reset();
         car_state->start();
-
     }
 
 }
-void AICarDemo::on_Car_reset_clicked()
+void AICarDemo::Car_Reset()
 {
     Car_turn_flag = 0;
     Car_AD_flag = 0;
@@ -291,11 +293,12 @@ void AICarDemo::on_Car_reset_clicked()
     car->reset();
     emit Car_writeRead(CAR_COMMAND_ADDR, 1, 0);//小车复位
     emit Car_writeRead(CAR_COMMAND_LED_ADDR, 1, 0);//小车LED复位
-
-
+}
+void AICarDemo::on_Car_reset_clicked()
+{
+    Car_Reset();
     QPointF point = car->mapToScene(scene->sceneRect().x(),scene->sceneRect().y());
-    qDebug()<<"cjf debug"<<point.x()<<point.y();
-
+//    qDebug()<<"cjf debug"<<point.x()<<point.y();
 }
 void AICarDemo::Car_state_data(){
     emit Car_read(0x0010,9);
@@ -435,6 +438,11 @@ void AICarDemo::Car_videoDisplay(const QImage image)
         cv::resize(img,img,Size(320, 240));
         img1 = plr->test_mtcnn_plate(img);      //车牌识别
         ui->LPR->setText(QString::fromStdString(plr->LPR_Data));
+        if(plr->LPR_Data!="")
+        {
+            car_lpr_flag = 1;
+        }
+        plr->LPR_Data="";
     }
     QImage qimg = this->Mat2QImage(img1);
 
@@ -446,12 +454,28 @@ void AICarDemo::Car_traffic_light_Play()
 {
      rgy_light_play_flag = 0;
      ul_play_flag = 0;
+
+     if(car_play_flag ==1)
+     {
+         video_play->stop();
+         ui->faces_data->clear();
+         car_play_flag = 3;
+     }
+     if(car_play_flag ==2)
+     {
+         video_play->stop();
+         car_play_flag = 0;
+     }
 }
 Mat AICarDemo::rgy_light_identification(const Mat &mat)
 {
     ui->red_light->setStyleSheet("");
     ui->green_light->setStyleSheet("");
     ui->yellow_light->setStyleSheet("");
+
+    ui->school_red_light->setStyleSheet("");
+    ui->school_green_light->setStyleSheet("");
+    ui->school_yellow_light->setStyleSheet("");
 
     QImage qImage;
     Mat src,src1, mout, hsv;
@@ -466,7 +490,7 @@ Mat AICarDemo::rgy_light_identification(const Mat &mat)
     HoughCircles(mout, circles, HOUGH_GRADIENT, 1, 10, 100, 35, 15, 60);//霍夫变换圆检测
     Scalar circleColor = Scalar(0,0,255);//圆形的边缘颜色
     //Scalar centerColor = Scalar(0, 0, 255);//圆心的颜色
-    for (size_t i = 0; i < circles.size(); i++) {
+    for (size_t i = 0; i < circles.size()&&i<3; i++) {
         Vec3f c = circles[i];
 //        circle(src, Point(c[0], c[1]),c[2], circleColor, 2, LINE_AA);//画边缘
         //circle(src, Point(c[0], c[1]), 2, centerColor, 2, LINE_AA);//画圆心
@@ -511,21 +535,24 @@ Mat AICarDemo::rgy_light_identification(const Mat &mat)
 
         medianBlur(maskYellow, yellow_result, 5);
         yellow = countNonZero(yellow_result);
-        qDebug()<<"rgb:"<<red<<green<<yellow;
+//        qDebug()<<"rgb:"<<red<<green<<yellow;
         //颜色判决
         if ((yellow*1.0 >= 0.5)|| (red*1.0  >=0.5 )||  (green*1.0 >= 0.5))//判断红绿黄三色的像素占比是否过半
         {
             circle(src, Point(c[0], c[1]),c[2], circleColor, 2, LINE_AA);//画边缘
             if(green > red && green > yellow && green > 50){
                 ui->green_light->setStyleSheet("border-image:url(:/image/res/image/green_light.png);");
+                ui->school_green_light->setStyleSheet("border-image:url(:/image/res/image/green_light.png);");
                 rgy_light_play_flag  |= 0x02;
             }else if(red > yellow && red >50){
                 ui->red_light->setStyleSheet("border-image:url(:/image/res/image/red_light.png);");
+                ui->school_red_light->setStyleSheet("border-image:url(:/image/res/image/red_light.png);");
                 rgy_light_play_flag  |= 0x01;
 
             }else{
                 if(yellow > 50){
                     ui->yellow_light->setStyleSheet("border-image:url(:/image/res/image/yellow_light.png);");
+                    ui->school_yellow_light->setStyleSheet("border-image:url(:/image/res/image/yellow_light.png);");
                     rgy_light_play_flag  |= 0x04;
                 }
             }
@@ -542,6 +569,7 @@ Mat AICarDemo::rgy_light_identification(const Mat &mat)
         success->play();
         rgy_light_play_flag = 8;
         video_play->start();
+        car_rgy_flag = 1;
     }else if(rgy_light_play_flag == 0x04){
         QSound *success = new QSound("./mp3/yellow_light.wav", this);
         success->play();
@@ -578,15 +606,16 @@ Mat AICarDemo::FaceRecognition(const Mat &mat)
         if(iter->x-5 > 0 && iter->y-5 >0){
             cv::Rect area(iter->x-5, iter->y-5, iter->width+5, iter->height+5); //需要裁减的矩形区域
             m = img2(area);//img2(*iter).copyTo(m);
+            car_face_flag = 1;
         }
 
         QImage qimg = this->Mat2QImage(m);
         QPixmap pixmap = QPixmap::fromImage(qimg);
         ui->faces_data->setPixmap(pixmap.scaled(ui->faces_data->size(),Qt::IgnoreAspectRatio));//Qt::SmoothTransformation 保持比例
     }
+
     return img1;
 }
-
 
 void AICarDemo::Uart_Connect()
 {
@@ -596,7 +625,7 @@ void AICarDemo::Uart_Connect()
         qDebug()<<list3[i].portName();//打印串口信息
 
     foreach (const QSerialPortInfo &info, QSerialPortInfo::availablePorts())//搜索串口，获取串口列表
-    {qDebug()<<"cjf";
+    {
         if(info.portName() == "ttyS3"){//在串口列表中查找
             qDebug() << "所需串口已找到，具体信息如下：";
             qDebug() << "Name : " << info.portName();//串口名称，比如com3
@@ -616,7 +645,7 @@ void AICarDemo::Uart_Connect()
     SerialPort.setFlowControl(QSerialPort::NoFlowControl);//设置流控制（无）
 
     if(SerialPort.isOpen()){
-            qDebug()<<"串口已经打开";
+        qDebug()<<"串口已经打开";
     }
 
     connect(&SerialPort, SIGNAL(readyRead()), this, SLOT(Uart_ReadData()));//读取数据的函数
@@ -655,7 +684,7 @@ void AICarDemo::Uart_ReadData()
                 {
                     int temp_data = temp[0]<<8 | temp[1];
                     ui->ultrasound_data->setText(QString::number(temp_data));
-                    qDebug()<<temp_data;
+//                    qDebug()<<temp_data;
                     if(temp_data <240)
                     {
                         //ui->ultrasound_data->setText(tr("数据无效"));
@@ -692,22 +721,32 @@ void AICarDemo::Uart_WriteData()
 
 void AICarDemo::on_pushButton_clicked()
 {
-    //Uart_Connect();
     car->reset();
     car->resetTransform();  //car->resetMatrix();
     car->setPos(0,0);       //初始化小车位置
 
     AutoPilot->setInterval(1000/33);
     AutoPilot->start();
+
+    //请选择目的地
+    if(Car_END_flag == 0){
+        QSound *success = new QSound("./mp3/arrive_where.wav", this);
+        success->play();
+        AutoPilot->stop();
+    }
+
 }
 void AICarDemo::AutoPilotSystem()
 {
     QPointF point = car->mapToScene(scene->sceneRect().x(),scene->sceneRect().y());
-    qDebug()<<point.x()<<point.y();
-
-//    Car_Map_Home(point);
-//    Car_Map_Mall(point);
-    Car_Map_TownHall(point);
+//    qDebug()<<point.x()<<point.y();
+    if(Car_END_flag == 1){
+        Car_Map_TownHall(point);
+    }
+    if(Car_END_flag == 2||Car_END_flag== 3||Car_END_flag== 4){
+        Car_Map_Mall(point);
+    }
+    //    Car_Map_Home(point);//保留路径
 }
 void AICarDemo::Car_Map_Home(QPointF point)
 {
@@ -786,6 +825,28 @@ void AICarDemo::Car_Map_Mall(QPointF point)
         on_accelerate_clicked();
     }
 
+    if(point.x()==-160&&point.y()==-280)//车牌识别
+    {
+        if(car_play_flag==0)
+        {
+            Car_Reset();
+            QSound *success = new QSound("./mp3/car_lpr_play.wav", this);
+            success->play();
+            car_play_flag = 2;
+            video_play->start();
+            ui->LPRButton->setChecked(true);//车牌检测
+        }
+        if(car_lpr_flag==1)
+        {
+            on_accelerate_clicked();
+            car_lpr_flag = 0;
+            ui->car_pole_2->setVisible(false);
+            ui->LPRButton->setAutoExclusive(false);
+            ui->LPRButton->setChecked(false);
+            ui->LPRButton->setAutoExclusive(true);
+        }
+    }
+
     if(point.x()==-160&&point.y()==-334)//右转
     {
         on_turnRight_clicked();
@@ -797,8 +858,9 @@ void AICarDemo::Car_Map_Mall(QPointF point)
 
     if((int)point.x()==215&&(int)point.y()==-382)//前行
     {
-        car->reset();
+        Car_Reset();
         on_accelerate_clicked();
+        ui->car_pole_2->setVisible(true);
     }
 
     if((int)point.x()==445&&(int)point.y()==-382)//右上角坐标点
@@ -812,8 +874,23 @@ void AICarDemo::Car_Map_Mall(QPointF point)
 
     if((int)point.x()==493&&(int)point.y()==-6)
     {
-        car->reset();
-        on_accelerate_clicked();
+        if(car_play_flag==0)
+        {
+            Car_Reset();
+            QSound *success = new QSound("./mp3/car_face.wav", this);
+            success->play();
+            car_play_flag = 2;
+            video_play->start();
+            ui->FACEButton->setChecked(true);//人脸检测
+        }
+        if(car_face_flag==1)
+        {
+            on_accelerate_clicked();
+            car_face_flag = 0;
+            ui->FACEButton->setAutoExclusive(false);
+            ui->FACEButton->setChecked(false);
+            ui->FACEButton->setAutoExclusive(true);
+        }
     }
 
     if((int)point.x()==493&&(int)point.y()==250)//右下角坐标点
@@ -826,10 +903,77 @@ void AICarDemo::Car_Map_Mall(QPointF point)
     }
     if((int)point.x()==118&&(int)point.y()==298)
     {
-        car->reset();
+        Car_Reset();
         on_accelerate_clicked();
     }
-
+    if((int)point.x()==105&&(int)point.y()==298&&Car_END_flag == 2)
+    {
+        if(car_play_flag==0)
+        {
+            Car_Reset();
+            QSound *success = new QSound("./mp3/arrive_mall.wav", this);
+            success->play();
+            car_play_flag = 1;
+            video_play->start();
+        }
+        if(car_play_flag ==3){
+            on_accelerate_clicked();
+            car_play_flag=0;
+        }
+    }
+    if((int)point.x()==-55&&(int)point.y()==298&&Car_END_flag == 3)
+    {
+        if(car_play_flag==0)
+        {
+            Car_Reset();
+            QSound *success = new QSound("./mp3/arrive_school.wav", this);
+            success->play();
+            car_play_flag = 1;
+            video_play->start();
+        }
+        if(car_play_flag ==3){
+            on_accelerate_clicked();
+            car_play_flag=0;
+        }
+    }
+    if((int)point.x()==-59&&(int)point.y()==298)
+    {
+        QSound *success = new QSound("./mp3/car_school_rgy.wav", this);
+        success->play();
+    }
+    if((int)point.x()==-60&&(int)point.y()==298)
+    {
+        if(car_play_flag==0)
+        {
+            Car_Reset();
+            car_play_flag = 2;
+            video_play->start();
+            ui->RGYButton->setChecked(true);//红绿灯识别
+        }
+        if(car_rgy_flag == 1)
+        {
+            on_accelerate_clicked();
+            car_rgy_flag = 0;
+            ui->RGYButton->setAutoExclusive(false);
+            ui->RGYButton->setChecked(false);
+            ui->RGYButton->setAutoExclusive(true);
+        }
+    }
+    if((int)point.x()==-310&&(int)point.y()==298&&Car_END_flag == 4)
+    {
+        if(car_play_flag==0)
+        {
+            Car_Reset();
+            QSound *success = new QSound("./mp3/arrive_gym.wav", this);
+            success->play();
+            car_play_flag = 1;
+            video_play->start();
+        }
+        if(car_play_flag ==3){
+            on_accelerate_clicked();
+            car_play_flag=0;
+        }
+    }
     if((int)point.x()==-363&&(int)point.y()==298)//左下角坐标点
     {
         on_turnRight_clicked();
@@ -841,7 +985,7 @@ void AICarDemo::Car_Map_Mall(QPointF point)
 
     if((int)point.x()==-412&&(int)point.y()==-76)
     {
-        car->reset();
+        Car_Reset();
         on_accelerate_clicked();
     }
     if((int)point.x()==-412&&(int)point.y()==-175)//左中间坐标点
@@ -854,13 +998,23 @@ void AICarDemo::Car_Map_Mall(QPointF point)
     }
     if((int)point.x()==-36&&(int)point.y()==-224)
     {
-        car->reset();
+        Car_Reset();
         on_accelerate_clicked();
+    }
+    if((int)point.x()==20&&(int)point.y()==-224)
+    {
+        ui->car_pole_3->setVisible(false);
+    }
+    if((int)point.x()==110&&(int)point.y()==-224)
+    {
+        ui->car_pole_3->setVisible(true);
     }
 
     if((int)point.x()==214&&(int)point.y()==-224)//自动泊车-右转倒车
     {
-        car->reset();
+        QSound *success = new QSound("./mp3/automatic_parking.wav", this);
+        success->play();
+        Car_Reset();
         on_decelerate_clicked();
         on_turnRight_clicked();
         on_turnRight_clicked();
@@ -871,12 +1025,22 @@ void AICarDemo::Car_Map_Mall(QPointF point)
 
     if((int)point.x()==-163&&(int)point.y()==-170)//小车倒车
     {
-        car->reset();
+        Car_Reset();
         on_decelerate_clicked();
     }
     if((int)point.x()==-162&&(int)point.y()==-157)//小车停止
     {
-        car->reset();
+        Car_Reset();
+
+        ui->mall->setChecked(false);
+        ui->school->setChecked(false);
+        ui->gym->setChecked(false);
+        on_mall_clicked();
+        on_school_clicked();
+        on_gym_clicked();
+
+        ui->LPR->clear();
+        AutoPilot->stop();
     }
 }
 void AICarDemo::Car_Map_TownHall(QPointF point)
@@ -897,10 +1061,35 @@ void AICarDemo::Car_Map_TownHall(QPointF point)
 
     if((int)point.x()==215&&(int)point.y()==-228)
     {
-        car->reset();
+        Car_Reset();
         on_accelerate_clicked();
     }
 
+    if((int)point.x()==250&&(int)point.y()==-228)//车牌识别
+    {
+        if(car_play_flag==0)
+        {
+            Car_Reset();
+            QSound *success = new QSound("./mp3/car_lpr_play.wav", this);
+            success->play();
+            car_play_flag = 2;
+            video_play->start();
+            ui->LPRButton->setChecked(true);//车牌检测
+        }
+        if(car_lpr_flag==1)
+        {
+            on_accelerate_clicked();
+            car_lpr_flag = 0;
+            ui->car_pole_1->setVisible(false);
+            ui->LPRButton->setAutoExclusive(false);
+            ui->LPRButton->setChecked(false);
+            ui->LPRButton->setAutoExclusive(true);
+        }
+    }
+    if((int)point.x()==340&&(int)point.y()==-228)
+    {
+        ui->car_pole_1->setVisible(true);
+    }
     if((int)point.x()==476&&(int)point.y()==-228)//右边中间坐标点
     {
         on_turnLeft_clicked();
@@ -912,8 +1101,29 @@ void AICarDemo::Car_Map_TownHall(QPointF point)
 
     if((int)point.x()==204&&(int)point.y()==-283)
     {
-        car->reset();
+        Car_Reset();
         on_accelerate_clicked();
+    }
+
+    if((int)point.x()==204&&(int)point.y()==-300)
+    {
+        if(car_play_flag==0)
+        {
+            Car_Reset();
+            QSound *success = new QSound("./mp3/car_face.wav", this);
+            success->play();
+            car_play_flag = 2;
+            video_play->start();
+            ui->FACEButton->setChecked(true);//人脸检测
+        }
+        if(car_face_flag==1)
+        {
+            on_accelerate_clicked();
+            car_face_flag = 0;
+            ui->FACEButton->setAutoExclusive(false);
+            ui->FACEButton->setChecked(false);
+            ui->FACEButton->setAutoExclusive(true);
+        }
     }
 
     if((int)point.x()==204&&(int)point.y()==-367)//右边上坐标点
@@ -926,8 +1136,24 @@ void AICarDemo::Car_Map_TownHall(QPointF point)
     }
     if((int)point.x()==149&&(int)point.y()==-95)
     {
-        car->reset();
+        Car_Reset();
         on_accelerate_clicked();
+    }
+    if((int)point.x()==-300&&(int)point.y()==-95)
+    {
+        if(car_play_flag==0)
+        {
+            Car_Reset();
+            QSound *success = new QSound("./mp3/arrive_townhall.wav", this);
+            success->play();
+            car_play_flag = 1;
+            video_play->start();
+
+        }
+        if(car_play_flag ==3){
+            on_accelerate_clicked();
+            car_play_flag=0;
+        }
     }
     if((int)point.x()==-396&&(int)point.y()==-95)//左边上坐标点
     {
@@ -939,7 +1165,7 @@ void AICarDemo::Car_Map_TownHall(QPointF point)
     }
     if((int)point.x()==-124&&(int)point.y()==-40)
     {
-        car->reset();
+        Car_Reset();
         on_accelerate_clicked();
     }
     if((int)point.x()==-124&&(int)point.y()==40)//左边中间坐标点
@@ -952,12 +1178,22 @@ void AICarDemo::Car_Map_TownHall(QPointF point)
     }
     if((int)point.x()==-69&&(int)point.y()==-231)
     {
-        car->reset();
+        Car_Reset();
         on_accelerate_clicked();
+    }
+    if((int)point.x()==20&&(int)point.y()==-231)
+    {
+        ui->car_pole_3->setVisible(false);
+    }
+    if((int)point.x()==110&&(int)point.y()==-231)
+    {
+        ui->car_pole_3->setVisible(true);
     }
     if((int)point.x()==212&&(int)point.y()==-231)
     {
-        car->reset();
+        QSound *success = new QSound("./mp3/automatic_parking.wav", this);
+        success->play();
+        Car_Reset();
         on_decelerate_clicked();
         on_turnRight_clicked();
         on_turnRight_clicked();
@@ -967,11 +1203,103 @@ void AICarDemo::Car_Map_TownHall(QPointF point)
     }
     if((int)point.x()==-161&&(int)point.y()==-181)
     {
-        car->reset();
+        Car_Reset();
         on_decelerate_clicked();
     }
     if((int)point.x()==-161&&(int)point.y()==-160)
     {
-        car->reset();
+        Car_Reset();
+        ui->townhall->setChecked(false);
+        on_townhall_clicked();
+        ui->LPR->clear();
+
+        AutoPilot->stop();
+    }
+}
+
+
+void AICarDemo::on_townhall_clicked()
+{
+    if(ui->townhall->isChecked())//按钮按下操作
+    {
+        ui->townhall->setStyleSheet("border-image:url(:/image/res/image/townhall.png);");
+        ui->mall->setChecked(false);
+        ui->school->setChecked(false);
+        ui->gym->setChecked(false);
+        on_mall_clicked();
+        on_school_clicked();
+        on_gym_clicked();
+
+        Car_END_flag = 1;
+    }else{
+        ui->townhall->setStyleSheet("border-image:url(:/image/res/image/townhall_balck.png);");
+        Car_END_flag = 0;
+    }
+}
+
+void AICarDemo::on_mall_clicked()
+{
+    if(ui->mall->isChecked())//按钮按下操作
+    {
+        ui->mall->setStyleSheet("border-image:url(:/image/res/image/mall.png);");
+        ui->townhall->setChecked(false);
+        ui->school->setChecked(false);
+        ui->gym->setChecked(false);
+        on_townhall_clicked();
+        on_school_clicked();
+        on_gym_clicked();
+        Car_END_flag = 2;
+    }else{
+        ui->mall->setStyleSheet("border-image:url(:/image/res/image/mall_balck.png);");
+        Car_END_flag = 0;
+    }
+}
+
+void AICarDemo::on_school_clicked()
+{
+    if(ui->school->isChecked())//按钮按下操作
+    {
+        ui->school->setStyleSheet("border-image:url(:/image/res/image/school.png);");
+        ui->townhall->setChecked(false);
+        ui->mall->setChecked(false);
+        ui->gym->setChecked(false);
+        on_townhall_clicked();
+        on_mall_clicked();
+        on_gym_clicked();
+        Car_END_flag = 3;
+    }else{
+        ui->school->setStyleSheet("border-image:url(:/image/res/image/school_balck.png);");
+        Car_END_flag = 0;
+    }
+}
+
+void AICarDemo::on_gym_clicked()
+{
+    if(ui->gym->isChecked())//按钮按下操作
+    {
+        ui->gym->setStyleSheet("border-image:url(:/image/res/image/gym.png);");
+        ui->townhall->setChecked(false);
+        ui->mall->setChecked(false);
+        ui->school->setChecked(false);
+        on_townhall_clicked();
+        on_mall_clicked();
+        on_school_clicked();
+
+        Car_END_flag = 4;
+    }else{
+        ui->gym->setStyleSheet("border-image:url(:/image/res/image/gym_balck.png);");
+        Car_END_flag = 0;
+    }
+}
+
+void AICarDemo::on_ul_clicked()
+{
+    if(ui->ul->isChecked())//按钮按下操作
+    {
+        Uart_Connect();
+        ui->ul->setText(tr("断开"));
+    }else{
+        Uart_Close();
+        ui->ul->setText(tr("打开"));
     }
 }
