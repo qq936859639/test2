@@ -40,7 +40,6 @@ private slots:
     void on_btspeaker_clicked();
 
     void on_btiotdht_clicked();
-
 private:
     Ui::MainWindow *ui;
 };

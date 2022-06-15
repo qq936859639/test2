@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui serialbus multimedia serialport
+QT       += core gui serialbus multimedia serialport mqtt
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -22,6 +22,7 @@ SOURCES += main.cpp\
         AICarDemo/aicardemo.cpp \
         AICarDemo/car/car.cpp \
         CameraDemo/camerademo.cpp \
+        SmartHome/cjson/cJSON.c \
         plr/cvUniText.cpp \
         plr/plr.cpp \
         services/camerathread.cpp \
@@ -38,6 +39,7 @@ HEADERS  += mainwindow.h \
     AICarDemo/aicardemo.h \
     AICarDemo/car/car.h \
     CameraDemo/camerademo.h \
+    SmartHome/cjson/cJSON.h \
     plr/cvUniText.hpp \
     plr/include/detector_creator.h \
     plr/include/lpc_recognizer.h \

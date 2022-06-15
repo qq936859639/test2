@@ -6,6 +6,7 @@
 #include "CameraDemo/camerademo.h"
 #include "AICarDemo/aicardemo.h"
 #include "LCDCheck/lcdcheck.h"
+#include "SmartHome/smarthome.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -76,5 +77,7 @@ void MainWindow::on_btspeaker_clicked()
 
 void MainWindow::on_btiotdht_clicked()
 {
- qDebug() << "智慧家居";
+    qDebug() << "智慧家居";
+    SmartHome *smarhome = new SmartHome(nullptr, cameraThread);
+    smarhome->show();
 }

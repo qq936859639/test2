@@ -19,7 +19,7 @@
 #include "plr/cvUniText.hpp"
 #include "plr/plr.h"
 
-#include<QSerialPortInfo>
+#include <QSerialPortInfo>
 #include <QSerialPort>
 
 using namespace std;

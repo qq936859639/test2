@@ -817,22 +817,6 @@ border-image: url(:/image/res/image/wireless_node.png) 0 0 3 0;
  <resources/>
  <connections>
   <connection>
-   <sender>btspeaker2</sender>
-   <signal>clicked()</signal>
-   <receiver>btspeaker</receiver>
-   <slot>click()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>943</x>
-     <y>71</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>834</x>
-     <y>71</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>btledbuzzer</sender>
    <signal>clicked()</signal>
    <receiver>btiotdht</receiver>
@@ -877,6 +861,22 @@ border-image: url(:/image/res/image/wireless_node.png) 0 0 3 0;
     <hint type="destinationlabel">
      <x>872</x>
      <y>190</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>btspeaker2</sender>
+   <signal>clicked()</signal>
+   <receiver>btspeaker</receiver>
+   <slot>click()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>943</x>
+     <y>71</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>834</x>
+     <y>71</y>
     </hint>
    </hints>
   </connection>
