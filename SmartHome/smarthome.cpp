@@ -4,7 +4,7 @@
 #include <QtCore/QDateTime>
 #include <QtWidgets/QMessageBox>
 #include <QTimer>
-
+#include <QSound>//声音
 SmartHome::SmartHome(QWidget *parent, CameraThread *camerathread) :
     QWidget(parent),
     ui(new Ui::SmartHome)
@@ -20,11 +20,21 @@ SmartHome::SmartHome(QWidget *parent, CameraThread *camerathread) :
     ui->PIR_data->setCheckable(true);
 
     pir_flag = 0;
+    play_flag = 0;
 
     init_PIR();
     init_DHT11();
     init_LEDB();
     init_OCR();
+
+    this->cameraThread = camerathread;
+    string xmlPath="./data/haarcascade_frontalface_default.xml";
+//    string xmlPath="./data/haarcascade_frontalface_alt2.xml";
+    if(!ccf.load(xmlPath))   //加载训练文件
+    {
+        perror("不能加载指定的xml文件");
+    }
+
 }
 void SmartHome::init_PIR()
 {
@@ -193,9 +203,18 @@ void SmartHome::init_LEDB()
                     char *led_data = cJSON_GetObjectItem(parray, "LED")->valuestring;//字符串
                     ui->state_LED_data->setText(led_data);
                     if(ui->state_LED_data->text() == "ledon")
-                        ui->LED_data->setStyleSheet("background-color: rgba(213, 31, 31, 0);");
-                    else
-                        ui->LED_data->setStyleSheet("background-color: rgba(100, 100, 31, 0);");
+                    {
+                        ui->LED_data->setStyleSheet("QPushButton{border-image: url(:/image/res/image/led_on.png);}"
+                                                    "QPushButton:pressed{border-width:3px;"
+                                                    "border-image: url(:/image/res/image/led_on.png);}");
+                        ui->label->setStyleSheet("border-image: url(:/image/res/image/smarthome_1.jpg);");
+                    }
+                    else{
+                        ui->LED_data->setStyleSheet("QPushButton{border-image: url(:/image/res/image/led_off.png);}"
+                                                    "QPushButton:pressed{border-width:3px;"
+                                                    "border-image: url(:/image/res/image/led_off.png);}");
+                        ui->label->setStyleSheet("border-image: url(:/image/res/image/smarthome_0.jpg);");
+                    }
                 }
             }
             if((parray = cJSON_GetObjectItem(proot, "reported")) != NULL)//判断是否有reported
@@ -204,10 +223,16 @@ void SmartHome::init_LEDB()
                 {
                     char *buzzer_data = cJSON_GetObjectItem(parray, "BUZZER")->valuestring;//字符串
                     ui->state_BUZZER_data->setText(buzzer_data);
-                    if(ui->state_BUZZER_data->text() == "buzzeron")
-                        ui->BUZZER_data->setStyleSheet("background-color: rgba(213, 31, 31, 0);");
-                    else
-                        ui->BUZZER_data->setStyleSheet("background-color: rgba(100, 100, 31, 0);");
+                    if(ui->state_BUZZER_data->text() == "buzzeron"){
+                        ui->BUZZER_data->setStyleSheet("QPushButton{border-image: url(:/image/res/image/buzzer_on.png);}"
+                                                    "QPushButton:pressed{border-width:3px;"
+                                                    "border-image: url(:/image/res/image/buzzer_on.png);}");
+                    }
+                    else{
+                        ui->BUZZER_data->setStyleSheet("QPushButton{border-image: url(:/image/res/image/buzzer_off.png);}"
+                                                    "QPushButton:pressed{border-width:3px;"
+                                                    "border-image: url(:/image/res/image/buzzer_off.png);}");
+                    }
                 }
             }
         }
@@ -258,10 +283,18 @@ void SmartHome::init_OCR()
                 {
                     char *ocr_data = cJSON_GetObjectItem(parray, "OCRelay")->valuestring;//字符串
                     ui->state_OCR_data->setText(ocr_data);
-                    if(ui->state_OCR_data->text() == "OCRelay_On")
-                        ui->OCR_data->setStyleSheet("background-color: rgba(213, 31, 31, 0);");
-                    else
-                        ui->OCR_data->setStyleSheet("background-color: rgba(100, 100, 31, 0);");
+                    if(ui->state_OCR_data->text() == "OCRelay_On"){
+                        ui->OCR_data->setStyleSheet("QPushButton{border-image: url(:/image/res/image/tv_on.png);}"
+                                                    "QPushButton:pressed{border-width:3px;"
+                                                    "border-image: url(:/image/res/image/tv_on.png);}");
+                        ui->TV->setVisible(true);
+                    }
+                    else{
+                        ui->OCR_data->setStyleSheet("QPushButton{border-image: url(:/image/res/image/tv_off.png);}"
+                                                    "QPushButton:pressed{border-width:3px;"
+                                                    "border-image: url(:/image/res/image/tv_off.png);}");
+                        ui->TV->setVisible(false);
+                    }
                 }
             }
         }
@@ -286,7 +319,10 @@ SmartHome::~SmartHome()
 {
     delete ui;
 }
-
+void SmartHome::closeEvent(QCloseEvent *event)
+{
+    disconnect(cameraThread, SIGNAL(Collect_complete(QImage)),this,SLOT(SmartHome_videoDisplay(QImage)));
+}
 //热释红外操作代码
 void SmartHome::on_Connect_PIR_clicked()
 {
@@ -604,7 +640,7 @@ void SmartHome::on_Key_SmartHome_clicked()
         ui->Connect_PIR->setEnabled(false);
         ui->Connect_DHT11->setEnabled(false);
         ui->Connect_LEDB->setEnabled(false);
-
+        connect(cameraThread, SIGNAL(Collect_complete(QImage)),this,SLOT(SmartHome_videoDisplay(QImage)));
     }else{
         on_Connect_OCR_clicked();
         on_Connect_PIR_clicked();
@@ -615,6 +651,7 @@ void SmartHome::on_Key_SmartHome_clicked()
         ui->Connect_PIR->setEnabled(true);
         ui->Connect_DHT11->setEnabled(true);
         ui->Connect_LEDB->setEnabled(true);
+        disconnect(cameraThread, SIGNAL(Collect_complete(QImage)),this,SLOT(SmartHome_videoDisplay(QImage)));
     }
 }
 
@@ -657,10 +694,10 @@ void SmartHome::on_PIR_data_clicked()
     if(ui->PIR_data->isChecked())//按钮按下操作
     {
         pir_flag = 1;
-        ui->PIR_data->setStyleSheet("background-color: rgba(213, 31, 31, 0);");
+        ui->PIR_data->setStyleSheet("border-image:url(:/image/res/image/security_on.png);");
     }else{
         pir_flag = 0;
-        ui->PIR_data->setStyleSheet("background-color: rgba(100, 101, 31, 0);");
+        ui->PIR_data->setStyleSheet("border-image:url(:/image/res/image/security_off.png);");
     }
 }
 
@@ -672,4 +709,171 @@ void SmartHome::on_OCR_data_clicked()
     else{
         on_OCR_ON_clicked();
     }
+}
+QImage SmartHome::Mat2QImage(const Mat &mat)
+{
+    switch (mat.type())
+    {
+        // 8-bit, 4 channel
+        case CV_8UC4:
+        {
+            QImage image(mat.data, mat.cols, mat.rows, mat.step, QImage::Format_ARGB32);
+            return image;
+        }
+
+        // 8-bit, 3 channel
+        case CV_8UC3:
+        {
+            QImage image(mat.data, mat.cols, mat.rows, mat.step, QImage::Format_RGB888);
+            return image.rgbSwapped();
+        }
+
+        // 8-bit, 1 channel
+        case CV_8UC1:
+        {
+#if QT_VERSION < QT_VERSION_CHECK(5, 5, 0)
+            QImage image(mat.data, mat.cols, mat.rows, int(mat.step), QImage::Format_Grayscale8);
+#else
+            QVector<QRgb> sColorTable;
+            if (sColorTable.isEmpty())
+            {
+                sColorTable.resize( 256 );
+
+                for ( int i =0; i <256; ++i )
+                {
+                    sColorTable[i] = qRgb( i, i, i );
+                }
+            }
+
+            QImage image(mat.data, mat.cols, mat.rows, mat.step, QImage::Format_Indexed8 );
+            image.setColorTable(sColorTable);
+#endif
+
+            return image;
+        }
+
+        // wrong
+        default:
+            qDebug() << "ERROR: Mat could not be converted to QImage.";
+            break;
+    }
+    return QImage();
+}
+
+Mat SmartHome::QImage2Mat(const QImage& image)
+{
+    cv::Mat mat,mat_out;    //如果把mat_out变更为mat，那么参数image的r/b被调换。即使被const修饰，依然被更改，比较诡异。参数变为值传递，也依然被更改。
+    switch (image.format())
+    {
+    case QImage::Format_RGB32:                              //一般Qt读入本地彩色图后为此格式
+        mat = cv::Mat(image.height(), image.width(), CV_8UC4, (void*)image.constBits(), image.bytesPerLine());
+        cv::cvtColor(mat, mat_out, cv::COLOR_BGRA2BGR);     //转3通道，OpenCV一般用3通道的
+        break;
+    case QImage::Format_RGB888:
+        mat = cv::Mat(image.height(), image.width(), CV_8UC3, (void*)image.constBits(), image.bytesPerLine());
+        cv::cvtColor(mat, mat_out, cv::COLOR_RGB2BGR);
+        break;
+    case QImage::Format_Indexed8:
+        mat = cv::Mat(image.height(), image.width(), CV_8UC1, (void*)image.constBits(), image.bytesPerLine());
+        break;
+    }
+    return mat_out;
+}
+void SmartHome::SmartHome_videoDisplay(const QImage image)
+{
+    QImage image1 = image.copy();
+    image1 = image1.mirrored(false, false);
+
+    Mat img = this->QImage2Mat(image1);
+    if(ui->Key_SmartHome->isChecked()){
+        img = FaceRecognition(img);            //人脸识别
+    }
+
+    QImage qimg = this->Mat2QImage(img);
+    QPixmap pixmap = QPixmap::fromImage(qimg);
+    ui->video_0->setPixmap(pixmap.scaled(ui->video_0->size(),Qt::IgnoreAspectRatio));//, Qt::SmoothTransformation 保持比例
+}
+
+Mat SmartHome::FaceRecognition(const Mat &mat)
+{
+    vector<Rect> faces;  //创建一个容器保存检测出来的脸
+    Mat img1, gray;
+
+    img1 = mat;
+    cv::resize(img1,img1,Size(320, 240));
+
+    cvtColor(img1, gray, COLOR_BGR2GRAY); //转换成灰度图，因为harr特征从灰度图中提取
+    equalizeHist(gray,gray);  //直方图均衡行
+    ccf.detectMultiScale(gray,faces,1.1,3,0,Size(50,50),Size(200,200)); //检测人脸
+    for(vector<Rect>::const_iterator iter=faces.begin();iter!=faces.end();iter++)
+    {
+        Mat img2, m;
+        img1.copyTo(img2);
+
+        rectangle(img1,*iter,Scalar(0,0,255),2,10);//画出脸部矩形
+        if(iter->x-5 > 0 && iter->y-5 >0){
+            cv::Rect area(iter->x-5, iter->y-5, iter->width+5, iter->height+5);//需要裁减的矩形区域
+            m = img2(area);//img2(*iter).copyTo(m);
+        }
+
+        QImage qimg = this->Mat2QImage(m);
+        QPixmap pixmap = QPixmap::fromImage(qimg);
+        if(!pixmap.isNull()){
+            ui->video_1->setPixmap(pixmap.scaled(ui->video_1->size(),Qt::IgnoreAspectRatio));//Qt::SmoothTransformation 保持比例
+            if(play_flag ==0){
+                QSound *success = new QSound("./mp3/guests_visit.wav", this);
+                success->play();
+                play_flag = 1;
+                QTimer::singleShot(3000,this,SLOT(SmartHome_Play()));//延时3秒
+            }
+        }
+    }
+    return img1;
+}
+void SmartHome::SmartHome_Play()
+{
+    play_flag = 0;
+}
+
+void SmartHome::on_speech_pressed()
+{
+    ui->speech->setText("松开识别");
+    //开始录音
+    audio = new Audio;
+    audio->startAudio("file_16k.pcm");
+}
+
+void SmartHome::on_speech_released()
+{
+    //停止录音
+    audio->stopAudio();
+    //修改按钮文字
+    ui->speech->setText("开始识别");
+
+    //开始识别
+    Speech m_speech;
+    QString text = m_speech.speechIdentify("file_16k.pcm");
+
+    if(text == "开灯。"){
+        on_LED_ON_clicked();
+    }else if(text == "关灯。"){
+        on_LED_OFF_clicked();
+    }else if(text == "开启报警。"){
+        on_BUZZER_ON_clicked();
+    }else if(text == "关闭报警。"){
+        on_BUZZER_OFF_clicked();
+    }else if(text == "打开电视。"){
+        on_OCR_ON_clicked();
+    }else if(text == "关闭电视。"){
+        on_OCR_OFF_clicked();
+    }else if(text == "打开安防。"){
+        ui->PIR_data->setChecked(true);
+        on_PIR_data_clicked();
+    }else if(text == "关闭安防。"){
+        ui->PIR_data->setChecked(false);
+        on_PIR_data_clicked();
+    }
+    ui->textEdit->setText(text);
+
+    ui->speech->setText("按住说话");
 }

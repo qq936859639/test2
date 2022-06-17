@@ -30,5 +30,15 @@
         <file>image/car_pole_1.png</file>
         <file>image/car_pole_2.png</file>
         <file>image/smarthome_0.jpg</file>
+        <file>image/buzzer_on.png</file>
+        <file>image/buzzer_off.png</file>
+        <file>image/tv_off.png</file>
+        <file>image/security_off.png</file>
+        <file>image/tv_on.png</file>
+        <file>image/security_on.png</file>
+        <file>image/led_off.png</file>
+        <file>image/led_on.png</file>
+        <file>image/tv.png</file>
+        <file>image/smarthome_1.jpg</file>
     </qresource>
 </RCC>

@@ -113,7 +113,7 @@
         <item>
          <widget class="QLabel" name="state_DHT11_temp_data">
           <property name="text">
-           <string>          </string>
+           <string/>
           </property>
          </widget>
         </item>
@@ -134,7 +134,7 @@
         <item>
          <widget class="QLabel" name="state_DHT11_humi_data">
           <property name="text">
-           <string>          </string>
+           <string/>
           </property>
          </widget>
         </item>
@@ -279,7 +279,7 @@
        <x>20</x>
        <y>160</y>
        <width>661</width>
-       <height>91</height>
+       <height>97</height>
       </rect>
      </property>
      <layout class="QGridLayout" name="gridLayout_4">
@@ -703,7 +703,7 @@
        <x>20</x>
        <y>160</y>
        <width>661</width>
-       <height>91</height>
+       <height>97</height>
       </rect>
      </property>
      <layout class="QGridLayout" name="gridLayout_3">
@@ -926,17 +926,20 @@
      <property name="styleSheet">
       <string notr="true"/>
      </property>
-     <widget class="QLabel" name="P_gif">
+     <widget class="QLabel" name="TV">
       <property name="geometry">
        <rect>
-        <x>100</x>
-        <y>170</y>
-        <width>51</width>
-        <height>41</height>
+        <x>98</x>
+        <y>145</y>
+        <width>65</width>
+        <height>90</height>
        </rect>
       </property>
+      <property name="styleSheet">
+       <string notr="true">border-image: url(:/image/res/image/tv.png);</string>
+      </property>
       <property name="text">
-       <string>TextLabel</string>
+       <string/>
       </property>
      </widget>
      <widget class="QLabel" name="label">
@@ -1008,7 +1011,7 @@ color: rgb(238, 238, 236);</string>
        </rect>
       </property>
       <property name="text">
-       <string>0</string>
+       <string/>
       </property>
      </widget>
      <widget class="QLabel" name="video_1">
@@ -1026,10 +1029,10 @@ color: rgb(238, 238, 236);</string>
        </font>
       </property>
       <property name="styleSheet">
-       <string notr="true">background-color: rgb(233, 185, 110);</string>
+       <string notr="true"/>
       </property>
       <property name="text">
-       <string>0</string>
+       <string/>
       </property>
      </widget>
      <widget class="QPushButton" name="LED_data">
@@ -1038,14 +1041,27 @@ color: rgb(238, 238, 236);</string>
         <x>235</x>
         <y>325</y>
         <width>40</width>
-        <height>30</height>
+        <height>35</height>
        </rect>
       </property>
       <property name="styleSheet">
-       <string notr="true">background-color: rgba(213, 31, 31, 0);</string>
+       <string notr="true">QPushButton{
+border-image: url(:/image/res/image/led_off.png);
+}
+
+QPushButton:pressed{
+border-width:3px;
+border-image: url(:/image/res/image/led_off.png);
+}</string>
       </property>
       <property name="text">
        <string/>
+      </property>
+      <property name="checkable">
+       <bool>false</bool>
+      </property>
+      <property name="checked">
+       <bool>false</bool>
       </property>
      </widget>
      <widget class="QPushButton" name="BUZZER_data">
@@ -1054,7 +1070,7 @@ color: rgb(238, 238, 236);</string>
         <x>290</x>
         <y>325</y>
         <width>40</width>
-        <height>30</height>
+        <height>35</height>
        </rect>
       </property>
       <property name="font">
@@ -1063,7 +1079,14 @@ color: rgb(238, 238, 236);</string>
        </font>
       </property>
       <property name="styleSheet">
-       <string notr="true"/>
+       <string notr="true">QPushButton{
+border-image: url(:/image/res/image/buzzer_off.png);
+}
+
+QPushButton:pressed{
+border-width:3px;
+border-image: url(:/image/res/image/buzzer_off.png);
+}</string>
       </property>
       <property name="text">
        <string/>
@@ -1075,11 +1098,11 @@ color: rgb(238, 238, 236);</string>
         <x>235</x>
         <y>365</y>
         <width>40</width>
-        <height>30</height>
+        <height>35</height>
        </rect>
       </property>
       <property name="styleSheet">
-       <string notr="true">background-color: rgba(120, 245, 36, 22);</string>
+       <string notr="true">border-image: url(:/image/res/image/security_off.png);</string>
       </property>
       <property name="text">
        <string/>
@@ -1091,11 +1114,18 @@ color: rgb(238, 238, 236);</string>
         <x>290</x>
         <y>365</y>
         <width>40</width>
-        <height>30</height>
+        <height>35</height>
        </rect>
       </property>
       <property name="styleSheet">
-       <string notr="true">background-color: rgba(202, 239, 51, 101);</string>
+       <string notr="true">QPushButton{
+border-image: url(:/image/res/image/tv_on.png);
+}
+
+QPushButton:pressed{
+border-width:3px;
+border-image: url(:/image/res/image/tv_on.png);
+}</string>
       </property>
       <property name="text">
        <string/>
@@ -1138,7 +1168,7 @@ color: rgb(238, 238, 236);</string>
      <zorder>label</zorder>
      <zorder>DHT11_Humi_data</zorder>
      <zorder>DHT11_Temp_data</zorder>
-     <zorder>P_gif</zorder>
+     <zorder>TV</zorder>
      <zorder>video_0</zorder>
      <zorder>video_1</zorder>
      <zorder>LED_data</zorder>
@@ -1153,8 +1183,8 @@ color: rgb(238, 238, 236);</string>
   <widget class="QWidget" name="layoutWidget_2">
    <property name="geometry">
     <rect>
-     <x>770</x>
-     <y>360</y>
+     <x>780</x>
+     <y>440</y>
      <width>128</width>
      <height>27</height>
     </rect>
@@ -1193,6 +1223,62 @@ color: rgb(238, 238, 236);</string>
    </property>
    <property name="text">
     <string>一键连接</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="speech">
+   <property name="geometry">
+    <rect>
+     <x>790</x>
+     <y>310</y>
+     <width>89</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
+   <property name="text">
+    <string>按住说话</string>
+   </property>
+  </widget>
+  <widget class="QTextEdit" name="textEdit">
+   <property name="geometry">
+    <rect>
+     <x>780</x>
+     <y>270</y>
+     <width>104</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>10</pointsize>
+    </font>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_2">
+   <property name="geometry">
+    <rect>
+     <x>760</x>
+     <y>340</y>
+     <width>151</width>
+     <height>91</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>8</pointsize>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">color: rgb(242, 24, 24);</string>
+   </property>
+   <property name="text">
+    <string>语音控制
+灯：开灯，关灯
+报警器：开启报警，关闭报警
+电视：打开电视，关闭电视
+安防：打开安防，关闭安防</string>
    </property>
   </widget>
  </widget>

@@ -6,6 +6,17 @@
 #include "cjson/cJSON.h"//add
 #include "services/camerathread.h"
 
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/objdetect/objdetect.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+
+#include "BaiduSpeech/audio.h"
+#include "BaiduSpeech/speech.h"
+
+using namespace std;
+using namespace cv;
+
 namespace Ui {
 class SmartHome;
 }
@@ -17,6 +28,7 @@ class SmartHome : public QWidget
 public:
     explicit SmartHome(QWidget *parent = nullptr,CameraThread *camerathread=nullptr);
     ~SmartHome();
+
 
 public slots:
     void setClientPort(int p);
@@ -63,14 +75,16 @@ private slots:
 
     void QTimer_Subscribe();
 
-
     void on_LED_data_clicked();
-
     void on_BUZZER_data_clicked();
-
     void on_PIR_data_clicked();
-
     void on_OCR_data_clicked();
+
+    void SmartHome_videoDisplay(const QImage image);
+    void SmartHome_Play();
+
+    void on_speech_pressed();
+    void on_speech_released();
 
 private:
     Ui::SmartHome *ui;
@@ -86,6 +100,18 @@ private:
     QMqttClient *m_client_ledb;
 
     quint8 pir_flag;
+    quint8 play_flag;
+
+    CameraThread *cameraThread;
+
+    QImage Mat2QImage(const Mat &mat);
+    Mat QImage2Mat(const QImage& image);
+
+    Audio *audio;
+protected:
+    void closeEvent(QCloseEvent *event);
+    Mat FaceRecognition(const Mat &mat);
+    CascadeClassifier ccf;   //创建分类器对象
 };
 
 #endif // SMARTHOME_H

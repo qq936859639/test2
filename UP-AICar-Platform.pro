@@ -22,6 +22,9 @@ SOURCES += main.cpp\
         AICarDemo/aicardemo.cpp \
         AICarDemo/car/car.cpp \
         CameraDemo/camerademo.cpp \
+        SmartHome/BaiduSpeech/audio.cpp \
+        SmartHome/BaiduSpeech/http.cpp \
+        SmartHome/BaiduSpeech/speech.cpp \
         SmartHome/cjson/cJSON.c \
         plr/cvUniText.cpp \
         plr/plr.cpp \
@@ -39,6 +42,9 @@ HEADERS  += mainwindow.h \
     AICarDemo/aicardemo.h \
     AICarDemo/car/car.h \
     CameraDemo/camerademo.h \
+    SmartHome/BaiduSpeech/audio.h \
+    SmartHome/BaiduSpeech/http.h \
+    SmartHome/BaiduSpeech/speech.h \
     SmartHome/cjson/cJSON.h \
     plr/cvUniText.hpp \
     plr/include/detector_creator.h \
@@ -94,3 +100,6 @@ LIBS += $(shell pkg-config --libs opencv4) \
 #-lvulkan -lglslang -lSPIRV -lMachineIndependent -lOGLCompiler -lOSDependent -lGenericCodeGen
 # or LIBS += ./plr/deps/ncnn/lib/libncnn_imx8.a -lncnn
 #------end
+
+SUBDIRS += \
+    SmartHome/BaiduSpeech/baiduSpeech.pro
