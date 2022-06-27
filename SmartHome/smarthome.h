@@ -14,6 +14,7 @@
 #include "BaiduSpeech/audio.h"
 #include "BaiduSpeech/speech.h"
 
+#include "../MICDemo/hidmicdemo/hidmicdemo.h"
 using namespace std;
 using namespace cv;
 
@@ -112,6 +113,7 @@ protected:
     void closeEvent(QCloseEvent *event);
     Mat FaceRecognition(const Mat &mat);
     CascadeClassifier ccf;   //创建分类器对象
+    HIDMICDEMO *hidmic;
 };
 
 #endif // SMARTHOME_H

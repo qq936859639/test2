@@ -34,7 +34,8 @@ SmartHome::SmartHome(QWidget *parent, CameraThread *camerathread) :
     {
         perror("不能加载指定的xml文件");
     }
-
+    hidmic = new HIDMICDEMO;
+    hidmic->hidmic_init();
 }
 void SmartHome::init_PIR()
 {
@@ -322,6 +323,7 @@ SmartHome::~SmartHome()
 void SmartHome::closeEvent(QCloseEvent *event)
 {
     disconnect(cameraThread, SIGNAL(Collect_complete(QImage)),this,SLOT(SmartHome_videoDisplay(QImage)));
+    hidmic->hidmic_close();//关闭麦克风
 }
 //热释红外操作代码
 void SmartHome::on_Connect_PIR_clicked()
@@ -666,6 +668,7 @@ void SmartHome::QTimer_Subscribe()
 void SmartHome::on_Quit_SmartHome_clicked()
 {
 //    QApplication::quit();//关闭所有窗口
+    hidmic->hidmic_close();//关闭麦克风
     SmartHome::deleteLater();//关闭当前窗口
 }
 
@@ -838,21 +841,28 @@ void SmartHome::SmartHome_Play()
 void SmartHome::on_speech_pressed()
 {
     ui->speech->setText("松开识别");
-    //开始录音
-    audio = new Audio;
-    audio->startAudio("file_16k.pcm");
+    //开始录音-1.USB麦克或自带的麦克
+//    audio = new Audio;
+//    audio->startAudio("file_16k.pcm");
+
+    //开始录音-2.使用科大讯飞麦克阵列录音
+    hidmic->hidmic_start_record();
 }
 
 void SmartHome::on_speech_released()
 {
-    //停止录音
-    audio->stopAudio();
+    //停止录音-1.USB麦克或自带的麦克
+    //audio->stopAudio();
+
+    //停止录音-2.使用科大讯飞麦克阵列
+    hidmic->hidmic_stop_record();
     //修改按钮文字
     ui->speech->setText("开始识别");
 
     //开始识别
     Speech m_speech;
-    QString text = m_speech.speechIdentify("file_16k.pcm");
+    //QString text = m_speech.speechIdentify("file_16k.pcm");//自带的麦克
+    QString text = m_speech.speechIdentify("./audio/mic_demo_vvui_deno.pcm");
 
     if(text == "开灯。"){
         on_LED_ON_clicked();

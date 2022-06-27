@@ -7,6 +7,7 @@
 #include "AICarDemo/aicardemo.h"
 #include "LCDCheck/lcdcheck.h"
 #include "SmartHome/smarthome.h"
+#include "MICDemo/micdemo.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -46,7 +47,8 @@ void MainWindow::on_btlcd_clicked()
 
 void MainWindow::on_btmic_clicked()
 {
-
+    MICDemo *mic = new MICDemo(nullptr);
+    mic->show();
 }
 
 void MainWindow::on_bta311d_clicked()

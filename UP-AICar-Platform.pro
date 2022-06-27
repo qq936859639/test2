@@ -22,6 +22,7 @@ SOURCES += main.cpp\
         AICarDemo/aicardemo.cpp \
         AICarDemo/car/car.cpp \
         CameraDemo/camerademo.cpp \
+        MICDemo/hidmicdemo/hidmicdemo.cpp \
         SmartHome/BaiduSpeech/audio.cpp \
         SmartHome/BaiduSpeech/http.cpp \
         SmartHome/BaiduSpeech/speech.cpp \
@@ -42,6 +43,10 @@ HEADERS  += mainwindow.h \
     AICarDemo/aicardemo.h \
     AICarDemo/car/car.h \
     CameraDemo/camerademo.h \
+    MICDemo/hidmicdemo/hidapi.h \
+    MICDemo/hidmicdemo/hidmicdemo.h \
+    MICDemo/hidmicdemo/protocol_proc_unit.h \
+    MICDemo/hidmicdemo/queue_simple.h \
     SmartHome/BaiduSpeech/audio.h \
     SmartHome/BaiduSpeech/http.h \
     SmartHome/BaiduSpeech/speech.h \
@@ -101,5 +106,10 @@ LIBS += $(shell pkg-config --libs opencv4) \
 # or LIBS += ./plr/deps/ncnn/lib/libncnn_imx8.a -lncnn
 #------end
 
+#--科大讯飞
+INCLUDEPATH += \
+    /usr/include/libusb-1.0
+LIBS +=  -lhid_lib
+#--end
 SUBDIRS += \
     SmartHome/BaiduSpeech/baiduSpeech.pro

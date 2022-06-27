@@ -22,28 +22,39 @@
      <height>121</height>
     </rect>
    </property>
+   <property name="font">
+    <font>
+     <pointsize>20</pointsize>
+    </font>
+   </property>
+   <property name="layoutDirection">
+    <enum>Qt::LeftToRight</enum>
+   </property>
    <property name="styleSheet">
     <string notr="true">background-color: rgb(170, 255, 255);</string>
    </property>
    <property name="text">
-    <string>识别测试：张三、李四</string>
+    <string>科大讯飞麦克阵列</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
    </property>
   </widget>
   <widget class="QTextBrowser" name="textBrowser">
    <property name="geometry">
     <rect>
-     <x>660</x>
-     <y>160</y>
+     <x>540</x>
+     <y>150</y>
      <width>256</width>
      <height>261</height>
     </rect>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButton">
+  <widget class="QPushButton" name="speech">
    <property name="geometry">
     <rect>
-     <x>60</x>
-     <y>190</y>
+     <x>70</x>
+     <y>250</y>
      <width>75</width>
      <height>23</height>
     </rect>
@@ -52,11 +63,11 @@
     <string>录音</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButton_2">
+  <widget class="QPushButton" name="speech_config">
    <property name="geometry">
     <rect>
-     <x>220</x>
-     <y>190</y>
+     <x>70</x>
+     <y>170</y>
      <width>75</width>
      <height>23</height>
     </rect>
@@ -65,6 +76,91 @@
     <string>设置主麦</string>
    </property>
   </widget>
+  <widget class="QPushButton" name="speech_play">
+   <property name="geometry">
+    <rect>
+     <x>160</x>
+     <y>250</y>
+     <width>89</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>播放录音</string>
+   </property>
+  </widget>
+  <widget class="QSpinBox" name="spinBox">
+   <property name="geometry">
+    <rect>
+     <x>160</x>
+     <y>170</y>
+     <width>42</width>
+     <height>26</height>
+    </rect>
+   </property>
+   <property name="minimum">
+    <number>0</number>
+   </property>
+   <property name="value">
+    <number>0</number>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_2">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>350</y>
+     <width>411</width>
+     <height>61</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color: rgb(138, 226, 52);
+color: rgb(239, 41, 41);</string>
+   </property>
+   <property name="text">
+    <string>默认设置主麦为3
+可通过语音“小V小V”，根据声源的位置，自动切换主麦</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_3">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>928</width>
+     <height>432</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color: rgba(202, 239, 51, 101);</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="quit">
+   <property name="geometry">
+    <rect>
+     <x>820</x>
+     <y>360</y>
+     <width>89</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Quit</string>
+   </property>
+  </widget>
+  <zorder>label_3</zorder>
+  <zorder>label</zorder>
+  <zorder>textBrowser</zorder>
+  <zorder>speech</zorder>
+  <zorder>speech_config</zorder>
+  <zorder>speech_play</zorder>
+  <zorder>spinBox</zorder>
+  <zorder>label_2</zorder>
+  <zorder>quit</zorder>
  </widget>
  <resources/>
  <connections/>
