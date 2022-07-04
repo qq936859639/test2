@@ -35,7 +35,11 @@ SmartHome::SmartHome(QWidget *parent, CameraThread *camerathread) :
         perror("不能加载指定的xml文件");
     }
     hidmic = new HIDMICDEMO;
-    hidmic->hidmic_init();
+    if(hidmic->hidmic_init()==0){
+        ui->speech->setDisabled(false);
+    }else{
+        ui->speech->setDisabled(true);
+    }
 }
 void SmartHome::init_PIR()
 {
@@ -323,7 +327,8 @@ SmartHome::~SmartHome()
 void SmartHome::closeEvent(QCloseEvent *event)
 {
     disconnect(cameraThread, SIGNAL(Collect_complete(QImage)),this,SLOT(SmartHome_videoDisplay(QImage)));
-    hidmic->hidmic_close();//关闭麦克风
+    if(ui->speech->isEnabled())
+        hidmic->hidmic_close();//关闭麦克风
 }
 //热释红外操作代码
 void SmartHome::on_Connect_PIR_clicked()
@@ -668,7 +673,8 @@ void SmartHome::QTimer_Subscribe()
 void SmartHome::on_Quit_SmartHome_clicked()
 {
 //    QApplication::quit();//关闭所有窗口
-    hidmic->hidmic_close();//关闭麦克风
+    if(ui->speech->isEnabled())
+        hidmic->hidmic_close();//关闭麦克风
     SmartHome::deleteLater();//关闭当前窗口
 }
 

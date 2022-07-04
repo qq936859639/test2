@@ -8,7 +8,7 @@
 #include "LCDCheck/lcdcheck.h"
 #include "SmartHome/smarthome.h"
 #include "MICDemo/micdemo.h"
-
+#include "GPSDemo/gpsdemo.h"
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -63,7 +63,8 @@ void MainWindow::on_btkeyboard_clicked()
 
 void MainWindow::on_btgps_clicked()
 {
-
+    GPSDemo *gps = new GPSDemo(nullptr);
+    gps->show();
 }
 
 void MainWindow::on_btsonor_clicked()

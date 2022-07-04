@@ -248,43 +248,49 @@ void Direction()
 }
 int HIDMICDEMO::hidmic_init()
 {
-	hid_device *handle;
-	handle = hid_open();
-    if (!handle)
-	{
-        QMessageBox::warning(NULL, "QAudioDeviceInfo", "无法打开麦克风设备，请检测设备连接");
-		return -1;
-	}
-    qDebug() << "\n>>>>>成功打开麦克风设备\n";
-audioService.sendMsg = send_to_usb_device;
-audioService.recvMsg = recv_from_usb_device;
-audioService.businessProcCb = business_proc_callback;
-audioService.errProc = err_proc;
+    if(if_awake == false){
+        hid_device *handle;
+        handle = hid_open();
+        if (!handle)
+        {
+            QMessageBox::warning(NULL, "QAudioDeviceInfo", "无法打开麦克风设备，请检测设备连接");
+            return -1;
+        }
+        if_awake = true;
+        qDebug() << "\n>>>>>成功打开麦克风设备\n";
+        audioService.sendMsg = send_to_usb_device;
+        audioService.recvMsg = recv_from_usb_device;
+        audioService.businessProcCb = business_proc_callback;
+        audioService.errProc = err_proc;
 
-//	protocol_proc_init(send_to_usb_device, recv_from_usb_device, business_proc_callback, err_proc);
-    protocol_proc_init(audioService.sendMsg, audioService.recvMsg, audioService.businessProcCb, audioService.errProc);
-    get_system_status();
-//    get_software_version();
-//    sleep(1);
-    if (major_mic_id>5 || major_mic_id<0)//
-    {
-        qDebug()<<">>>>>您还未唤醒或设置主麦方向，请唤醒或设置后再进行录音操作";
-        qDebug()<<"开始设置主麦方向3";
-        int mic_id = 3;
-        int ret1 = set_major_mic_id(mic_id);
-        if (ret1 != 0)
+        //	protocol_proc_init(send_to_usb_device, recv_from_usb_device, business_proc_callback, err_proc);
+        protocol_proc_init(audioService.sendMsg, audioService.recvMsg, audioService.businessProcCb, audioService.errProc);
+        get_system_status();
+        //    get_software_version();
+        //    sleep(1);
+        if (major_mic_id>5 || major_mic_id<0)//
         {
-            printf("\n>>>>>主麦设置失败,请检查主麦id:");
+            qDebug()<<">>>>>您还未唤醒或设置主麦方向，请唤醒或设置后再进行录音操作";
+            qDebug()<<"开始设置主麦方向3";
+            int mic_id = 3;
+            int ret1 = set_major_mic_id(mic_id);
+            if (ret1 != 0)
+            {
+                printf("\n>>>>>主麦设置失败,请检查主麦id:");
+            }
+            int led_id = get_led_based_mic_id(mic_id);
+            int ret2 = set_target_led_on(led_id);
+            if (ret2 != 0)
+            {
+                printf("\n>>>>>灯光设置失败,请检查灯光id:");
+            }
         }
-        int led_id = get_led_based_mic_id(mic_id);
-        int ret2 = set_target_led_on(led_id);
-        if (ret2 != 0)
-        {
-            printf("\n>>>>>灯光设置失败,请检查灯光id:");
-        }
+        return 0;
+    }else{
+        QMessageBox::warning(NULL, "QAudioDeviceInfo", "无法打开麦>克风设备，请检测设备连接");
+        return -1;
     }
 
-    return 0;
 #if 0
 	while (1)
 	{
@@ -490,6 +496,7 @@ void HIDMICDEMO::hidmic_close()
     finish_to_record_original_sound();
 
     hid_close();
+    if_awake = false;
     qDebug()<<">>>>>退出测试用例";
 }
 void HIDMICDEMO::hidmic_config(int mic)

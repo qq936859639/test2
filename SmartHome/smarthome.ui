@@ -1183,10 +1183,10 @@ color: rgb(238, 238, 236);</string>
   <widget class="QWidget" name="layoutWidget_2">
    <property name="geometry">
     <rect>
-     <x>780</x>
-     <y>440</y>
-     <width>128</width>
-     <height>27</height>
+     <x>747</x>
+     <y>426</y>
+     <width>161</width>
+     <height>41</height>
     </rect>
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout_4">
@@ -1228,10 +1228,10 @@ color: rgb(238, 238, 236);</string>
   <widget class="QPushButton" name="speech">
    <property name="geometry">
     <rect>
-     <x>790</x>
+     <x>780</x>
      <y>310</y>
-     <width>89</width>
-     <height>25</height>
+     <width>101</width>
+     <height>31</height>
     </rect>
    </property>
    <property name="styleSheet">
@@ -1244,9 +1244,9 @@ color: rgb(238, 238, 236);</string>
   <widget class="QTextEdit" name="textEdit">
    <property name="geometry">
     <rect>
-     <x>780</x>
+     <x>763</x>
      <y>270</y>
-     <width>104</width>
+     <width>131</width>
      <height>31</height>
     </rect>
    </property>

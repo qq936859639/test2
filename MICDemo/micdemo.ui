@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>928</width>
-    <height>432</height>
+    <width>1024</width>
+    <height>553</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,9 +16,9 @@
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
-     <x>40</x>
+     <x>20</x>
      <y>10</y>
-     <width>761</width>
+     <width>981</width>
      <height>121</height>
     </rect>
    </property>
@@ -43,8 +43,8 @@
   <widget class="QTextBrowser" name="textBrowser">
    <property name="geometry">
     <rect>
-     <x>540</x>
-     <y>150</y>
+     <x>580</x>
+     <y>170</y>
      <width>256</width>
      <height>261</height>
     </rect>
@@ -53,23 +53,23 @@
   <widget class="QPushButton" name="speech">
    <property name="geometry">
     <rect>
-     <x>70</x>
+     <x>100</x>
      <y>250</y>
-     <width>75</width>
-     <height>23</height>
+     <width>91</width>
+     <height>31</height>
     </rect>
    </property>
    <property name="text">
-    <string>录音</string>
+    <string>按下录音</string>
    </property>
   </widget>
   <widget class="QPushButton" name="speech_config">
    <property name="geometry">
     <rect>
-     <x>70</x>
+     <x>100</x>
      <y>170</y>
-     <width>75</width>
-     <height>23</height>
+     <width>91</width>
+     <height>31</height>
     </rect>
    </property>
    <property name="text">
@@ -79,10 +79,10 @@
   <widget class="QPushButton" name="speech_play">
    <property name="geometry">
     <rect>
-     <x>160</x>
+     <x>230</x>
      <y>250</y>
-     <width>89</width>
-     <height>25</height>
+     <width>91</width>
+     <height>31</height>
     </rect>
    </property>
    <property name="text">
@@ -92,10 +92,10 @@
   <widget class="QSpinBox" name="spinBox">
    <property name="geometry">
     <rect>
-     <x>160</x>
+     <x>230</x>
      <y>170</y>
-     <width>42</width>
-     <height>26</height>
+     <width>51</width>
+     <height>31</height>
     </rect>
    </property>
    <property name="minimum">
@@ -109,9 +109,9 @@
    <property name="geometry">
     <rect>
      <x>40</x>
-     <y>350</y>
-     <width>411</width>
-     <height>61</height>
+     <y>360</y>
+     <width>461</width>
+     <height>71</height>
     </rect>
    </property>
    <property name="styleSheet">
@@ -128,8 +128,8 @@ color: rgb(239, 41, 41);</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>928</width>
-     <height>432</height>
+     <width>1024</width>
+     <height>553</height>
     </rect>
    </property>
    <property name="styleSheet">
@@ -142,10 +142,10 @@ color: rgb(239, 41, 41);</string>
   <widget class="QPushButton" name="quit">
    <property name="geometry">
     <rect>
-     <x>820</x>
-     <y>360</y>
+     <x>880</x>
+     <y>390</y>
      <width>89</width>
-     <height>25</height>
+     <height>41</height>
     </rect>
    </property>
    <property name="text">

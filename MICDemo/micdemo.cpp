@@ -13,7 +13,13 @@ MICDemo::MICDemo(QWidget *parent) :
     ui->setupUi(this);
 
     hidmic = new HIDMICDEMO;
-    hidmic->hidmic_init();
+    if(hidmic->hidmic_init()==0)
+    {
+        ui->speech->setDisabled(false);
+    }else{
+        ui->speech->setDisabled(true);
+    }
+
 }
 
 MICDemo::~MICDemo()
@@ -23,7 +29,8 @@ MICDemo::~MICDemo()
 
 void MICDemo::closeEvent(QCloseEvent *event)
 {
-    hidmic->hidmic_close();//关闭麦克风
+    if(ui->speech->isEnabled())
+        hidmic->hidmic_close();//关闭麦克风
 }
 
 void MICDemo::on_speech_config_clicked()
@@ -73,20 +80,21 @@ void MICDemo::on_speech_play_clicked()
     int size = out->periodSize();
     char *buf = new char[size]; //
     FILE *fp = fopen("./audio/mic_demo_vvui_deno.pcm", "rb");
-    while (!feof(fp))
-    {
-        if (out->bytesFree() < size)
+    if(fp){
+        while (!feof(fp))
         {
-            QThread::msleep(1); //
-            continue;   //读的速度很快，等待播放完成
+            if (out->bytesFree() < size)
+            {
+                QThread::msleep(1); //
+                continue;   //读的速度很快，等待播放完成
+            }
+            int len = fread(buf, 1, size, fp);
+            if (len <= 0) break;
+            io->write(buf, len);  // 播放
         }
-        int len = fread(buf, 1, size, fp);
-        if (len <= 0) break;
-        io->write(buf, len);  // 播放
+        fclose(fp);
+        delete[] buf;
     }
-    fclose(fp);
-    delete[] buf;
-
 /*
     qDebug()<<"cjf ok";
     process.start("aplay  -r 16000 ./audio/mic_demo_vvui_deno.pcm");
@@ -99,6 +107,7 @@ void MICDemo::on_speech_play_clicked()
 
 void MICDemo::on_quit_clicked()
 {
-     hidmic->hidmic_close();//关闭麦克风
-     MICDemo::deleteLater();//关闭当前窗口
+    if(ui->speech->isEnabled())
+        hidmic->hidmic_close();//关闭麦克风
+    MICDemo::deleteLater();//关闭当前窗口
 }
