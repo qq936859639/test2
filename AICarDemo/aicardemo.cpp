@@ -28,7 +28,7 @@ AICarDemo::AICarDemo(QWidget *parent, CameraThread *camerathread, ModbusThread *
     ui->mall->setCheckable(true);
     ui->school->setCheckable(true);
     ui->gym->setCheckable(true);
-    ui->ul->setCheckable(true);
+
     car_play_flag = 0;
     ul_play_flag = 0;
     Car_END_flag = 0;
@@ -637,18 +637,21 @@ void AICarDemo::Uart_Connect()
             break;//找到所需要的串口信息，退出循环
         }//使用if语句判断是否所需串口
     }
-    SerialPort.open(QIODevice::ReadOnly);//打开串口，并设置串口为只读模式
-    SerialPort.setBaudRate(QSerialPort::Baud9600);//设置串口波特率（9600）
-    SerialPort.setDataBits(QSerialPort::Data8);//设置数据位（8）
-    SerialPort.setParity(QSerialPort::NoParity); //设置奇偶校检（无）
-    SerialPort.setStopBits(QSerialPort::OneStop);//设置停止位(一位)
-    SerialPort.setFlowControl(QSerialPort::NoFlowControl);//设置流控制（无）
+    if(SerialPort.open(QIODevice::ReadOnly))//打开串口，并设置串口为只读模式
+    {
+        ui->ul->setText(tr("断开"));
+        SerialPort.setBaudRate(QSerialPort::Baud9600);//设置串口波特率（9600）
+        SerialPort.setDataBits(QSerialPort::Data8);//设置数据位（8）
+        SerialPort.setParity(QSerialPort::NoParity); //设置奇偶校检（无）
+        SerialPort.setStopBits(QSerialPort::OneStop);//设置停止位(一位)
+        SerialPort.setFlowControl(QSerialPort::NoFlowControl);//设置流控制（无）
 
-    if(SerialPort.isOpen()){
-        qDebug()<<"串口已经打开";
+        if(SerialPort.isOpen()){
+            qDebug()<<"串口已经打开";
+        }
+
+        connect(&SerialPort, SIGNAL(readyRead()), this, SLOT(Uart_ReadData()));//读取数据的函数
     }
-
-    connect(&SerialPort, SIGNAL(readyRead()), this, SLOT(Uart_ReadData()));//读取数据的函数
 }
 
 void AICarDemo::Uart_ReadData()
@@ -1294,10 +1297,9 @@ void AICarDemo::on_gym_clicked()
 
 void AICarDemo::on_ul_clicked()
 {
-    if(ui->ul->isChecked())//按钮按下操作
+    if(ui->ul->text()== "打开")//按钮按下操作
     {
         Uart_Connect();
-        ui->ul->setText(tr("断开"));
     }else{
         Uart_Close();
         ui->ul->setText(tr("打开"));

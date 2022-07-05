@@ -97,7 +97,6 @@ void gps_parse(char *line,GPS_INFO *GPS)
                 speed_tmp = Get_Float_Number(&buf[GetComma(7, buf)]); //速度(单位：海里/时)
                 GPS->speed = speed_tmp * 1.85; //1海里=1.85公里
                 GPS->direction = Get_Float_Number(&buf[GetComma(8, buf)]); //角度
-                //            GPS->high   = get_double_number(&buf[GetComma(8,buf)]);
             }
         }
 
