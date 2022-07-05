@@ -192,6 +192,11 @@
     </item>
     <item>
      <widget class="QTextEdit" name="Receive_text_win">
+      <property name="font">
+       <font>
+        <pointsize>8</pointsize>
+       </font>
+      </property>
       <property name="readOnly">
        <bool>true</bool>
       </property>

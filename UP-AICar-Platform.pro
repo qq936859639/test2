@@ -22,6 +22,7 @@ SOURCES += main.cpp\
         AICarDemo/aicardemo.cpp \
         AICarDemo/car/car.cpp \
         CameraDemo/camerademo.cpp \
+        GPSDemo/gps_bd/gps.c \
         MICDemo/hidmicdemo/hidmicdemo.cpp \
         SmartHome/BaiduSpeech/audio.cpp \
         SmartHome/BaiduSpeech/http.cpp \
@@ -43,6 +44,7 @@ HEADERS  += mainwindow.h \
     AICarDemo/aicardemo.h \
     AICarDemo/car/car.h \
     CameraDemo/camerademo.h \
+    GPSDemo/gps_bd/gps.h \
     MICDemo/hidmicdemo/hidapi.h \
     MICDemo/hidmicdemo/hidmicdemo.h \
     MICDemo/hidmicdemo/protocol_proc_unit.h \

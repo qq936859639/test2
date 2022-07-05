@@ -3,21 +3,22 @@
 #include <QMessageBox>
 #include <QList>
 #include <QDebug>
-#include <QTimer>
-#include <QThread>
+
 GPSDemo::GPSDemo(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::GPSDemo)
 {
     ui->setupUi(this);
     setAttribute(Qt::WA_DeleteOnClose);
-//    ui->webView->load(QUrl("file:/home/cjf/test/QtBaiduMapApi-master/map.html"));绝对路径
+//  ui->webView->load(QUrl("file:/home/cjf/test/QtBaiduMapApi-master/map.html"));绝对路径
     ui->webView->load(QUrl("file:" + qApp->applicationDirPath() + "/data/baidumap.html"));
 
     ui->close_port->setEnabled(false);
     //初始化端口
     serialport = new QSerialPort(this);
     portFind();
+    //GPS实例
+    GPS = new GPS_INFO();
 }
 
 GPSDemo::~GPSDemo()
@@ -110,7 +111,6 @@ void GPSDemo::on_open_port_clicked()
 //        serialport->setParity(QSerialPort::NoParity);       //无校验位
 //        serialport->setStopBits(QSerialPort::OneStop);         //停止位1
 //        serialport->setFlowControl(QSerialPort::NoFlowControl);    //无线流
-
         //串口设置完成，监听数据
         connect(serialport, &QSerialPort::readyRead, this, &GPSDemo::read_data);
     }
@@ -122,36 +122,25 @@ void GPSDemo::on_open_port_clicked()
 /*接收数据*/
 void GPSDemo::read_data()
 {
-    //qDebug()<<"read";
     //字符串或者十六进制接收
-//    if(serialport->bytesAvailable() < 500)
-//        return;
-//    serialport->flush();
-
-    QByteArray temp3;
-    QByteArray buffer;
+    QByteArray buffer, buffer_temp;
     buffer = serialport->readAll();
 
-        //存放GPS最终数据
-    temp3=checkData(buffer,"$","*");    //连接北斗数据，“$”开始，“*”结束
-    if(!temp3.isNull()){    //发送北斗数据
-        DBSend(temp3);
-    }
+    buffer_temp=checkData(buffer,"$","\n");    //连接北斗数据，“$”开始，“\n”结束
 
-  /* if(!buffer.isEmpty())
-    {
+    if(!buffer_temp.isNull()){    //解析北斗数据
         QString str = ui->Receive_text_win->toPlainText();
         if(ui->receive_state->currentText() == "string")
         {
-            str = tr(buffer);
+            str = tr(buffer_temp);
             ui->Receive_text_win->append(str);
         }else{
-           QByteArray temp = buffer.toHex().toUpper();
-           str = tr(temp);
-           ui->Receive_text_win->append(str);
+            QByteArray temp_data = buffer_temp.toHex().toUpper();
+            str = tr(temp_data);
+            ui->Receive_text_win->append(str);
         }
-    }*/
-
+        GPS_DB_PARSE(buffer_temp);
+    }
     buffer.clear();
 }
 /*关闭串口*/
@@ -179,149 +168,52 @@ void GPSDemo::on_gps_map_clicked()
 }
 QByteArray GPSDemo::checkData(QByteArray temp1,const QByteArray &s1,const QByteArray &s2)
 {
-    QByteArray temp3;    //存放GPS最终数据
+    QByteArray temp2;    //存放GPS最终数据
 
     //异常类：无头且变量为空，已丢失头部，数据不可靠，直接返回
-    if ((!temp1.contains(s1)) & (temp2.isNull()) )
+    if ((!temp1.contains(s1)) & (temp.isNull()) )
     {
         return 0;
     }
     //第一种：有头无尾，先清空原有内容，再附加
     if ((temp1.contains(s1))&(!temp1.contains(s2)))
     {
-        temp2.clear();
-        temp2.append(temp1);
+        temp.clear();
+        temp.append(temp1);
     }
     //第二种：无头无尾且变量已有内容，数据中段部分，继续附加即可
-    if ((!temp1.contains(s1))&(!temp1.contains(s2))&(!temp2.isNull()))
+    if ((!temp1.contains(s1))&(!temp1.contains(s2))&(!temp.isNull()))
     {
-        temp2.append(temp1);
+        temp.append(temp1);
     }
     //第三种：无头有尾且变量已有内容，已完整读取，附加后输出数据，并清空变量
-    if ((!temp1.contains(s1))&(temp1.contains(s2))&(!temp2.isNull()))
+    if ((!temp1.contains(s1))&(temp1.contains(s2))&(!temp.isNull()))
     {
-        temp2.append(temp1);
-        temp3 = temp2;
-        temp2.clear();
-        return temp3;
+        temp.append(temp1);
+        temp2 = temp;
+        temp.clear();
+        return temp2;
     }
     //第四种：有头有尾（一段完整的内容），先清空原有内容，再附加，然后输出，最后清空变量
     if ((temp1.contains(s1))&(temp1.contains(s2)))
     {
-        temp2.clear();
-        temp2.append(temp1);
-        temp3 = temp2;
-        temp2.clear();
-        return temp3;
+        temp.clear();
+        temp.append(temp1);
+        temp2 = temp;
+        temp.clear();
+        return temp2;
     }
     return 0;
 }
-void  GPSDemo::DBSend(QByteArray temp3) {
 
-    struct GPS_INFO *GPS=new GPS_INFO;
+void  GPSDemo::GPS_DB_PARSE(QByteArray temp3)
+{
     char* ch=temp3.data();
-
-    if(temp3.contains("$GNRMC")){
-        gps_parse(ch,GPS);          //解析数据，接续到数据存入GPS内
-        QString GPSData=QString(temp3);            //GPSData，接收到的数据用于调试
-        if(flagDB){                               //表示数据解析正确，进行显示
-//            ui->Receive_text_win->setText(GPSData);    //调试北斗数据显示
-            QString str = ui->Receive_text_win->toPlainText();
-            if(ui->receive_state->currentText() == "string")
-            {
-                str = tr(temp3);
-                ui->Receive_text_win->setText(str);
-            }else{
-               QByteArray temp = temp3.toHex().toUpper();
-               str = tr(temp);
-               ui->Receive_text_win->setText(str);
-            }
-
-            if(temp3.contains("$GNRMC"))
-                show_gps(GPS);          //界面显示
-        }
-    }
-    delete GPS;
-}
-void GPSDemo::gps_parse(char *line,GPS_INFO *GPS)//将得到的数据解析到GPS中
-{
-    int tmp,tmp1,tmp2;
-    int t;
-    char* buf=line;
-    flagDB=false;
-    t=GetComma(12,buf);//返回第12个逗号的最后位置
-    if(t){//包含12个，(12)不为“N”
-        //t&&c!='N'
-        flagDB=true;
-        GPS->D.hour=(buf[7]-'0')*10+(buf[8]-'0');
-        GPS->D.minute=(buf[9]-'0')*10+(buf[10]-'0');
-        GPS->D.second=(buf[11]-'0')*10+(buf[12]-'0');
-        tmp=GetComma(9,buf);      //得到第9个逗号的下一字符序号
-        GPS->D.day=(buf[tmp+0]-'0')*10+(buf[tmp+1]-'0');
-        GPS->D.month=(buf[tmp+2]-'0')*10+(buf[tmp+3]-'0');
-        GPS->D.year=(buf[tmp+4]-'0')*10+(buf[tmp+5]-'0')+2000;
-
-        //------------------------------
-        GPS->status=buf[GetComma(2,buf)];     //状态
-
-        tmp1=GetComma(3,buf);
-        GPS->latituded=(buf[tmp1+0]-'0')*10+(buf[tmp1+1]-'0');  //纬度度
-        GPS->latitudef=get_double_number(&buf[tmp1+2]);  //纬度分
-        GPS->latitude=GPS->latituded+(GPS->latitudef)/60;   //纬度
-        GPS->NS=buf[GetComma(4,buf)];             //南北纬
-
-        tmp2=GetComma(5,buf);
-        GPS->longituded=(buf[tmp2+0]-'0')*100+(buf[tmp2+1]-'0')*10+(buf[tmp2+2]-'0');//经度度
-        GPS->longitudef=get_double_number(&(buf[tmp2+3]));//经度分
-        GPS->longitude=GPS->longituded+(GPS->longitudef)/60;   //经度
-        GPS->EW=buf[GetComma(6,buf)];             //东西经
-
-//        GPS->speed=(buf[GetComma(7,buf)]-'0');   //speed
-//        GPS->high=(buf[GetComma(8,buf)]-'0');   //hight
-        GPS->speed  = get_double_number(&buf[GetComma(7,buf)]);  //speed
-        GPS->high   = get_double_number(&buf[GetComma(8,buf)]);
-    }
-    else{
-
-    }
-}
-/*--------------------------------------显示GPS北斗数据------------------------------*/
-void GPSDemo::show_gps(GPS_INFO *GPS)
-{
-//    qDebug()<<(QString("%1-%2-%3").arg(GPS->D.year).arg(GPS->D.month).arg(GPS->D.day));
-//    qDebug()<<(QString("%1:%2:%3").arg(GPS->D.hour).arg(GPS->D.minute).arg(GPS->D.second));
-//    qDebug()<<(QString("%1 %2").arg(GPS->latitude).arg(GPS->NS));
-//    qDebug()<<(QString("%1 %2").arg(GPS->longitude).arg(GPS->EW));
-//    qDebug()<<(QString("%1").arg(GPS->status));
-//    qDebug()<<(QString("%1").arg(GPS->speed));
-//    qDebug()<<(QString("%1").arg(GPS->high));
-    if(GPS->D.hour + 8 >=24)
-        GPS->D.hour = GPS->D.hour - 24;
-    ui->timelineEdit->setText(QString("%1:%2:%3").arg(GPS->D.hour+8).arg(GPS->D.minute).arg(GPS->D.second));
-    ui->latlineEdit->setText(QString("%1").arg(GPS->latitude));
-    ui->longlineEdit->setText(QString("%1").arg(GPS->longitude));
+    gps_parse(ch,GPS);          //解析数据，接续到数据存入GPS内
+    ui->timelineEdit->setText(QString("%1:%2:%3").arg(GPS->D.hour).arg(GPS->D.minute).arg(GPS->D.second));
+    ui->latlineEdit->setText(QString("%1").arg(GPS->latitude_ok));
+    ui->longlineEdit->setText(QString("%1").arg(GPS->longitude_ok));
     ui->headlineEdit->setText(QString("%1").arg(GPS->high));
 
-}
-int GPSDemo::GetComma(int num,char *str)
-{
-    int i,j=0;
-    int len=strlen(str);
-    for(i=0;i<len;i++)
-    {
-        if(str[i]==',')j++;
-        if(j==num)return i+1;   //返回当前找到的逗号位置的下一个位置
-    }
-    return 0;
-}
-double GPSDemo::get_double_number(char *s)
-{
-    char buf[128];
-    int i;
-    double rev;
-    i=GetComma(1,s);    //得到数据长度
-    strncpy(buf,s,i);
-    buf[i]=0;           //加字符串结束标志
-    rev=atof(buf);      //字符串转float
-    return rev;
+//    delete GPS;
 }
