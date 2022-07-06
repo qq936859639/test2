@@ -9,6 +9,8 @@
 #include "SmartHome/smarthome.h"
 #include "MICDemo/micdemo.h"
 #include "GPSDemo/gpsdemo.h"
+#include "KeyboardDemo/keyboarddemo.h"
+#include "SensorDemo/sensordemo.h"
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -58,7 +60,8 @@ void MainWindow::on_bta311d_clicked()
 
 void MainWindow::on_btkeyboard_clicked()
 {
-
+    KeyboardDemo *keyboard = new KeyboardDemo();
+    keyboard->show();
 }
 
 void MainWindow::on_btgps_clicked()
@@ -69,7 +72,8 @@ void MainWindow::on_btgps_clicked()
 
 void MainWindow::on_btsonor_clicked()
 {
-
+    SensorDemo *sensor = new SensorDemo();
+    sensor->show();
 }
 
 void MainWindow::on_btspeaker_clicked()

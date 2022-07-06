@@ -148,8 +148,13 @@ color: rgb(239, 41, 41);</string>
      <height>41</height>
     </rect>
    </property>
+   <property name="font">
+    <font>
+     <pointsize>16</pointsize>
+    </font>
+   </property>
    <property name="text">
-    <string>Quit</string>
+    <string>退出</string>
    </property>
   </widget>
   <zorder>label_3</zorder>

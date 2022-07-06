@@ -687,7 +687,6 @@ void AICarDemo::Uart_ReadData()
                 {
                     int temp_data = temp[0]<<8 | temp[1];
                     ui->ultrasound_data->setText(QString::number(temp_data));
-//                    qDebug()<<temp_data;
                     if(temp_data <240)
                     {
                         //ui->ultrasound_data->setText(tr("数据无效"));

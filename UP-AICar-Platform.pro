@@ -23,7 +23,9 @@ SOURCES += main.cpp\
         AICarDemo/car/car.cpp \
         CameraDemo/camerademo.cpp \
         GPSDemo/gps_bd/gps.c \
+        KeyboardDemo/keyboarddemo.cpp \
         MICDemo/hidmicdemo/hidmicdemo.cpp \
+        SensorDemo/sensordemo.cpp \
         SmartHome/BaiduSpeech/audio.cpp \
         SmartHome/BaiduSpeech/http.cpp \
         SmartHome/BaiduSpeech/speech.cpp \
@@ -45,10 +47,12 @@ HEADERS  += mainwindow.h \
     AICarDemo/car/car.h \
     CameraDemo/camerademo.h \
     GPSDemo/gps_bd/gps.h \
+    KeyboardDemo/keyboarddemo.h \
     MICDemo/hidmicdemo/hidapi.h \
     MICDemo/hidmicdemo/hidmicdemo.h \
     MICDemo/hidmicdemo/protocol_proc_unit.h \
     MICDemo/hidmicdemo/queue_simple.h \
+    SensorDemo/sensordemo.h \
     SmartHome/BaiduSpeech/audio.h \
     SmartHome/BaiduSpeech/http.h \
     SmartHome/BaiduSpeech/speech.h \
@@ -77,8 +81,10 @@ FORMS    += mainwindow.ui \
     CameraDemo/camerademo.ui \
     CoreModule/coremodule.ui \
     GPSDemo/gpsdemo.ui \
+    KeyboardDemo/keyboarddemo.ui \
     LCDCheck/lcdcheck.ui \
     MICDemo/micdemo.ui \
+    SensorDemo/sensordemo.ui \
     SmartHome/smarthome.ui
 
 RESOURCES += \

@@ -152,7 +152,6 @@ void GPSDemo::on_close_port_clicked()
 
     serialport->clear();
     serialport->close();
-    portFind();
 }
 
 void GPSDemo::on_clear_receive_button_clicked()
@@ -214,6 +213,5 @@ void  GPSDemo::GPS_DB_PARSE(QByteArray temp3)
     ui->latlineEdit->setText(QString("%1").arg(GPS->latitude_ok));
     ui->longlineEdit->setText(QString("%1").arg(GPS->longitude_ok));
     ui->headlineEdit->setText(QString("%1").arg(GPS->high));
-
 //    delete GPS;
 }
