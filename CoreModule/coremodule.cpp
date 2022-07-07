@@ -12,3 +12,9 @@ CoreModule::~CoreModule()
 {
     delete ui;
 }
+
+void CoreModule::on_quit_clicked()
+{
+//    this->close();
+    CoreModule::deleteLater();//关闭当前窗口
+}

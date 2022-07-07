@@ -17,7 +17,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>AICar</string>
+   <string>AICarDemo</string>
   </property>
   <widget class="QGraphicsView" name="graphicsView">
    <property name="geometry">
@@ -128,7 +128,7 @@
       <rect>
        <x>10</x>
        <y>10</y>
-       <width>211</width>
+       <width>256</width>
        <height>101</height>
       </rect>
      </property>

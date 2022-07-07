@@ -40,5 +40,6 @@
         <file>image/led_on.png</file>
         <file>image/tv.png</file>
         <file>image/smarthome_1.jpg</file>
+        <file>image/AIBoard.jpg</file>
     </qresource>
 </RCC>

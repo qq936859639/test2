@@ -15,6 +15,9 @@ public:
     explicit CoreModule(QWidget *parent = nullptr);
     ~CoreModule();
 
+private slots:
+    void on_quit_clicked();
+
 private:
     Ui::CoreModule *ui;
 };

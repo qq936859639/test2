@@ -11,6 +11,8 @@
 #include "GPSDemo/gpsdemo.h"
 #include "KeyboardDemo/keyboarddemo.h"
 #include "SensorDemo/sensordemo.h"
+#include "SpeakerDemo/speakerdemo.h"
+#include "CoreModule/coremodule.h"
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -55,7 +57,8 @@ void MainWindow::on_btmic_clicked()
 
 void MainWindow::on_bta311d_clicked()
 {
-
+    CoreModule *core = new CoreModule();
+    core->show();
 }
 
 void MainWindow::on_btkeyboard_clicked()
@@ -78,13 +81,12 @@ void MainWindow::on_btsonor_clicked()
 
 void MainWindow::on_btspeaker_clicked()
 {
-    qDebug() << "on_btspeaker_clicked";
-
+    SpeakerDemo *speaker = new SpeakerDemo();
+    speaker->show();
 }
 
 void MainWindow::on_btiotdht_clicked()
 {
-    qDebug() << "智慧家居";
     SmartHome *smarhome = new SmartHome(nullptr, cameraThread);
     smarhome->show();
 }

@@ -30,6 +30,7 @@ SOURCES += main.cpp\
         SmartHome/BaiduSpeech/http.cpp \
         SmartHome/BaiduSpeech/speech.cpp \
         SmartHome/cjson/cJSON.c \
+        SpeakerDemo/speakerdemo.cpp \
         plr/cvUniText.cpp \
         plr/plr.cpp \
         services/camerathread.cpp \
@@ -57,6 +58,7 @@ HEADERS  += mainwindow.h \
     SmartHome/BaiduSpeech/http.h \
     SmartHome/BaiduSpeech/speech.h \
     SmartHome/cjson/cJSON.h \
+    SpeakerDemo/speakerdemo.h \
     plr/cvUniText.hpp \
     plr/include/detector_creator.h \
     plr/include/lpc_recognizer.h \
@@ -85,7 +87,8 @@ FORMS    += mainwindow.ui \
     LCDCheck/lcdcheck.ui \
     MICDemo/micdemo.ui \
     SensorDemo/sensordemo.ui \
-    SmartHome/smarthome.ui
+    SmartHome/smarthome.ui \
+    SpeakerDemo/speakerdemo.ui
 
 RESOURCES += \
     resource.qrc
