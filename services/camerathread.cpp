@@ -58,7 +58,7 @@ CameraThread::~CameraThread()
 }
 
 void CameraThread::run(){
-    while (1) {
+    while (startflag) {
         usleep(1);
         if(startflag == true)
         {

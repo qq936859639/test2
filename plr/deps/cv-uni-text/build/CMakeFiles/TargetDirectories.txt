@@ -1,8 +1,0 @@
-/home/cjf/test/mobile-lpr/deps/cv-uni-text/build/CMakeFiles/install/strip.dir
-/home/cjf/test/mobile-lpr/deps/cv-uni-text/build/CMakeFiles/install.dir
-/home/cjf/test/mobile-lpr/deps/cv-uni-text/build/CMakeFiles/list_install_components.dir
-/home/cjf/test/mobile-lpr/deps/cv-uni-text/build/CMakeFiles/rebuild_cache.dir
-/home/cjf/test/mobile-lpr/deps/cv-uni-text/build/CMakeFiles/edit_cache.dir
-/home/cjf/test/mobile-lpr/deps/cv-uni-text/build/CMakeFiles/main.dir
-/home/cjf/test/mobile-lpr/deps/cv-uni-text/build/CMakeFiles/install/local.dir
-/home/cjf/test/mobile-lpr/deps/cv-uni-text/build/CMakeFiles/cvunitext.dir

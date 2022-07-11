@@ -37,7 +37,7 @@ public:
 signals:
     void Show_complete();
 
-    void Camera_connect();
+    void Camera_connect(const QString ip);
     void Camera_write(quint16 data);
 //    void Camera_read(int, int);
     void Camera_writeRead(int startAddress, quint16 numberOfEntries, quint16 data);

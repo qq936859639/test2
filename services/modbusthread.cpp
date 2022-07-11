@@ -31,7 +31,7 @@ void ModbusThread::on_connectType_currentIndexChanged()
                 this, &ModbusThread::onStateChanged);
     }
 }
-void ModbusThread::on_connect()
+void ModbusThread::on_connect(QString userip)
 {
     if (!modbusDevice)
         return;
@@ -40,7 +40,7 @@ void ModbusThread::on_connect()
     {
         //处于非连接状态，进行连接
         //TCP连接,端口502，地址192.168.*.*
-        const QUrl url = QUrl::fromUserInput(HOST_NAME); //获取IP和端口号
+        const QUrl url = QUrl::fromUserInput(userip); //获取IP和端口号
         modbusDevice->setConnectionParameter(QModbusDevice::NetworkPortParameter, url.port());
         modbusDevice->setConnectionParameter(QModbusDevice::NetworkAddressParameter, url.host());
 

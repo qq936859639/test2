@@ -49,7 +49,7 @@ signals:
     void on_read_data(int startAddress, int data);
     void on_change_connet(bool);
 private slots:
-    void on_connect();
+    void on_connect(const QString ip);
     void on_write(quint16 data);
     void on_read(int startAddress, quint16 numberOfEntries);
     void on_readWrite(quint16 data);
@@ -59,7 +59,6 @@ protected:
 
     //void on_connect();
     //void on_write(QString t);
-
 
     void readReady();
     void onStateChanged(int state);

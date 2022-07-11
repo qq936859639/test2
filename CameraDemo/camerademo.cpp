@@ -38,7 +38,7 @@ CameraDemo::CameraDemo(QWidget *parent, CameraThread *camerathread, ModbusThread
     connect(cameraThread, SIGNAL(Collect_complete(QImage)),this,SLOT(videoDisplay(QImage)));
     connect(modbusThread, SIGNAL(on_read_data(int, int)),this,SLOT(Camera_read_data(int, int)));
 
-    connect(this, SIGNAL(Camera_connect()),modbusThread,SLOT(on_connect()));
+    connect(this, SIGNAL(Camera_connect(QString)),modbusThread,SLOT(on_connect(QString)));
 //    connect(this, SIGNAL(Camera_write(quint16)),modbusThread,SLOT(on_write(quint16)));//only write
 //    connect(this, SIGNAL(Camera_read(int,int)),modbusThread,SLOT(on_read(int,int)));//only read
     connect(this, SIGNAL(Camera_writeRead(int, quint16, quint16)),modbusThread,SLOT(on_writeRead(int, quint16, quint16)));
@@ -58,12 +58,12 @@ void CameraDemo::closeEvent(QCloseEvent *event)
 {
     faces_flag = false;
     connect_flag = false;
-    emit Camera_connect();
+    emit Camera_connect(ui->lineEdit->text());
 
     disconnect(cameraThread, SIGNAL(Collect_complete(QImage)),this,SLOT(videoDisplay(QImage)));
     disconnect(modbusThread, SIGNAL(on_read_data(int, int)),this,SLOT(Camera_read_data(int, int)));
 
-    disconnect(this, SIGNAL(Camera_connect()),modbusThread,SLOT(on_connect()));
+    disconnect(this, SIGNAL(Camera_connect(QString)),modbusThread,SLOT(on_connect(QString)));
     disconnect(this, SIGNAL(Camera_writeRead(int, quint16, quint16)),modbusThread,SLOT(on_writeRead(int, quint16, quint16)));
 
     disconnect(modbusThread, SIGNAL(on_change_connet(bool)),this,SLOT(Camera_change_connet(bool)));
@@ -194,7 +194,7 @@ void CameraDemo::Camera_change_connet(bool data)
 
 void CameraDemo::on_connect_clicked()
 {
-    emit Camera_connect();
+    emit Camera_connect(ui->lineEdit->text());
 }
 
 void CameraDemo::on_up_clicked()

@@ -12,6 +12,8 @@ AICarDemo::AICarDemo(QWidget *parent, CameraThread *camerathread, ModbusThread *
     ui(new Ui::AICarDemo)
 {
     ui->setupUi(this);
+    setAttribute(Qt::WA_DeleteOnClose);
+
     scene = new QGraphicsScene(this);
     scene->setSceneRect(-500+180, -500+174, 720, 530);
     scene->setItemIndexMethod(QGraphicsScene::NoIndex);
@@ -57,7 +59,7 @@ AICarDemo::AICarDemo(QWidget *parent, CameraThread *camerathread, ModbusThread *
 
     this->cameraThread = camerathread;
     this->modbusThread = modbusthread;
-    connect(this, SIGNAL(Car_connect()),modbusThread,SLOT(on_connect()));
+    connect(this, SIGNAL(Car_connect(QString)),modbusThread,SLOT(on_connect(QString)));
     connect(modbusThread, SIGNAL(on_change_connet(bool)),this,SLOT(Car_change_connet(bool)));
 
     connect(this, SIGNAL(Car_writeRead(int, quint16, quint16)),modbusThread,SLOT(on_writeRead(int, quint16, quint16)));
@@ -83,10 +85,10 @@ AICarDemo::~AICarDemo()
 }
 void AICarDemo::closeEvent(QCloseEvent *event)
 {
-//    emit Car_connect();
+    emit Car_connect(ui->lineEdit->text());
     Car_Reset();
     Uart_Close();//关闭串口
-    disconnect(this, SIGNAL(Car_connect()),modbusThread,SLOT(on_connect()));
+    disconnect(this, SIGNAL(Car_connect(QString)),modbusThread,SLOT(on_connect(QString)));
     disconnect(modbusThread, SIGNAL(on_change_connet(bool)),this,SLOT(Car_change_connet(bool)));
 
     disconnect(this, SIGNAL(Car_writeRead(int, quint16, quint16)),modbusThread,SLOT(on_writeRead(int, quint16, quint16)));
@@ -264,7 +266,7 @@ void AICarDemo::on_decelerate_clicked()
 
 void AICarDemo::on_connect_clicked()
 {
-    emit Car_connect();
+    emit Car_connect(ui->lineEdit->text());
 }
 void AICarDemo::Car_change_connet(bool data)
 {
@@ -274,6 +276,7 @@ void AICarDemo::Car_change_connet(bool data)
         ui->tabWidget->setDisabled(true);
         ui->Car_reset->setDisabled(true);
         car_state->stop();
+        ui->frame->setVisible(true);
     }
     if(data == true){
         ui->connect->setText(tr("Disconnect"));
@@ -281,6 +284,7 @@ void AICarDemo::Car_change_connet(bool data)
         ui->Car_reset->setDisabled(false);
         Car_Reset();
         car_state->start();
+        ui->frame->setVisible(false);
     }
 
 }
@@ -297,7 +301,11 @@ void AICarDemo::Car_Reset()
 void AICarDemo::on_Car_reset_clicked()
 {
     Car_Reset();
-    QPointF point = car->mapToScene(scene->sceneRect().x(),scene->sceneRect().y());
+
+    car->reset();
+    car->resetTransform();  //car->resetMatrix();
+    car->setPos(0,0);       //初始化小车位置
+//    QPointF point = car->mapToScene(scene->sceneRect().x(),scene->sceneRect().y());
 //    qDebug()<<"cjf debug"<<point.x()<<point.y();
 }
 void AICarDemo::Car_state_data(){

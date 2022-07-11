@@ -16,8 +16,6 @@ INCLUDEPATH += . /usr/include/opencv4/opencv /usr/include/opencv4
 TARGET = UP-AICar-Platform
 TEMPLATE = app
 
-
-
 SOURCES += main.cpp\
         AICarDemo/aicardemo.cpp \
         AICarDemo/car/car.cpp \
@@ -31,8 +29,8 @@ SOURCES += main.cpp\
         SmartHome/BaiduSpeech/speech.cpp \
         SmartHome/cjson/cJSON.c \
         SpeakerDemo/speakerdemo.cpp \
-        plr/cvUniText.cpp \
-        plr/plr.cpp \
+        lpr/cvUniText.cpp \
+        lpr/lpr.cpp \
         services/camerathread.cpp \
         CoreModule/coremodule.cpp \
         GPSDemo/gpsdemo.cpp \
@@ -59,16 +57,16 @@ HEADERS  += mainwindow.h \
     SmartHome/BaiduSpeech/speech.h \
     SmartHome/cjson/cJSON.h \
     SpeakerDemo/speakerdemo.h \
-    plr/cvUniText.hpp \
-    plr/include/detector_creator.h \
-    plr/include/lpc_recognizer.h \
-    plr/include/lpr_recognizer.h \
-    plr/include/plate_detectors.h \
-    plr/include/plate_info.h \
-    plr/include/plate_petector.h \
-    plr/include/plate_recognizers.h \
-    plr/plr.h \
-    plr/timing.h \
+    lpr/cvUniText.hpp \
+    lpr/include/detector_creator.h \
+    lpr/include/lpc_recognizer.h \
+    lpr/include/lpr_recognizer.h \
+    lpr/include/plate_detectors.h \
+    lpr/include/plate_info.h \
+    lpr/include/plate_petector.h \
+    lpr/include/plate_recognizers.h \
+    lpr/lpr.h \
+    lpr/timing.h \
     services/camerathread.h \
     CoreModule/coremodule.h \
     GPSDemo/gpsdemo.h \
@@ -100,7 +98,7 @@ CONFIG += c++11
 
 INCLUDEPATH += \
     /usr/include/opencv4 \
-    /usr/include/ncnn \
+#    /usr/include/ncnn \
     /usr/include/freetype2
 
 LIBS += $(shell pkg-config --libs opencv4) \
@@ -109,18 +107,42 @@ LIBS += $(shell pkg-config --libs opencv4) \
     -lgomp  \
     -lstdc++ \
     -lm \
-    -lmlpr \
-    -lncnn \
     -lpthread
 #------A311D
 #-lvulkan -lglslang -lSPIRV -lMachineIndependent -lOGLCompiler -lOSDependent -lGenericCodeGen
-# or LIBS += ./plr/deps/ncnn/lib/libncnn_imx8.a -lncnn
+# or LIBS += ./lpr/deps/ncnn/lib/libncnn_imx8.a -lncnn
 #------end
+
+
+#A311D
+contains(QT_ARCH, arm64){
+#车牌识别库
+unix:!macx: LIBS += -L$$PWD/lib/lpr/arm64/ -lmlpr -lncnn 
+INCLUDEPATH += $$PWD/lpr/include/ncnn
+DEPENDPATH += $$PWD/lib/lpr/arm64
+unix:!macx: PRE_TARGETDEPS += $$PWD/lib/lpr/arm64/
+#--科大讯飞
+INCLUDEPATH += \
+    /usr/include/libusb-1.0
+unix:!macx: LIBS += -L$$PWD/lib/iflytek/arm64/ -lhid_lib
+INCLUDEPATH += $$PWD/lib/iflytek/arm64
+DEPENDPATH += $$PWD/lib/iflytek/arm64
+#--end
+LIBS += -lvulkan -lglslang -lSPIRV -lMachineIndependent -lOGLCompiler -lOSDependent -lGenericCodeGen
+
+}else{
 
 #--科大讯飞
 INCLUDEPATH += \
     /usr/include/libusb-1.0
-LIBS +=  -lhid_lib
+unix:!macx: LIBS += -L$$PWD/lib/iflytek/x64/ -lhid_lib
+INCLUDEPATH += $$PWD/lib/iflytek/x64
+DEPENDPATH += $$PWD/lib/iflytek/x64
 #--end
-SUBDIRS += \
-    SmartHome/BaiduSpeech/baiduSpeech.pro
+
+#车牌识别库
+unix:!macx: LIBS += -L$$PWD/lib/lpr/x64/ -lmlpr -lncnn
+INCLUDEPATH += $$PWD/lpr/include/ncnn
+DEPENDPATH += $$PWD/lib/lpr/x64
+unix:!macx: PRE_TARGETDEPS += $$PWD/lib/lpr/x64/
+}

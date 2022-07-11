@@ -14,10 +14,10 @@
 #include <opencv2/objdetect/objdetect.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
-#include "plr/include/plate_detectors.h"
-#include "plr/include/plate_recognizers.h"
-#include "plr/cvUniText.hpp"
-#include "plr/plr.h"
+#include "lpr/include/plate_detectors.h"
+#include "lpr/include/plate_recognizers.h"
+#include "lpr/cvUniText.hpp"
+#include "lpr/lpr.h"
 
 #include <QSerialPortInfo>
 #include <QSerialPort>
@@ -54,7 +54,7 @@ public:
     Mat QImage2Mat(const QImage& image);
 
 signals:
-    void Car_connect();
+    void Car_connect(const QString ip);
     void Car_writeRead(int startAddress, quint16 numberOfEntries, quint16 data);
     void Car_read(int startAddress, quint16 numberOfEntries);
     void Car_times(bool data);
