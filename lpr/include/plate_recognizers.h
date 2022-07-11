@@ -11,8 +11,8 @@
 
 namespace pr {
     static LPCRecognizerConfig float_lpc_recognizer = {
-        "lpc.param",
-        "lpc.bin"
+        "lpr/models/float/lpc.param",
+        "lpr/models/float/lpc.bin"
     };
 
     static LPCRecognizerConfig int8_lpc_recognizer = {
@@ -32,8 +32,8 @@ namespace pr {
     }
 
     static LPRRecognizerConfig float_lpr_recognizer = {
-            "lpr.param",
-            "lpr.bin",
+            "lpr/models/float/lpr.param",
+            "lpr/models/float/lpr.bin",
             float_lpc_recognizer
     };
 

@@ -12,7 +12,7 @@ AICarDemo::AICarDemo(QWidget *parent, CameraThread *camerathread, ModbusThread *
     ui(new Ui::AICarDemo)
 {
     ui->setupUi(this);
-    setAttribute(Qt::WA_DeleteOnClose);
+//    setAttribute(Qt::WA_DeleteOnClose);
 
     scene = new QGraphicsScene(this);
     scene->setSceneRect(-500+180, -500+174, 720, 530);

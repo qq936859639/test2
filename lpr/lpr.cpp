@@ -1,8 +1,13 @@
 #include "lpr.h"
 PLR::PLR(){
-    fix_mtcnn_detector("lpr/models/float", pr::mtcnn_float_detector);
+//    fix_mtcnn_detector("lpr/models/float", pr::mtcnn_float_detector);
+//    detector = pr::IPlateDetector::create_plate_detector(pr::mtcnn_float_detector);
+//    fix_lpr_recognizer("lpr/models/float", pr::float_lpr_recognizer);
+//    lpr = pr::float_lpr_recognizer.create_recognizer();
+
+//    fix_mtcnn_detector("lpr/models/float", pr::mtcnn_float_detector);
     detector = pr::IPlateDetector::create_plate_detector(pr::mtcnn_float_detector);
-    fix_lpr_recognizer("lpr/models/float", pr::float_lpr_recognizer);
+//    fix_lpr_recognizer("lpr/models/float", pr::float_lpr_recognizer);
     lpr = pr::float_lpr_recognizer.create_recognizer();
 }
 

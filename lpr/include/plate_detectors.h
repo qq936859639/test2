@@ -13,8 +13,8 @@
 
 namespace pr{
     static AlignPlateDetectorConfig float_align = {
-            "det3.param",
-            "det3.bin",
+            "lpr/models/float/det3.param",
+            "lpr/models/float/det3.bin",
             120,
             48,
             0.5,
@@ -46,10 +46,10 @@ namespace pr{
     }
 
     static MtcnnPlateDetectorConfig mtcnn_float_detector = {
-            "det1.param",
-            "det1.bin",
-            "det2.param",
-            "det2.bin",
+            "lpr/models/float/det1.param",
+            "lpr/models/float/det1.bin",
+            "lpr/models/float/det2.param",
+            "lpr/models/float/det2.bin",
             0.5,
             0.7,
             0.8,
