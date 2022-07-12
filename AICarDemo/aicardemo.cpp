@@ -305,6 +305,37 @@ void AICarDemo::on_Car_reset_clicked()
     car->reset();
     car->resetTransform();  //car->resetMatrix();
     car->setPos(0,0);       //初始化小车位置
+
+    car_face_flag = 0;
+    car_lpr_flag = 0;
+    car_play_flag = 0;
+    ul_play_flag = 0;
+    Car_END_flag = 0;
+    rgy_light_play_flag = 0;
+
+    ui->townhall->setEnabled(true);
+    ui->school->setEnabled(true);
+    ui->gym->setEnabled(true);
+    ui->mall->setEnabled(true);
+    ui->townhall->setChecked(false);
+    ui->school->setChecked(false);
+    ui->gym->setChecked(false);
+    ui->mall->setChecked(false);
+    on_townhall_clicked();
+    on_school_clicked();
+    on_gym_clicked();
+    on_mall_clicked();
+
+    plr->LPR_Data="";
+    ui->LPR->clear();
+    ui->faces_data->clear();
+    AutoPilot->stop();
+
+    ui->car_pole_1->setVisible(true);
+    ui->car_pole_2->setVisible(true);
+    ui->car_pole_3->setVisible(true);
+
+    ui->passengers->setVisible(true);
 //    QPointF point = car->mapToScene(scene->sceneRect().x(),scene->sceneRect().y());
 //    qDebug()<<"cjf debug"<<point.x()<<point.y();
 }
@@ -450,7 +481,7 @@ void AICarDemo::Car_videoDisplay(const QImage image)
         {
             car_lpr_flag = 1;
         }
-        plr->LPR_Data="";
+//        plr->LPR_Data="";
     }
     QImage qimg = this->Mat2QImage(img1);
 
@@ -731,9 +762,22 @@ void AICarDemo::Uart_WriteData()
 
 void AICarDemo::on_pushButton_clicked()
 {
+    Car_Reset();
+
     car->reset();
     car->resetTransform();  //car->resetMatrix();
     car->setPos(0,0);       //初始化小车位置
+
+    car_face_flag = 0;
+    car_lpr_flag = 0;
+    car_play_flag = 0;
+    ul_play_flag = 0;
+    rgy_light_play_flag = 0;
+
+    plr->LPR_Data="";
+    ui->LPR->clear();
+    ui->faces_data->clear();
+    ui->passengers->setVisible(true);
 
     AutoPilot->setInterval(1000/33);
     AutoPilot->start();
@@ -743,6 +787,11 @@ void AICarDemo::on_pushButton_clicked()
         QSound *success = new QSound("./mp3/arrive_where.wav", this);
         success->play();
         AutoPilot->stop();
+    }else{
+        ui->townhall->setEnabled(false);
+        ui->school->setEnabled(false);
+        ui->gym->setEnabled(false);
+        ui->mall->setEnabled(false);
     }
 
 }
@@ -896,6 +945,7 @@ void AICarDemo::Car_Map_Mall(QPointF point)
         if(car_face_flag==1)
         {
             on_accelerate_clicked();
+            ui->passengers->setVisible(false);
             car_face_flag = 0;
             ui->FACEButton->setAutoExclusive(false);
             ui->FACEButton->setChecked(false);
@@ -1051,6 +1101,12 @@ void AICarDemo::Car_Map_Mall(QPointF point)
 
         ui->LPR->clear();
         AutoPilot->stop();
+
+        ui->passengers->setVisible(true);
+        ui->townhall->setEnabled(true);
+        ui->school->setEnabled(true);
+        ui->gym->setEnabled(true);
+        ui->mall->setEnabled(true);
     }
 }
 void AICarDemo::Car_Map_TownHall(QPointF point)
@@ -1129,6 +1185,7 @@ void AICarDemo::Car_Map_TownHall(QPointF point)
         if(car_face_flag==1)
         {
             on_accelerate_clicked();
+            ui->passengers->setVisible(false);
             car_face_flag = 0;
             ui->FACEButton->setAutoExclusive(false);
             ui->FACEButton->setChecked(false);
@@ -1224,6 +1281,12 @@ void AICarDemo::Car_Map_TownHall(QPointF point)
         ui->LPR->clear();
 
         AutoPilot->stop();
+
+        ui->passengers->setVisible(true);
+        ui->townhall->setEnabled(true);
+        ui->school->setEnabled(true);
+        ui->gym->setEnabled(true);
+        ui->mall->setEnabled(true);
     }
 }
 

@@ -126,9 +126,9 @@
     <widget class="QWidget" name="horizontalLayoutWidget">
      <property name="geometry">
       <rect>
-       <x>20</x>
+       <x>10</x>
        <y>10</y>
-       <width>201</width>
+       <width>211</width>
        <height>101</height>
       </rect>
      </property>
@@ -648,7 +648,7 @@
       <string notr="true"/>
      </property>
      <property name="title">
-      <string>驾驶员</string>
+      <string>乘客</string>
      </property>
      <widget class="QWidget" name="verticalLayoutWidget">
       <property name="geometry">
@@ -851,8 +851,8 @@
     <rect>
      <x>495</x>
      <y>130</y>
-     <width>150</width>
-     <height>70</height>
+     <width>121</width>
+     <height>61</height>
     </rect>
    </property>
    <property name="styleSheet">
@@ -1021,6 +1021,41 @@
     </property>
    </widget>
   </widget>
+  <widget class="QLabel" name="passengers">
+   <property name="geometry">
+    <rect>
+     <x>605</x>
+     <y>150</y>
+     <width>50</width>
+     <height>40</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">border-image: url(:/image/res/image/passengers.png);</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <zorder>frame</zorder>
+  <zorder>graphicsView</zorder>
+  <zorder>connect</zorder>
+  <zorder>Car_reset</zorder>
+  <zorder>Car_videoDisplay</zorder>
+  <zorder>tabWidget</zorder>
+  <zorder>school_rgy_light</zorder>
+  <zorder>school_yellow_light</zorder>
+  <zorder>school_red_light</zorder>
+  <zorder>school_green_light</zorder>
+  <zorder>townhall</zorder>
+  <zorder>home</zorder>
+  <zorder>mall</zorder>
+  <zorder>school</zorder>
+  <zorder>gym</zorder>
+  <zorder>car_pole_3</zorder>
+  <zorder>car_pole_1</zorder>
+  <zorder>car_pole_2</zorder>
+  <zorder>passengers</zorder>
  </widget>
  <resources/>
  <connections/>
