@@ -15,6 +15,9 @@ public:
     explicit KeyboardDemo(QWidget *parent = nullptr);
     ~KeyboardDemo();
 
+private slots:
+    void on_quit_clicked();
+
 private:
     Ui::KeyboardDemo *ui;
 };

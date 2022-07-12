@@ -27,6 +27,8 @@ private slots:
     void on_clear_receive_button_clicked();
     void on_gps_map_clicked();
 
+    void on_quit_clicked();
+
 private:
     Ui::GPSDemo *ui;
     QSerialPort *serialport;

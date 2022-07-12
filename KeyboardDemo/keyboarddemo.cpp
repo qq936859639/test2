@@ -12,3 +12,8 @@ KeyboardDemo::~KeyboardDemo()
 {
     delete ui;
 }
+
+void KeyboardDemo::on_quit_clicked()
+{
+    KeyboardDemo::deleteLater();//关闭当前窗口
+}

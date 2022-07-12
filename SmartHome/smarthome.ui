@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>914</width>
-    <height>480</height>
+    <width>1024</width>
+    <height>553</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -22,7 +22,7 @@
      <x>50</x>
      <y>20</y>
      <width>691</width>
-     <height>450</height>
+     <height>471</height>
     </rect>
    </property>
    <property name="styleSheet">
@@ -39,9 +39,9 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>160</y>
+       <y>150</y>
        <width>661</width>
-       <height>91</height>
+       <height>101</height>
       </rect>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
@@ -166,7 +166,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>250</y>
+       <y>260</y>
        <width>661</width>
        <height>170</height>
       </rect>
@@ -277,9 +277,9 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>160</y>
+       <y>150</y>
        <width>661</width>
-       <height>97</height>
+       <height>101</height>
       </rect>
      </property>
      <layout class="QGridLayout" name="gridLayout_4">
@@ -404,7 +404,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>250</y>
+       <y>260</y>
        <width>661</width>
        <height>170</height>
       </rect>
@@ -603,7 +603,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>250</y>
+       <y>260</y>
        <width>661</width>
        <height>170</height>
       </rect>
@@ -621,9 +621,9 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>160</y>
+       <y>150</y>
        <width>661</width>
-       <height>91</height>
+       <height>101</height>
       </rect>
      </property>
      <layout class="QGridLayout" name="gridLayout">
@@ -701,9 +701,9 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>160</y>
+       <y>146</y>
        <width>661</width>
-       <height>97</height>
+       <height>111</height>
       </rect>
      </property>
      <layout class="QGridLayout" name="gridLayout_3">
@@ -807,7 +807,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>250</y>
+       <y>260</y>
        <width>661</width>
        <height>170</height>
       </rect>
@@ -920,7 +920,7 @@
        <x>-10</x>
        <y>0</y>
        <width>701</width>
-       <height>421</height>
+       <height>441</height>
       </rect>
      </property>
      <property name="styleSheet">
@@ -930,9 +930,9 @@
       <property name="geometry">
        <rect>
         <x>98</x>
-        <y>145</y>
-        <width>65</width>
-        <height>90</height>
+        <y>151</y>
+        <width>67</width>
+        <height>92</height>
        </rect>
       </property>
       <property name="styleSheet">
@@ -948,7 +948,7 @@
         <x>10</x>
         <y>0</y>
         <width>691</width>
-        <height>421</height>
+        <height>441</height>
        </rect>
       </property>
       <property name="styleSheet">
@@ -962,7 +962,7 @@
       <property name="geometry">
        <rect>
         <x>293</x>
-        <y>280</y>
+        <y>300</y>
         <width>40</width>
         <height>30</height>
        </rect>
@@ -988,7 +988,7 @@ color: rgb(238, 238, 236);</string>
       <property name="geometry">
        <rect>
         <x>240</x>
-        <y>280</y>
+        <y>300</y>
         <width>40</width>
         <height>30</height>
        </rect>
@@ -1004,10 +1004,10 @@ color: rgb(238, 238, 236);</string>
      <widget class="QLabel" name="video_0">
       <property name="geometry">
        <rect>
-        <x>230</x>
-        <y>90</y>
-        <width>151</width>
-        <height>91</height>
+        <x>228</x>
+        <y>92</y>
+        <width>155</width>
+        <height>98</height>
        </rect>
       </property>
       <property name="text">
@@ -1018,7 +1018,7 @@ color: rgb(238, 238, 236);</string>
       <property name="geometry">
        <rect>
         <x>250</x>
-        <y>230</y>
+        <y>250</y>
         <width>61</width>
         <height>41</height>
        </rect>
@@ -1039,7 +1039,7 @@ color: rgb(238, 238, 236);</string>
       <property name="geometry">
        <rect>
         <x>235</x>
-        <y>325</y>
+        <y>345</y>
         <width>40</width>
         <height>35</height>
        </rect>
@@ -1068,7 +1068,7 @@ border-image: url(:/image/res/image/led_off.png);
       <property name="geometry">
        <rect>
         <x>290</x>
-        <y>325</y>
+        <y>345</y>
         <width>40</width>
         <height>35</height>
        </rect>
@@ -1096,7 +1096,7 @@ border-image: url(:/image/res/image/buzzer_off.png);
       <property name="geometry">
        <rect>
         <x>235</x>
-        <y>365</y>
+        <y>385</y>
         <width>40</width>
         <height>35</height>
        </rect>
@@ -1112,7 +1112,7 @@ border-image: url(:/image/res/image/buzzer_off.png);
       <property name="geometry">
        <rect>
         <x>290</x>
-        <y>365</y>
+        <y>385</y>
         <width>40</width>
         <height>35</height>
        </rect>
@@ -1135,7 +1135,7 @@ border-image: url(:/image/res/image/tv_on.png);
       <property name="geometry">
        <rect>
         <x>240</x>
-        <y>306</y>
+        <y>326</y>
         <width>35</width>
         <height>20</height>
        </rect>
@@ -1152,7 +1152,7 @@ color: rgb(238, 238, 236);</string>
       <property name="geometry">
        <rect>
         <x>293</x>
-        <y>306</y>
+        <y>326</y>
         <width>35</width>
         <height>20</height>
        </rect>
@@ -1180,45 +1180,13 @@ color: rgb(238, 238, 236);</string>
     </widget>
    </widget>
   </widget>
-  <widget class="QWidget" name="layoutWidget_2">
-   <property name="geometry">
-    <rect>
-     <x>747</x>
-     <y>426</y>
-     <width>161</width>
-     <height>41</height>
-    </rect>
-   </property>
-   <layout class="QHBoxLayout" name="horizontalLayout_4">
-    <item>
-     <spacer name="horizontalSpacer_2">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>40</width>
-        <height>20</height>
-       </size>
-      </property>
-     </spacer>
-    </item>
-    <item>
-     <widget class="QPushButton" name="Quit_SmartHome">
-      <property name="text">
-       <string>Quit</string>
-      </property>
-     </widget>
-    </item>
-   </layout>
-  </widget>
   <widget class="QPushButton" name="Key_SmartHome">
    <property name="geometry">
     <rect>
-     <x>800</x>
+     <x>850</x>
      <y>50</y>
-     <width>89</width>
-     <height>25</height>
+     <width>91</width>
+     <height>41</height>
     </rect>
    </property>
    <property name="text">
@@ -1228,10 +1196,10 @@ color: rgb(238, 238, 236);</string>
   <widget class="QPushButton" name="speech">
    <property name="geometry">
     <rect>
-     <x>780</x>
-     <y>310</y>
-     <width>101</width>
-     <height>31</height>
+     <x>840</x>
+     <y>230</y>
+     <width>111</width>
+     <height>41</height>
     </rect>
    </property>
    <property name="styleSheet">
@@ -1244,8 +1212,8 @@ color: rgb(238, 238, 236);</string>
   <widget class="QTextEdit" name="textEdit">
    <property name="geometry">
     <rect>
-     <x>763</x>
-     <y>270</y>
+     <x>830</x>
+     <y>190</y>
      <width>131</width>
      <height>31</height>
     </rect>
@@ -1259,15 +1227,15 @@ color: rgb(238, 238, 236);</string>
   <widget class="QLabel" name="label_2">
    <property name="geometry">
     <rect>
-     <x>760</x>
-     <y>340</y>
-     <width>151</width>
-     <height>91</height>
+     <x>800</x>
+     <y>290</y>
+     <width>211</width>
+     <height>131</height>
     </rect>
    </property>
    <property name="font">
     <font>
-     <pointsize>8</pointsize>
+     <pointsize>10</pointsize>
     </font>
    </property>
    <property name="styleSheet">
@@ -1279,6 +1247,19 @@ color: rgb(238, 238, 236);</string>
 报警器：开启报警，关闭报警
 电视：打开电视，关闭电视
 安防：打开安防，关闭安防</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="Quit_SmartHome">
+   <property name="geometry">
+    <rect>
+     <x>850</x>
+     <y>440</y>
+     <width>111</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>退出</string>
    </property>
   </widget>
  </widget>

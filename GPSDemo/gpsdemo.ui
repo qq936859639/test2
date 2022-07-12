@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>900</width>
-    <height>500</height>
+    <width>1024</width>
+    <height>553</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,8 +16,8 @@
   <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>20</y>
+     <x>30</x>
+     <y>80</y>
      <width>211</width>
      <height>461</height>
     </rect>
@@ -232,8 +232,8 @@
   <widget class="QWebEngineView" name="webView" native="true">
    <property name="geometry">
     <rect>
-     <x>370</x>
-     <y>20</y>
+     <x>460</x>
+     <y>80</y>
      <width>521</width>
      <height>461</height>
     </rect>
@@ -242,8 +242,8 @@
   <widget class="Line" name="line">
    <property name="geometry">
     <rect>
-     <x>350</x>
-     <y>20</y>
+     <x>400</x>
+     <y>80</y>
      <width>20</width>
      <height>461</height>
     </rect>
@@ -255,8 +255,8 @@
   <widget class="QWidget" name="verticalLayoutWidget">
    <property name="geometry">
     <rect>
-     <x>250</x>
-     <y>20</y>
+     <x>290</x>
+     <y>80</y>
      <width>101</width>
      <height>236</height>
     </rect>
@@ -315,8 +315,8 @@
   <widget class="QPushButton" name="gps_map">
    <property name="geometry">
     <rect>
-     <x>250</x>
-     <y>260</y>
+     <x>290</x>
+     <y>320</y>
      <width>101</width>
      <height>61</height>
     </rect>
@@ -328,8 +328,8 @@
   <widget class="Line" name="line_2">
    <property name="geometry">
     <rect>
-     <x>230</x>
-     <y>20</y>
+     <x>260</x>
+     <y>80</y>
      <width>20</width>
      <height>461</height>
     </rect>
@@ -338,12 +338,51 @@
     <enum>Qt::Vertical</enum>
    </property>
   </widget>
+  <widget class="QPushButton" name="quit">
+   <property name="geometry">
+    <rect>
+     <x>290</x>
+     <y>490</y>
+     <width>101</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>退出</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_12">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>9</y>
+     <width>1024</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>20</pointsize>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color: rgb(211, 215, 207);</string>
+   </property>
+   <property name="text">
+    <string>GSP/北斗     定位系统</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+  </widget>
   <zorder>webView</zorder>
   <zorder>layoutWidget</zorder>
   <zorder>line</zorder>
   <zorder>verticalLayoutWidget</zorder>
   <zorder>gps_map</zorder>
   <zorder>line_2</zorder>
+  <zorder>quit</zorder>
+  <zorder>label_12</zorder>
  </widget>
  <customwidgets>
   <customwidget>

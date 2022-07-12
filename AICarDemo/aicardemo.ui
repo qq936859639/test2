@@ -1037,7 +1037,6 @@
     <string/>
    </property>
   </widget>
-  <zorder>frame</zorder>
   <zorder>graphicsView</zorder>
   <zorder>connect</zorder>
   <zorder>Car_reset</zorder>
@@ -1056,6 +1055,7 @@
   <zorder>car_pole_1</zorder>
   <zorder>car_pole_2</zorder>
   <zorder>passengers</zorder>
+  <zorder>frame</zorder>
  </widget>
  <resources/>
  <connections/>

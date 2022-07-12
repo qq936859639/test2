@@ -6,6 +6,7 @@ CameraDemo::CameraDemo(QWidget *parent, CameraThread *camerathread, ModbusThread
       QWidget(parent),ui(new Ui::test)
 {
     ui->setupUi(this);
+
     faces_flag = false;
     connect_flag = false;
     this->cameraThread = camerathread;
@@ -236,4 +237,21 @@ void CameraDemo::on_faceTrack_clicked()
         ui->faceTrack->setText(tr("人脸追踪"));
     else
         ui->faceTrack->setText(tr("取消追踪"));
+}
+
+void CameraDemo::on_quit_clicked()
+{
+    faces_flag = false;
+    connect_flag = false;
+    emit Camera_connect(ui->lineEdit->text());
+
+    disconnect(cameraThread, SIGNAL(Collect_complete(QImage)),this,SLOT(videoDisplay(QImage)));
+    disconnect(modbusThread, SIGNAL(on_read_data(int, int)),this,SLOT(Camera_read_data(int, int)));
+
+    disconnect(this, SIGNAL(Camera_connect(QString)),modbusThread,SLOT(on_connect(QString)));
+    disconnect(this, SIGNAL(Camera_writeRead(int, quint16, quint16)),modbusThread,SLOT(on_writeRead(int, quint16, quint16)));
+
+    disconnect(modbusThread, SIGNAL(on_change_connet(bool)),this,SLOT(Camera_change_connet(bool)));
+
+    CameraDemo::deleteLater();//关闭当前窗口
 }

@@ -58,6 +58,8 @@ private slots:
 
     void on_faceTrack_clicked();
 
+    void on_quit_clicked();
+
 protected:
     void closeEvent(QCloseEvent *event);
 

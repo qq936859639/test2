@@ -215,3 +215,8 @@ void  GPSDemo::GPS_DB_PARSE(QByteArray temp3)
     ui->headlineEdit->setText(QString("%1").arg(GPS->high));
 //    delete GPS;
 }
+
+void GPSDemo::on_quit_clicked()
+{
+    GPSDemo::deleteLater();//关闭当前窗口
+}
