@@ -425,75 +425,6 @@ border-image: url(:/image/res/image/keyboard.png) 0 0 3 0;
     <item>
      <layout class="QVBoxLayout" name="verticalLayout_5">
       <item>
-       <layout class="QVBoxLayout" name="verticalLayout_4">
-        <item>
-         <widget class="QPushButton" name="btgps">
-          <property name="minimumSize">
-           <size>
-            <width>71</width>
-            <height>91</height>
-           </size>
-          </property>
-          <property name="cursor">
-           <cursorShape>PointingHandCursor</cursorShape>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QPushButton{
-border-image: url(:/image/res/image/sensor.png);
-}
-
-QPushButton:pressed{
-border-width:3px;
-border-image: url(:/image/res/image/sensor.png) 0 0 3 0;
-}</string>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <spacer name="verticalSpacer_9">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>5</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
-         <widget class="QPushButton" name="btsonor">
-          <property name="minimumSize">
-           <size>
-            <width>71</width>
-            <height>91</height>
-           </size>
-          </property>
-          <property name="cursor">
-           <cursorShape>PointingHandCursor</cursorShape>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QPushButton{
-border-image: url(:/image/res/image/sensor.png);
-}
-
-QPushButton:pressed{
-border-width:3px;
-border-image: url(:/image/res/image/sensor.png) 0 0 3 0;
-}</string>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item>
        <spacer name="verticalSpacer_10">
         <property name="orientation">
          <enum>Qt::Vertical</enum>
@@ -524,26 +455,13 @@ border-image: url(:/image/res/image/sensor.png) 0 0 3 0;
     <item>
      <layout class="QVBoxLayout" name="verticalLayout_7">
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_3">
-        <item>
-         <spacer name="horizontalSpacer_4">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>17</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
+       <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="1,1,0,0">
         <item>
          <widget class="QPushButton" name="btspeaker">
           <property name="minimumSize">
            <size>
             <width>71</width>
-            <height>121</height>
+            <height>200</height>
            </size>
           </property>
           <property name="cursor">
@@ -565,24 +483,11 @@ border-image: url(:/image/res/image/speaker.png) 0 0 3 0;
          </widget>
         </item>
         <item>
-         <spacer name="horizontalSpacer_3">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>18</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
          <widget class="QPushButton" name="btspeaker2">
           <property name="minimumSize">
            <size>
-            <width>70</width>
-            <height>121</height>
+            <width>60</width>
+            <height>200</height>
            </size>
           </property>
           <property name="cursor">
@@ -604,13 +509,69 @@ border-image: url(:/image/res/image/speaker.png) 0 0 3 0;
          </widget>
         </item>
         <item>
+         <layout class="QVBoxLayout" name="verticalLayout_4">
+          <item>
+           <widget class="QPushButton" name="btgps">
+            <property name="minimumSize">
+             <size>
+              <width>71</width>
+              <height>91</height>
+             </size>
+            </property>
+            <property name="cursor">
+             <cursorShape>PointingHandCursor</cursorShape>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton{
+border-image: url(:/image/res/image/sensor.png);
+}
+
+QPushButton:pressed{
+border-width:3px;
+border-image: url(:/image/res/image/sensor.png) 0 0 3 0;
+}</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="btsonor">
+            <property name="minimumSize">
+             <size>
+              <width>71</width>
+              <height>91</height>
+             </size>
+            </property>
+            <property name="cursor">
+             <cursorShape>PointingHandCursor</cursorShape>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton{
+border-image: url(:/image/res/image/sensor.png);
+}
+
+QPushButton:pressed{
+border-width:3px;
+border-image: url(:/image/res/image/sensor.png) 0 0 3 0;
+}</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
          <spacer name="horizontalSpacer_5">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
           <property name="sizeHint" stdset="0">
            <size>
-            <width>28</width>
+            <width>13</width>
             <height>20</height>
            </size>
           </property>
@@ -626,21 +587,54 @@ border-image: url(:/image/res/image/speaker.png) 0 0 3 0;
         <property name="sizeHint" stdset="0">
          <size>
           <width>20</width>
-          <height>5</height>
+          <height>13</height>
          </size>
         </property>
        </spacer>
       </item>
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_4">
+       <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="10,0">
         <item>
          <layout class="QVBoxLayout" name="verticalLayout_6">
+          <property name="spacing">
+           <number>0</number>
+          </property>
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
           <item>
            <widget class="QPushButton" name="btiotdht">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="minimumSize">
              <size>
-              <width>211</width>
-              <height>88</height>
+              <width>220</width>
+              <height>70</height>
+             </size>
+            </property>
+            <property name="sizeIncrement">
+             <size>
+              <width>0</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="baseSize">
+             <size>
+              <width>0</width>
+              <height>0</height>
              </size>
             </property>
             <property name="cursor">
@@ -679,7 +673,7 @@ border-image: url(:/image/res/image/wireless_node.png) 0 0 3 0;
             <property name="minimumSize">
              <size>
               <width>211</width>
-              <height>88</height>
+              <height>70</height>
              </size>
             </property>
             <property name="cursor">
@@ -718,7 +712,7 @@ border-image: url(:/image/res/image/wireless_node.png) 0 0 3 0;
             <property name="minimumSize">
              <size>
               <width>211</width>
-              <height>88</height>
+              <height>70</height>
              </size>
             </property>
             <property name="cursor">
@@ -757,7 +751,7 @@ border-image: url(:/image/res/image/wireless_node.png) 0 0 3 0;
             <property name="minimumSize">
              <size>
               <width>211</width>
-              <height>88</height>
+              <height>70</height>
              </size>
             </property>
             <property name="cursor">
@@ -800,7 +794,7 @@ border-image: url(:/image/res/image/wireless_node.png) 0 0 3 0;
           </property>
           <property name="sizeHint" stdset="0">
            <size>
-            <width>28</width>
+            <width>10</width>
             <height>20</height>
            </size>
           </property>
