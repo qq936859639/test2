@@ -385,10 +385,15 @@ void AICarDemo::Car_read_data(int address, int data)
     }
     if(address == 0x0018)
     {
-        if(data < 50 )
+        if(data < 50 ){
             radar_data = "有人";
-        else
+            if(Car_END_flag==0){
+                Car_Reset();
+            }
+        }
+        else{
             radar_data = "无人";
+        }
         radar_data = radar_data + ",  距离cm:" + QString::number(data);
         ui->radar_data->setText(radar_data);
     }
@@ -736,6 +741,9 @@ void AICarDemo::Uart_ReadData()
                             ul_play_flag = 1;
                             video_play->start();
                         }
+                        if(Car_END_flag==0){
+                            Car_Reset();
+                        }
                     }
                 }
                 status = 0;
@@ -805,6 +813,7 @@ void AICarDemo::AutoPilotSystem()
     if(Car_END_flag == 2||Car_END_flag== 3||Car_END_flag== 4){
         Car_Map_Mall(point);
     }
+
     //    Car_Map_Home(point);//保留路径
 }
 void AICarDemo::Car_Map_Home(QPointF point)
