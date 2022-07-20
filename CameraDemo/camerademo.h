@@ -33,6 +33,8 @@ public:
     bool faces_flag;
     bool connect_flag;
 
+    void get_ip();
+    void save_ip();
     void keyPressEvent(QKeyEvent *event) override;
 signals:
     void Show_complete();

@@ -50,6 +50,7 @@ CameraDemo::CameraDemo(QWidget *parent, CameraThread *camerathread, ModbusThread
     {
         perror("不能加载指定的xml文件");
     }
+    get_ip();
 }
 
 CameraDemo::~CameraDemo(){
@@ -176,7 +177,6 @@ void CameraDemo::Camera_change_connet(bool data)
         ui->down->setDisabled(true);
         ui->left->setDisabled(true);
         ui->right->setDisabled(true);
-
     }
     if(data == true){
         connect_flag = true;
@@ -189,6 +189,7 @@ void CameraDemo::Camera_change_connet(bool data)
         ui->down->setDisabled(false);
         ui->left->setDisabled(false);
         ui->right->setDisabled(false);
+        save_ip();
     }
 
 }
@@ -238,7 +239,38 @@ void CameraDemo::on_faceTrack_clicked()
     else
         ui->faceTrack->setText(tr("取消追踪"));
 }
+void CameraDemo::get_ip()
+{
+    // QFile 构造函数中打开文件
+    QFile file("./data/ip.sh");
+    // 只读打开文件
+    if (file.open(QIODevice::ReadOnly))
+    {
+        char buffer[100];
+        // 返回读成功的字节数，失败返回-1
+        qint64 lineLen = file.readLine(buffer, sizeof(buffer));
+        if (lineLen != -1)
+        {
+            ui->lineEdit->setText(buffer);
+        }
+        file.close();
+    }
 
+}
+void CameraDemo::save_ip()
+{
+    QString ip = ui->lineEdit->text();
+    QFile *myFile;
+    QTextStream *outFile;
+    QString filename="./data/ip.sh";
+    myFile=new QFile(filename);
+    if(myFile->open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        outFile=new QTextStream(myFile);
+        *outFile<<ip;
+        myFile->close();
+    }
+}
 void CameraDemo::on_quit_clicked()
 {
     faces_flag = false;

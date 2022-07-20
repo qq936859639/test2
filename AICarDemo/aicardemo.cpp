@@ -4,6 +4,7 @@
 #include <QDebug>
 #include <math.h>
 #include <QSound>//声音
+#include <QFile>
 //#include <fstream>   //文本读写
 
 
@@ -34,6 +35,9 @@ AICarDemo::AICarDemo(QWidget *parent, CameraThread *camerathread, ModbusThread *
     car_play_flag = 0;
     ul_play_flag = 0;
     Car_END_flag = 0;
+
+    Car_state_flag = 0;
+    Car_state1_flag = 0;
 
     car_state = new QTimer(this);
     car_state->setInterval(500);
@@ -77,6 +81,8 @@ AICarDemo::AICarDemo(QWidget *parent, CameraThread *camerathread, ModbusThread *
     }
     ui->tabWidget->setDisabled(true);
     ui->Car_reset->setDisabled(true);
+
+    get_ip();
 }
 
 AICarDemo::~AICarDemo()
@@ -200,7 +206,7 @@ void AICarDemo::on_accelerate_clicked()
         Car_AD_flag = -5;
 
     if(Car_AD_flag == 0){
-        Car_AD_Rate_num -= 10;
+        Car_AD_Rate_num -= 50;
         emit Car_writeRead(CAR_COMMAND_ADDR, 1, (CAR_LEFT_DATA | CAR_RIGHT_DATA) & 0x0F);//小车后退复位
 
         emit Car_writeRead(CAR_LEFT_REAR_LED_DATA, 1, 0);
@@ -209,15 +215,15 @@ void AICarDemo::on_accelerate_clicked()
     }
 
     if(Car_AD_flag < 0){
-        Car_AD_Rate_num += 10;
-        if(Car_AD_Rate_num > 550)
-            Car_AD_Rate_num = 550;
+        Car_AD_Rate_num += 50;
+        if(Car_AD_Rate_num > 900)
+            Car_AD_Rate_num = 900;
         emit Car_writeRead(CAR_ACCELERATE_ADDR_DATA, 1, Car_AD_Rate_num);
         emit Car_writeRead(CAR_COMMAND_ADDR, 1, CAR_ACCELERATE_DATA | CAR_LEFT_DATA | CAR_RIGHT_DATA);
     }
 
     if(Car_AD_flag > 0){
-        Car_AD_Rate_num -= 10;
+        Car_AD_Rate_num -= 50;
         if(Car_AD_Rate_num < 500)
             Car_AD_Rate_num = 500;
         emit Car_writeRead(CAR_DECELERATE_ADDR_DATA, 1, Car_AD_Rate_num);//小车后退
@@ -238,14 +244,14 @@ void AICarDemo::on_decelerate_clicked()
         Car_AD_flag = 5;
 
     if(Car_AD_flag == 0){
-        Car_AD_Rate_num -= 10;
+        Car_AD_Rate_num -= 50;
         emit Car_writeRead(CAR_COMMAND_ADDR, 1, (CAR_LEFT_DATA | CAR_RIGHT_DATA) & 0x0F);//小车后退复位
     }
 
     if(Car_AD_flag > 0){
-        Car_AD_Rate_num += 10;
-        if(Car_AD_Rate_num > 550)
-            Car_AD_Rate_num = 550;
+        Car_AD_Rate_num += 50;
+        if(Car_AD_Rate_num > 900)
+            Car_AD_Rate_num = 900;
         emit Car_writeRead(CAR_DECELERATE_ADDR_DATA, 1, Car_AD_Rate_num);
         emit Car_writeRead(CAR_COMMAND_ADDR, 1, CAR_DECELERATE_DATA | CAR_LEFT_DATA | CAR_RIGHT_DATA);
 //        qDebug()<<"cjf LL1 num"<<Car_turnLeft_Angle_num <<"time"<<Car_turn_flag;
@@ -255,7 +261,7 @@ void AICarDemo::on_decelerate_clicked()
     }
 
     if(Car_AD_flag < 0){
-        Car_AD_Rate_num -= 10;
+        Car_AD_Rate_num -= 50;
         if(Car_AD_Rate_num < 500)
             Car_AD_Rate_num = 500;
         emit Car_writeRead(CAR_ACCELERATE_ADDR_DATA, 1, Car_AD_Rate_num);//小车后退
@@ -285,15 +291,47 @@ void AICarDemo::Car_change_connet(bool data)
         Car_Reset();
         car_state->start();
         ui->frame->setVisible(false);
+        save_ip();
     }
 
+}
+void AICarDemo::get_ip()
+{
+    // QFile 构造函数中打开文件
+    QFile file("./data/ip.sh");
+    // 只读打开文件
+    if (file.open(QIODevice::ReadOnly))
+    {
+        char buffer[100];
+        // 返回读成功的字节数，失败返回-1
+        qint64 lineLen = file.readLine(buffer, sizeof(buffer));
+        if (lineLen != -1)
+        {
+            ui->lineEdit->setText(buffer);
+        }
+        file.close();
+    }
+}
+void AICarDemo::save_ip()
+{
+    QString ip = ui->lineEdit->text();
+    QFile *myFile;
+    QTextStream *outFile;
+    QString filename="./data/ip.sh";
+    myFile=new QFile(filename);
+    if(myFile->open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        outFile=new QTextStream(myFile);
+        *outFile<<ip;
+        myFile->close();
+    }
 }
 void AICarDemo::Car_Reset()
 {
     Car_turn_flag = 0;
     Car_AD_flag = 0;
     Car_turn_LR_Angle_num = 750;
-    Car_AD_Rate_num = 450;
+    Car_AD_Rate_num = 500;
     car->reset();
     emit Car_writeRead(CAR_COMMAND_ADDR, 1, 0);//小车复位
     emit Car_writeRead(CAR_COMMAND_LED_ADDR, 1, 0);//小车LED复位
@@ -312,6 +350,8 @@ void AICarDemo::on_Car_reset_clicked()
     ul_play_flag = 0;
     Car_END_flag = 0;
     rgy_light_play_flag = 0;
+    Car_state_flag = 0;
+    Car_state1_flag = 0;
 
     ui->townhall->setEnabled(true);
     ui->school->setEnabled(true);
@@ -385,16 +425,30 @@ void AICarDemo::Car_read_data(int address, int data)
     }
     if(address == 0x0018)
     {
-        if(data < 50 ){
-            radar_data = "有人";
-            if(Car_END_flag==0){
+        if(0 < data && data < 30){
+            if(Car_END_flag==0 && Car_AD_flag < 0 && Car_state_flag == 0){
                 Car_Reset();
+                Car_state_flag = 1;
+
+                if(ul_play_flag == 0){
+                    QSound *success = new QSound("./mp3/radar_obstacles.wav", this);
+                    success->play();
+                    ul_play_flag = 1;
+                    video_play->start();
+                }
             }
         }
         else{
-            radar_data = "无人";
+            if(0 < Car_AD_flag){
+                Car_state_flag = 0;
+            }
+            if(Car_END_flag==0 && Car_state_flag == 1){
+                on_accelerate_clicked();
+                Car_state_flag = 0;
+            }
+
         }
-        radar_data = radar_data + ",  距离cm:" + QString::number(data);
+        radar_data = QString::number(data);
         ui->radar_data->setText(radar_data);
     }
 }
@@ -735,14 +789,25 @@ void AICarDemo::Uart_ReadData()
                     {
                         //ui->ultrasound_data->setText(tr("数据无效"));
                     }else if (240 < temp_data && temp_data<500){
-                        if(ul_play_flag == 0){
-                            QSound *success = new QSound("./mp3/ur_obstacles.wav", this);
-                            success->play();
-                            ul_play_flag = 1;
-                            video_play->start();
-                        }
-                        if(Car_END_flag==0){
+                        if(Car_END_flag==0 && Car_AD_flag > 0 && Car_state1_flag == 0){
                             Car_Reset();
+                            Car_state1_flag = 1;
+
+                            if(ul_play_flag == 0){
+                                QSound *success = new QSound("./mp3/ur_obstacles.wav", this);
+                                success->play();
+                                ul_play_flag = 1;
+                                video_play->start();
+                            }
+                        }
+                    }else if(temp_data > 500){
+                        if(Car_AD_flag < 0){
+                            Car_state1_flag = 0;
+                        }
+
+                        if(Car_END_flag==0 && Car_state1_flag == 1){
+                            on_decelerate_clicked();
+                            Car_state1_flag = 0;
                         }
                     }
                 }

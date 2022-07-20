@@ -52,7 +52,8 @@ public:
 
     QImage Mat2QImage(const Mat &mat);
     Mat QImage2Mat(const QImage& image);
-
+    void get_ip();
+    void save_ip();
 signals:
     void Car_connect(const QString ip);
     void Car_writeRead(int startAddress, quint16 numberOfEntries, quint16 data);
@@ -133,6 +134,9 @@ private:
     void Car_Map_Mall(QPointF point);
     void Car_Map_TownHall(QPointF point);
     quint16 Car_END_flag;
+
+    quint8 Car_state_flag;
+    quint8 Car_state1_flag;
 };
 
 #endif // AICARDEMO_H

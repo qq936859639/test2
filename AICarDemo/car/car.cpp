@@ -10,7 +10,7 @@ QRectF Car::boundingRect() const
 Car::Car() : color(Qt::green), wheelsAngle(0), speed(0)
 {
     startTimer(1000 / 33);
-    setFlag(QGraphicsItem::ItemIsMovable, true);
+//    setFlag(QGraphicsItem::ItemIsMovable, true);
     setFlag(QGraphicsItem::ItemIsFocusable, true);
 }
 
