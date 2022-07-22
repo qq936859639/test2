@@ -105,7 +105,7 @@
     </size>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>1</number>
    </property>
    <property name="iconSize">
     <size>
@@ -686,7 +686,7 @@
     <widget class="QGroupBox" name="URBox">
      <property name="geometry">
       <rect>
-       <x>40</x>
+       <x>30</x>
        <y>240</y>
        <width>191</width>
        <height>61</height>

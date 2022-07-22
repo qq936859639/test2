@@ -97,6 +97,9 @@ void gps_parse(char *line,GPS_INFO *GPS)
                 speed_tmp = Get_Float_Number(&buf[GetComma(7, buf)]); //速度(单位：海里/时)
                 GPS->speed = speed_tmp * 1.85; //1海里=1.85公里
                 GPS->direction = Get_Float_Number(&buf[GetComma(8, buf)]); //角度
+#ifdef USE_BEIJING_TIMEZONE
+        UTC2BTC(&GPS->D);
+#endif
             }
         }
 
@@ -132,12 +135,16 @@ void gps_parse(char *line,GPS_INFO *GPS)
 
                     GPS->high     = get_double_number(&buf[GetComma(9,buf)]);
                     GPS->satellite = Get_Int_Number(&buf[GetComma(7, buf)]);
-                }
-            }
-        }
+
 #ifdef USE_BEIJING_TIMEZONE
         UTC2BTC(&GPS->D);
 #endif
+                }
+            }
+        }
+//#ifdef USE_BEIJING_TIMEZONE
+//        UTC2BTC(&GPS->D);
+//#endif
     }
 }
 
