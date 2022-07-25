@@ -104,6 +104,7 @@ void AICarDemo::closeEvent(QCloseEvent *event)
 
     disconnect(cameraThread, SIGNAL(Collect_complete(QImage)),this,SLOT(Car_videoDisplay(QImage)));
     disconnect(AutoPilot,SIGNAL(timeout()),this,SLOT(AutoPilotSystem()));
+rplidar->rplidar_close();
 }
 
 void AICarDemo::on_turnLeft_clicked()
@@ -1448,4 +1449,23 @@ void AICarDemo::on_ul_clicked()
         Uart_Close();
         ui->ul->setText(tr("打开"));
     }
+}
+
+void AICarDemo::on_rplidar_clicked()
+{
+    rplidar = new RPLIDAR();
+//    rplidar->rplidar_main();
+    rplidar->rplidar_open();
+
+}
+
+void AICarDemo::on_rplidar_data_clicked()
+{
+    rplidar->rplidar_ranges_flag = 0;
+        rplidar->rplidar_read();
+    qDebug()<<"cjf "<<
+        rplidar->rplidar_theta<<
+        rplidar->rplidar_dist<<
+        rplidar->rplidar_quality;
+    qDebug()<<"car status"<<rplidar->rplidar_ranges_flag;
 }

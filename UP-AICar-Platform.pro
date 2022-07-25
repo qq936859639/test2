@@ -19,6 +19,7 @@ TEMPLATE = app
 SOURCES += main.cpp\
         AICarDemo/aicardemo.cpp \
         AICarDemo/car/car.cpp \
+        AICarDemo/rplidar/rplidar.cpp \
         CameraDemo/camerademo.cpp \
         GPSDemo/gps_bd/gps.c \
         KeyboardDemo/keyboarddemo.cpp \
@@ -44,6 +45,12 @@ SOURCES += main.cpp\
 HEADERS  += mainwindow.h \
     AICarDemo/aicardemo.h \
     AICarDemo/car/car.h \
+    AICarDemo/rplidar/hal/types.h \
+    AICarDemo/rplidar/rplidar.h \
+    AICarDemo/rplidar/rplidar_cmd.h \
+    AICarDemo/rplidar/rplidar_driver.h \
+    AICarDemo/rplidar/rplidar_protocol.h \
+    AICarDemo/rplidar/rptypes.h \
     CameraDemo/camerademo.h \
     GPSDemo/gps_bd/gps.h \
     KeyboardDemo/keyboarddemo.h \
@@ -145,4 +152,10 @@ unix:!macx: LIBS += -L$$PWD/lib/lpr/x64/ -lmlpr -lncnn
 INCLUDEPATH += $$PWD/lpr/include/ncnn
 DEPENDPATH += $$PWD/lib/lpr/x64
 unix:!macx: PRE_TARGETDEPS += $$PWD/lib/lpr/x64/
+#激光雷达库
+unix:!macx: LIBS += -L$$PWD/lib/rplidar/x64/ -lrplidar_sdk
+INCLUDEPATH += $$PWD/lib/rplidar/x64
+DEPENDPATH += $$PWD/lib/rplidar/x64
+unix:!macx: PRE_TARGETDEPS += $$PWD/lib/rplidar/x64/
 }
+

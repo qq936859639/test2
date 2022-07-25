@@ -128,7 +128,7 @@
       <rect>
        <x>10</x>
        <y>10</y>
-       <width>221</width>
+       <width>256</width>
        <height>101</height>
       </rect>
      </property>
@@ -1037,6 +1037,32 @@
     <string/>
    </property>
   </widget>
+  <widget class="QPushButton" name="rplidar_data">
+   <property name="geometry">
+    <rect>
+     <x>630</x>
+     <y>380</y>
+     <width>89</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>PushButton</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="rplidar">
+   <property name="geometry">
+    <rect>
+     <x>490</x>
+     <y>380</y>
+     <width>89</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>PushButton</string>
+   </property>
+  </widget>
   <zorder>graphicsView</zorder>
   <zorder>school</zorder>
   <zorder>connect</zorder>
@@ -1056,6 +1082,8 @@
   <zorder>car_pole_2</zorder>
   <zorder>passengers</zorder>
   <zorder>frame</zorder>
+  <zorder>rplidar_data</zorder>
+  <zorder>rplidar</zorder>
  </widget>
  <resources/>
  <connections/>

@@ -22,6 +22,7 @@
 #include <QSerialPortInfo>
 #include <QSerialPort>
 
+#include "rplidar/rplidar.h"
 using namespace std;
 using namespace cv;
 
@@ -54,6 +55,8 @@ public:
     Mat QImage2Mat(const QImage& image);
     void get_ip();
     void save_ip();
+
+    RPLIDAR *rplidar;
 signals:
     void Car_connect(const QString ip);
     void Car_writeRead(int startAddress, quint16 numberOfEntries, quint16 data);
@@ -91,6 +94,10 @@ private slots:
     void on_gym_clicked();
 
     void on_ul_clicked();
+
+    void on_rplidar_clicked();
+
+    void on_rplidar_data_clicked();
 
 protected:
     void closeEvent(QCloseEvent *event);
