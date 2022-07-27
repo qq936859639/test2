@@ -1478,6 +1478,7 @@ void AICarDemo::on_rplidar_clicked()
             pm->start();
         }
     }else{
+        Car_Reset();
         ui->rplidar->setText(tr("打开"));
         Car_rplidar_state->stop();
         pm->stop();
