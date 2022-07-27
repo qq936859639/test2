@@ -6,7 +6,7 @@
 #include <QSound>//声音
 #include <QFile>
 //#include <fstream>   //文本读写
-
+#include <QMovie>
 
 AICarDemo::AICarDemo(QWidget *parent, CameraThread *camerathread, ModbusThread *modbusthread) :
     QWidget(parent),
@@ -83,6 +83,16 @@ AICarDemo::AICarDemo(QWidget *parent, CameraThread *camerathread, ModbusThread *
     ui->Car_reset->setDisabled(true);
 
     get_ip();
+
+    rplidar = new RPLIDAR();
+    Car_rplidar_flag = 0;
+    Car_rplidar_flag_stop = 0;
+    Car_rplidar_state = new QTimer(this);
+    Car_rplidar_state->setInterval(1000);
+    connect(Car_rplidar_state,SIGNAL(timeout()),this,SLOT(rplidar_data()));
+    pm = new QMovie(":/image/res/image/rplidar_0.gif");
+    ui->rplidar_0->setScaledContents(true);
+    ui->rplidar_0->setMovie(pm);
 }
 
 AICarDemo::~AICarDemo()
@@ -104,7 +114,10 @@ void AICarDemo::closeEvent(QCloseEvent *event)
 
     disconnect(cameraThread, SIGNAL(Collect_complete(QImage)),this,SLOT(Car_videoDisplay(QImage)));
     disconnect(AutoPilot,SIGNAL(timeout()),this,SLOT(AutoPilotSystem()));
-rplidar->rplidar_close();
+    if(ui->rplidar->text()=="断开")
+        rplidar->rplidar_close();
+    Car_rplidar_state->stop();
+    pm->stop();
 }
 
 void AICarDemo::on_turnLeft_clicked()
@@ -353,6 +366,7 @@ void AICarDemo::on_Car_reset_clicked()
     rgy_light_play_flag = 0;
     Car_state_flag = 0;
     Car_state1_flag = 0;
+    Car_rplidar_flag_stop = 0;
 
     ui->townhall->setEnabled(true);
     ui->school->setEnabled(true);
@@ -1453,19 +1467,98 @@ void AICarDemo::on_ul_clicked()
 
 void AICarDemo::on_rplidar_clicked()
 {
-    rplidar = new RPLIDAR();
-//    rplidar->rplidar_main();
-    rplidar->rplidar_open();
-
+    if(ui->rplidar->text()=="打开")
+    {
+        if(rplidar->rplidar_open()==0){
+            ui->rplidar->setText(tr("断开"));
+            on_Car_reset_clicked();
+            Car_rplidar_state->start();
+            pm->start();
+        }
+    }else{
+        rplidar->rplidar_close();
+        ui->rplidar->setText(tr("打开"));
+        Car_rplidar_state->stop();
+        pm->stop();
+    }
 }
 
-void AICarDemo::on_rplidar_data_clicked()
+void AICarDemo::rplidar_data()
 {
-    rplidar->rplidar_ranges_flag = 0;
+    if(ui->rplidar->text()=="断开" && Car_END_flag==0)
+    {
         rplidar->rplidar_read();
-    qDebug()<<"cjf "<<
-        rplidar->rplidar_theta<<
-        rplidar->rplidar_dist<<
-        rplidar->rplidar_quality;
-    qDebug()<<"car status"<<rplidar->rplidar_ranges_flag;
+
+        qDebug()<<"cjf:  "<<Car_rplidar_flag << "  :"<<rplidar->rplidar_ranges_flag;
+        if(Car_rplidar_flag == rplidar->rplidar_ranges_flag && rplidar->rplidar_ranges_flag != 0)
+        {
+            return;
+        }
+        if(Car_rplidar_flag !=0)
+        {
+            Car_rplidar_flag_stop = 0;
+        }
+        Car_rplidar_flag = rplidar->rplidar_ranges_flag;
+        
+        if(rplidar->rplidar_ranges_flag == 0x00 &&Car_rplidar_flag_stop == 0)//
+        {
+            Car_Reset();
+            on_accelerate_clicked();
+            Car_rplidar_flag_stop = 1;
+            ui->rplidar_1->setStyleSheet("");
+            ui->rplidar_2->setStyleSheet("");
+            ui->rplidar_3->setStyleSheet("");
+            ui->rplidar_4->setStyleSheet("");
+        }else if(rplidar->rplidar_ranges_flag == 0x01)//前
+        {
+            Car_Reset();
+            on_decelerate_clicked();
+            ui->rplidar_1->setStyleSheet("border-image:url(:/image/res/image/rplidar_1.png);");
+        }else if(rplidar->rplidar_ranges_flag == 0x02){//右
+            on_turnLeft_clicked();
+            ui->rplidar_2->setStyleSheet("border-image:url(:/image/res/image/rplidar_2.png);");
+        }else if(rplidar->rplidar_ranges_flag == 0x04){//后
+            Car_Reset();
+            ui->rplidar_3->setStyleSheet("border-image:url(:/image/res/image/rplidar_3.png);");
+        }else if(rplidar->rplidar_ranges_flag == 0x08){//左
+            on_turnRight_clicked();
+            ui->rplidar_4->setStyleSheet("border-image:url(:/image/res/image/rplidar_4.png);");
+        }else if(rplidar->rplidar_ranges_flag == 0x03){//前右
+            on_turnLeft_clicked();
+            ui->rplidar_1->setStyleSheet("border-image:url(:/image/res/image/rplidar_1.png);");
+            ui->rplidar_2->setStyleSheet("border-image:url(:/image/res/image/rplidar_2.png);");
+        }else if(rplidar->rplidar_ranges_flag == 0x06){//右后
+            on_turnLeft_clicked();
+            ui->rplidar_2->setStyleSheet("border-image:url(:/image/res/image/rplidar_2.png);");
+            ui->rplidar_3->setStyleSheet("border-image:url(:/image/res/image/rplidar_3.png);");
+        }else if(rplidar->rplidar_ranges_flag == 0x0C){//后左
+            on_turnRight_clicked();
+            ui->rplidar_3->setStyleSheet("border-image:url(:/image/res/image/rplidar_3.png);");
+            ui->rplidar_4->setStyleSheet("border-image:url(:/image/res/image/rplidar_4.png);");
+        }else if(rplidar->rplidar_ranges_flag == 0x09){//左前
+            on_turnRight_clicked();
+            ui->rplidar_4->setStyleSheet("border-image:url(:/image/res/image/rplidar_4.png);");
+            ui->rplidar_1->setStyleSheet("border-image:url(:/image/res/image/rplidar_1.png);");
+        }else if(rplidar->rplidar_ranges_flag == 0x0B){//左前右
+            on_decelerate_clicked();
+            ui->rplidar_4->setStyleSheet("border-image:url(:/image/res/image/rplidar_4.png);");
+            ui->rplidar_1->setStyleSheet("border-image:url(:/image/res/image/rplidar_1.png);");
+            ui->rplidar_2->setStyleSheet("border-image:url(:/image/res/image/rplidar_2.png);");
+        }else if(rplidar->rplidar_ranges_flag == 0x0A){//左右
+            Car_Reset();
+            ui->rplidar_2->setStyleSheet("border-image:url(:/image/res/image/rplidar_2.png);");
+            ui->rplidar_4->setStyleSheet("border-image:url(:/image/res/image/rplidar_4.png);");
+        }else if(rplidar->rplidar_ranges_flag == 0x05){//前后
+            Car_Reset();
+            ui->rplidar_1->setStyleSheet("border-image:url(:/image/res/image/rplidar_1.png);");
+            ui->rplidar_3->setStyleSheet("border-image:url(:/image/res/image/rplidar_3.png);");
+        }else if(rplidar->rplidar_ranges_flag == 0x0B){//前右后左
+            on_decelerate_clicked();
+            ui->rplidar_1->setStyleSheet("border-image:url(:/image/res/image/rplidar_1.png);");
+            ui->rplidar_2->setStyleSheet("border-image:url(:/image/res/image/rplidar_2.png);");
+            ui->rplidar_3->setStyleSheet("border-image:url(:/image/res/image/rplidar_3.png);");
+            ui->rplidar_4->setStyleSheet("border-image:url(:/image/res/image/rplidar_4.png);");
+        }
+
+    }
 }

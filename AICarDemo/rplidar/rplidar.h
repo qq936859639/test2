@@ -53,15 +53,14 @@ public:
     int rplidar_open();
     int rplidar_read();
     int rplidar_close();
-    int rplidar_main();
-
-    float rplidar_theta;
-    float rplidar_dist;
-    uint8_t rplidar_quality;
 
     uint8_t rplidar_ranges_flag;
 private:
     u_result     op_result;
     RPlidarDriver *drv;
+
+    float rplidar_theta;
+    float rplidar_dist;
+    uint8_t rplidar_quality;
 };
 #endif // RPLIDAR_H

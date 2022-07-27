@@ -81,7 +81,6 @@ void ctrlc(int)
     ctrl_c_pressed = true;
 }
 
-//int RPLIDAR::main1(int argc, const char * argv[]) {
 int RPLIDAR::rplidar_open() {
     const char * opt_com_path = NULL;
     _u32         baudrateArray[2] = {115200, 256000};
@@ -174,7 +173,7 @@ int RPLIDAR::rplidar_open() {
         //goto on_finished;
         RPlidarDriver::DisposeDriver(drv);
         drv = NULL;
-        return 0;
+        return -1;
     }
 
     // print out the device serial number, firmware and hardware version number..
@@ -197,7 +196,7 @@ int RPLIDAR::rplidar_open() {
 //        goto on_finished;
         RPlidarDriver::DisposeDriver(drv);
         drv = NULL;
-        return 0;
+        return -1;
     }
 
     signal(SIGINT, ctrlc);
@@ -205,7 +204,7 @@ int RPLIDAR::rplidar_open() {
     drv->startMotor();
     // start scan...
     drv->startScan(0,1);
-
+    return 0;
 }
 int RPLIDAR::rplidar_read() {
     // fetech result and print it out...
@@ -213,7 +212,7 @@ int RPLIDAR::rplidar_read() {
         size_t   count = _countof(nodes);
 
         op_result = drv->grabScanData(nodes, count);
-
+rplidar_ranges_flag = 0;
         if (IS_OK(op_result)) {
             drv->ascendScanData(nodes, count);
             for (int pos = 0; pos < (int)count ; ++pos) {
@@ -273,7 +272,7 @@ int RPLIDAR::rplidar_read() {
                     }
                 }
 
-                printf("cjf %03.2f,%08.2f,    %d\n", rplidar_theta, rplidar_dist, rplidar_quality);
+             //   printf("cjf %03.2f,%08.2f,    %d\n", rplidar_theta, rplidar_dist, rplidar_quality);
             }
         }
 
@@ -288,7 +287,7 @@ int RPLIDAR::rplidar_close() {
     // done!
 //on_finished:
     RPlidarDriver::DisposeDriver(drv);
-    drv = NULL;
+//    drv = NULL;
     return 0;
 }
 

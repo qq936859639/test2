@@ -42,5 +42,11 @@
         <file>image/smarthome_1.jpg</file>
         <file>image/AIBoard.jpg</file>
         <file>image/passengers.png</file>
+        <file>image/rplidar_0.gif</file>
+        <file>image/1.jpg</file>
+        <file>image/rplidar_4.png</file>
+        <file>image/rplidar_3.png</file>
+        <file>image/rplidar_2.png</file>
+        <file>image/rplidar_1.png</file>
     </qresource>
 </RCC>

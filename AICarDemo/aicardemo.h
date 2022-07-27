@@ -97,7 +97,7 @@ private slots:
 
     void on_rplidar_clicked();
 
-    void on_rplidar_data_clicked();
+    void rplidar_data();
 
 protected:
     void closeEvent(QCloseEvent *event);
@@ -114,6 +114,7 @@ private:
     QTimer *car_state;
     QTimer *video_play;
     QTimer *AutoPilot;
+    QTimer *Car_rplidar_state;
 
     QImage image_tmp;
 
@@ -144,6 +145,9 @@ private:
 
     quint8 Car_state_flag;
     quint8 Car_state1_flag;
+quint8 Car_rplidar_flag;
+quint8 Car_rplidar_flag_stop;
+QMovie *pm;
 };
 
 #endif // AICARDEMO_H

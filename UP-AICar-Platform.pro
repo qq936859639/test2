@@ -136,7 +136,11 @@ INCLUDEPATH += $$PWD/lib/iflytek/arm64
 DEPENDPATH += $$PWD/lib/iflytek/arm64
 #--end
 LIBS += -lvulkan -lglslang -lSPIRV -lMachineIndependent -lOGLCompiler -lOSDependent -lGenericCodeGen
-
+#激光雷达库
+unix:!macx: LIBS += -L$$PWD/lib/rplidar/arm64/ -lrplidar_sdk
+INCLUDEPATH += $$PWD/lib/rplidar/arm64
+DEPENDPATH += $$PWD/lib/rplidar/arm64
+unix:!macx: PRE_TARGETDEPS += $$PWD/lib/rplidar/arm64/
 }else{
 
 #--科大讯飞
