@@ -119,7 +119,7 @@ int RPLIDAR::rplidar_open() {
         fprintf(stderr, "insufficent memory, exit\n");
         exit(-2);
     }
-    
+
     rplidar_response_device_info_t devinfo;
     bool connectSuccess = false;
     // make connection...
@@ -131,7 +131,7 @@ int RPLIDAR::rplidar_open() {
         {
             op_result = drv->getDeviceInfo(devinfo);
 
-            if (IS_OK(op_result)) 
+            if (IS_OK(op_result))
             {
                 connectSuccess = true;
             }
@@ -153,7 +153,7 @@ int RPLIDAR::rplidar_open() {
             {
                 op_result = drv->getDeviceInfo(devinfo);
 
-                if (IS_OK(op_result)) 
+                if (IS_OK(op_result))
                 {
                     connectSuccess = true;
                     break;
@@ -167,7 +167,7 @@ int RPLIDAR::rplidar_open() {
         }
     }
     if (!connectSuccess) {
-        
+
         fprintf(stderr, "Error, cannot bind to the specified serial port %s.\n"
             , opt_com_path);
         //goto on_finished;
@@ -200,7 +200,7 @@ int RPLIDAR::rplidar_open() {
     }
 
     signal(SIGINT, ctrlc);
-    
+
     drv->startMotor();
     // start scan...
     drv->startScan(0,1);
@@ -212,12 +212,12 @@ int RPLIDAR::rplidar_read() {
         size_t   count = _countof(nodes);
 
         op_result = drv->grabScanData(nodes, count);
-rplidar_ranges_flag = 0;
+        rplidar_ranges_flag = 0;
         if (IS_OK(op_result)) {
             drv->ascendScanData(nodes, count);
             for (int pos = 0; pos < (int)count ; ++pos) {
          /*    printf("%s theta: %03.2f Dist: %08.2f Q: %d \n",
-                    (nodes[pos].sync_quality & RPLIDAR_RESP_MEASUREMENT_SYNCBIT) ?"S ":"  ", 
+                    (nodes[pos].sync_quality & RPLIDAR_RESP_MEASUREMENT_SYNCBIT) ?"S ":"  ",
                     (nodes[pos].angle_q6_checkbit >> RPLIDAR_RESP_MEASUREMENT_ANGLE_SHIFT)/64.0f,
                     nodes[pos].distance_q2/4.0f,
                     nodes[pos].sync_quality >> RPLIDAR_RESP_MEASUREMENT_QUALITY_SHIFT);*/
@@ -279,7 +279,7 @@ rplidar_ranges_flag = 0;
         if (ctrl_c_pressed){
           //  break;
         }
-
+    return 0;
 }
 int RPLIDAR::rplidar_close() {
     drv->stop();

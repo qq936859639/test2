@@ -105,7 +105,7 @@
     </size>
    </property>
    <property name="currentIndex">
-    <number>2</number>
+    <number>0</number>
    </property>
    <property name="iconSize">
     <size>
@@ -126,9 +126,9 @@
     <widget class="QWidget" name="horizontalLayoutWidget">
      <property name="geometry">
       <rect>
-       <x>20</x>
+       <x>10</x>
        <y>10</y>
-       <width>256</width>
+       <width>221</width>
        <height>101</height>
       </rect>
      </property>
@@ -798,7 +798,7 @@
       <string>激光雷达:</string>
      </property>
     </widget>
-    <widget class="QLabel" name="rplidar_1">
+    <widget class="QLabel" name="rplidar_3">
      <property name="geometry">
       <rect>
        <x>90</x>
@@ -814,7 +814,7 @@
       <string/>
      </property>
     </widget>
-    <widget class="QLabel" name="rplidar_2">
+    <widget class="QLabel" name="rplidar_4">
      <property name="geometry">
       <rect>
        <x>170</x>
@@ -830,7 +830,7 @@
       <string/>
      </property>
     </widget>
-    <widget class="QLabel" name="rplidar_3">
+    <widget class="QLabel" name="rplidar_1">
      <property name="geometry">
       <rect>
        <x>90</x>
@@ -846,7 +846,7 @@
       <string/>
      </property>
     </widget>
-    <widget class="QLabel" name="rplidar_4">
+    <widget class="QLabel" name="rplidar_2">
      <property name="geometry">
       <rect>
        <x>40</x>
@@ -881,10 +881,10 @@
     <zorder>rplidar</zorder>
     <zorder>rplidar_text</zorder>
     <zorder>rplidar_0</zorder>
-    <zorder>rplidar_3</zorder>
-    <zorder>rplidar_2</zorder>
     <zorder>rplidar_1</zorder>
     <zorder>rplidar_4</zorder>
+    <zorder>rplidar_3</zorder>
+    <zorder>rplidar_2</zorder>
    </widget>
   </widget>
   <widget class="QLabel" name="school_rgy_light">

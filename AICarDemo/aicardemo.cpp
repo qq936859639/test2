@@ -101,8 +101,8 @@ AICarDemo::~AICarDemo()
 }
 void AICarDemo::closeEvent(QCloseEvent *event)
 {
-    emit Car_connect(ui->lineEdit->text());
     Car_Reset();
+    emit Car_connect(ui->lineEdit->text());
     Uart_Close();//关闭串口
     disconnect(this, SIGNAL(Car_connect(QString)),modbusThread,SLOT(on_connect(QString)));
     disconnect(modbusThread, SIGNAL(on_change_connet(bool)),this,SLOT(Car_change_connet(bool)));
@@ -286,7 +286,9 @@ void AICarDemo::on_decelerate_clicked()
 
 void AICarDemo::on_connect_clicked()
 {
+    Car_Reset();
     emit Car_connect(ui->lineEdit->text());
+
 }
 void AICarDemo::Car_change_connet(bool data)
 {
@@ -1476,10 +1478,10 @@ void AICarDemo::on_rplidar_clicked()
             pm->start();
         }
     }else{
-        rplidar->rplidar_close();
         ui->rplidar->setText(tr("打开"));
         Car_rplidar_state->stop();
         pm->stop();
+        rplidar->rplidar_close();
     }
 }
 
@@ -1496,6 +1498,10 @@ void AICarDemo::rplidar_data()
         }
         if(Car_rplidar_flag !=0)
         {
+            ui->rplidar_1->setStyleSheet("");
+            ui->rplidar_2->setStyleSheet("");
+            ui->rplidar_3->setStyleSheet("");
+            ui->rplidar_4->setStyleSheet("");
             Car_rplidar_flag_stop = 0;
         }
         Car_rplidar_flag = rplidar->rplidar_ranges_flag;
@@ -1553,11 +1559,16 @@ void AICarDemo::rplidar_data()
             ui->rplidar_1->setStyleSheet("border-image:url(:/image/res/image/rplidar_1.png);");
             ui->rplidar_3->setStyleSheet("border-image:url(:/image/res/image/rplidar_3.png);");
         }else if(rplidar->rplidar_ranges_flag == 0x0B){//前右后左
-            on_decelerate_clicked();
+            Car_Reset();
             ui->rplidar_1->setStyleSheet("border-image:url(:/image/res/image/rplidar_1.png);");
             ui->rplidar_2->setStyleSheet("border-image:url(:/image/res/image/rplidar_2.png);");
             ui->rplidar_3->setStyleSheet("border-image:url(:/image/res/image/rplidar_3.png);");
             ui->rplidar_4->setStyleSheet("border-image:url(:/image/res/image/rplidar_4.png);");
+        }else if(rplidar->rplidar_ranges_flag == 0x07){//前右后
+            on_turnLeft_clicked();
+            ui->rplidar_1->setStyleSheet("border-image:url(:/image/res/image/rplidar_1.png);");
+            ui->rplidar_2->setStyleSheet("border-image:url(:/image/res/image/rplidar_2.png);");
+            ui->rplidar_3->setStyleSheet("border-image:url(:/image/res/image/rplidar_3.png);");
         }
 
     }
