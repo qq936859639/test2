@@ -128,7 +128,7 @@
       <rect>
        <x>10</x>
        <y>10</y>
-       <width>221</width>
+       <width>211</width>
        <height>101</height>
       </rect>
      </property>
@@ -145,7 +145,7 @@
         <item>
          <widget class="QPushButton" name="accelerate">
           <property name="text">
-           <string>加速</string>
+           <string>加档</string>
           </property>
          </widget>
         </item>
@@ -165,7 +165,7 @@
         <item>
          <widget class="QPushButton" name="decelerate">
           <property name="text">
-           <string>减速</string>
+           <string>减档</string>
           </property>
          </widget>
         </item>

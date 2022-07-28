@@ -93,6 +93,9 @@ AICarDemo::AICarDemo(QWidget *parent, CameraThread *camerathread, ModbusThread *
     pm = new QMovie(":/image/res/image/rplidar_0.gif");
     ui->rplidar_0->setScaledContents(true);
     ui->rplidar_0->setMovie(pm);
+    QImage img;
+    img.load("./image/bg.jpg");
+    img.save("./image/bg.jpg");
 }
 
 AICarDemo::~AICarDemo()
