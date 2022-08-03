@@ -30,6 +30,7 @@ public:
     ModbusThread *modbusThread;
     quint16 H_Angle_num = 135;
     quint16 V_Angle_num = 70;
+    quint16 video_times = 0;
     bool faces_flag;
     bool connect_flag;
 
@@ -42,7 +43,7 @@ signals:
     void Camera_connect(const QString ip);
     void Camera_write(quint16 data);
 //    void Camera_read(int, int);
-    void Camera_writeRead(int startAddress, quint16 numberOfEntries, quint16 data);
+    void Camera_writeRead(int startAddress, quint16 numberOfEntries, quint16 data,quint16 data2=0);
 
 private slots:
     void videoDisplay(const QImage img);

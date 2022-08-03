@@ -1,7 +1,7 @@
 ﻿#include "camerademo.h"
 #include "ui_camerademo.h"
 #include <QDebug>
-
+#include <QTime>
 CameraDemo::CameraDemo(QWidget *parent, CameraThread *camerathread, ModbusThread *modbusthread) :
       QWidget(parent),ui(new Ui::test)
 {
@@ -42,7 +42,7 @@ CameraDemo::CameraDemo(QWidget *parent, CameraThread *camerathread, ModbusThread
     connect(this, SIGNAL(Camera_connect(QString)),modbusThread,SLOT(on_connect(QString)));
 //    connect(this, SIGNAL(Camera_write(quint16)),modbusThread,SLOT(on_write(quint16)));//only write
 //    connect(this, SIGNAL(Camera_read(int,int)),modbusThread,SLOT(on_read(int,int)));//only read
-    connect(this, SIGNAL(Camera_writeRead(int, quint16, quint16)),modbusThread,SLOT(on_writeRead(int, quint16, quint16)));
+    connect(this, SIGNAL(Camera_writeRead(int, quint16, quint16,quint16)),modbusThread,SLOT(on_writeRead(int, quint16, quint16,quint16)));
 
     connect(modbusThread, SIGNAL(on_change_connet(bool)),this,SLOT(Camera_change_connet(bool)));
     string xmlPath="./data/haarcascade_frontalface_default.xml";
@@ -95,6 +95,10 @@ void CameraDemo::videoDisplay(const QImage image)
     image_tmp = image.copy().mirrored(true, false);
 
     if(faces_flag == true){
+//        video_times ++;
+//        if(video_times>3)
+        {
+//            video_times=0;
         QImage qImage ;
         vector<Rect> faces;  //创建一个容器保存检测出来的脸
 
@@ -106,18 +110,21 @@ void CameraDemo::videoDisplay(const QImage image)
         cvtColor(img2, img2, COLOR_BGR2RGB);
         cvtColor(img2, gray, COLOR_BGR2GRAY); //转换成灰度图，因为harr特征从灰度图中提取
         equalizeHist(gray,gray);  //直方图均衡行
-        ccf.detectMultiScale(gray,faces,1.3,3,0,Size(50,50),Size(200,200)); //检测人脸
+        ccf.detectMultiScale(gray,faces,1.3,3,0,Size(50,50),Size(150,150)); //检测人脸
         for(vector<Rect>::const_iterator iter=faces.begin();iter!=faces.end();iter++)
         {
-            rectangle(img2,*iter,Scalar(0,0,255),2,10); //画出脸部矩形
-//            qDebug()<<"cjfx"<<iter->x<<"y:"<<iter->y<<"w:"<<iter->width<<"h:"<<iter->height;
-            if( iter->x > 300/2)
+//            rectangle(img2,*iter,Scalar(0,0,255),2,10); //画出脸部矩形
+            rectangle(img2,iter[0],Scalar(0,0,255),2,10); //画出脸部矩形
+            qDebug()<<"cjfx"<<iter->x<<"y:"<<iter->y<<"w:"<<iter->width<<"h:"<<iter->height;
+
+            {
+            if( iter->x+(iter->width/2) > 200)
                 H_Angle_num = H_Angle_num +2;//right
-            if( iter->x < 180/2)
+            if( iter->x+(iter->width/2) < 100)
                 H_Angle_num = H_Angle_num -2;//left
-            if ( iter->y  > 150/2)
+            if ( iter->y+(iter->height/2)  > 140)
                 V_Angle_num = V_Angle_num + 2;//down
-            if ( iter->y  < 50/2)
+            if ( iter->y+(iter->height/2)  < 80)
                 V_Angle_num = V_Angle_num - 2;//up
 
             if(H_Angle_num < 45)
@@ -129,8 +136,15 @@ void CameraDemo::videoDisplay(const QImage image)
                 V_Angle_num = 45;
             if(V_Angle_num > 100)
                 V_Angle_num = 100;
-            emit Camera_writeRead(CAMERA_ADDR1, 1, H_Angle_num);
-            emit Camera_writeRead(CAMERA_ADDR2, 1, V_Angle_num);
+
+            emit Camera_writeRead(CAMERA_ADDR1, 2, H_Angle_num,V_Angle_num);
+//            emit Camera_writeRead(CAMERA_ADDR1, 1, H_Angle_num);
+//            emit Camera_writeRead(CAMERA_ADDR2, 1, V_Angle_num);
+//QDateTime current_date_time = QDateTime::currentDateTime();
+//QString current_date = current_date_time.toString("yyyy-MM-dd");
+//QString current_time = current_date_time.toString("hh:mm:ss.zzz ");
+//qDebug()<<"time "<<current_date_time<<"H:"<<H_Angle_num<<"V:"<<V_Angle_num;
+            }
         }
 
         cvtColor(img2,img2, COLOR_BGR2RGB);
@@ -142,9 +156,9 @@ void CameraDemo::videoDisplay(const QImage image)
             qImage = QImage((const unsigned char*)(img2.data),img2.cols,img2.rows,img2.cols * img2.channels(),
                             QImage::Format_RGB888);
         }
-
 //        ui->labelCamera->setPixmap(QPixmap::fromImage(qImage));
         ui->labelCamera->setPixmap(QPixmap::fromImage(qImage.scaled(ui->labelCamera->size(),Qt::KeepAspectRatio)));//全屏显示
+    }
     }
     else
     {
@@ -152,7 +166,6 @@ void CameraDemo::videoDisplay(const QImage image)
 //        ui->labelCamera->setPixmap(pixmap);
         ui->labelCamera->setPixmap(QPixmap::fromImage(image_tmp.scaled(ui->labelCamera->size(),Qt::KeepAspectRatio)));//全屏显示
     }
-
 }
 
 void CameraDemo::Camera_read_data(int address, int data)

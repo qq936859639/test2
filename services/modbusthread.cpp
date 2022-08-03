@@ -45,7 +45,7 @@ void ModbusThread::on_connect(QString userip)
         modbusDevice->setConnectionParameter(QModbusDevice::NetworkAddressParameter, url.host());
 
         modbusDevice->setTimeout(500);
-        modbusDevice->setNumberOfRetries(3);
+        modbusDevice->setNumberOfRetries(0);
         if(!modbusDevice->connectDevice()){//连接失败
            isConnected = false;
             perror("modbusDevice Connect failed");
@@ -135,7 +135,7 @@ void ModbusThread::readReady()
 //        quint16 data = unit.value(0);  //状态（位与关系）
 
         //待处理
-//        qDebug()<<i<<"cjf"<<unit.startAddress()+i<<"-cjf-"<<unit.value(i);
+        qDebug()<<i<<"cjf"<<unit.startAddress()+i<<"-cjf-"<<unit.value(i);
         emit on_read_data(unit.startAddress()+i, unit.value(i));
 
         }
@@ -181,7 +181,7 @@ void ModbusThread::on_readWrite(quint16 data)
     }
 }
 
-void ModbusThread::on_writeRead(int startAddress, quint16 numberOfEntries, quint16 data)
+void ModbusThread::on_writeRead(int startAddress, quint16 numberOfEntries, quint16 data,quint16 data2)
 {
     if (!modbusDevice)
         return;
@@ -196,9 +196,15 @@ void ModbusThread::on_writeRead(int startAddress, quint16 numberOfEntries, quint
 //        bool ok;
 //        int hex =st.toInt(&ok,16);//将读取到的数据转换为16进制发送
 //        quint16 qhex =static_cast<quint16>(hex);
-        quint16 qhex = data;
-       // qDebug()<<writeUnit.valueCount();
-        writeUnit.setValue(i,qhex);
+//        qDebug()<<writeUnit.valueCount();
+        if(i==0){
+            quint16 qhex = data;
+            writeUnit.setValue(i,qhex);
+        }
+        if(i==1){
+            quint16 qhex = data2;
+            writeUnit.setValue(i,qhex);
+        }
     }
 
     if (auto *reply = modbusDevice->sendWriteRequest(writeUnit, 1)) {

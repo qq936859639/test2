@@ -54,7 +54,7 @@ private slots:
     void on_read(int startAddress, quint16 numberOfEntries);
     void on_readWrite(quint16 data);
 
-    void on_writeRead(int startAddress, quint16 numberOfEntries, quint16 data);
+    void on_writeRead(int startAddress, quint16 numberOfEntries, quint16 data,quint16 data2 = 0);
 protected:
 
     //void on_connect();
