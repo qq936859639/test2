@@ -28,6 +28,7 @@ SOURCES += main.cpp\
         SmartHome/BaiduSpeech/audio.cpp \
         SmartHome/BaiduSpeech/http.cpp \
         SmartHome/BaiduSpeech/speech.cpp \
+        SmartHome/FaceRecognition/faceutils.cpp \
         SmartHome/cjson/cJSON.c \
         SpeakerDemo/speakerdemo.cpp \
         lpr/cvUniText.cpp \
@@ -62,6 +63,7 @@ HEADERS  += mainwindow.h \
     SmartHome/BaiduSpeech/audio.h \
     SmartHome/BaiduSpeech/http.h \
     SmartHome/BaiduSpeech/speech.h \
+    SmartHome/FaceRecognition/faceutils.h \
     SmartHome/cjson/cJSON.h \
     SpeakerDemo/speakerdemo.h \
     lpr/cvUniText.hpp \

@@ -5,6 +5,12 @@
 #include <QtWidgets/QMessageBox>
 #include <QTimer>
 #include <QSound>//声音
+#include <string.h>
+
+#include <QFileInfo>
+#include <QStandardPaths>
+#include <QDesktopServices>
+#include <QDir>
 SmartHome::SmartHome(QWidget *parent, CameraThread *camerathread) :
     QWidget(parent),
     ui(new Ui::SmartHome)
@@ -28,18 +34,27 @@ SmartHome::SmartHome(QWidget *parent, CameraThread *camerathread) :
     init_OCR();
 
     this->cameraThread = camerathread;
-    string xmlPath="./data/haarcascade_frontalface_default.xml";
+    string xmlPath="./data/haarcascade_frontalface_alt.xml";
+//    string xmlPath="./data/haarcascade_frontalface_default.xml";
 //    string xmlPath="./data/haarcascade_frontalface_alt2.xml";
-    if(!ccf.load(xmlPath))   //加载训练文件
-    {
-        perror("不能加载指定的xml文件");
-    }
+//    if(!ccf.load(xmlPath))   //加载训练文件
+//    {
+//        perror("不能加载指定的xml文件");
+//    }
     hidmic = new HIDMICDEMO;
     if(hidmic->hidmic_init()==0){
         ui->speech->setDisabled(false);
     }else{
         ui->speech->setDisabled(true);
     }
+
+    faceUtils = FaceUtils::getInstance();
+    connect(faceUtils, SIGNAL(startTrain()), this, SLOT(startTrainSlot()));
+    connect(faceUtils, SIGNAL(finishTrain(bool)), this, SLOT(finishTrainSlot(bool)));
+//    faceUtils->startTrainFace();
+    qsound_master = new QSound("./mp3/master_visit.wav", this);
+    qsound_guest = new QSound("./mp3/guests_visit.wav", this);
+    process = new QProcess(this);
 }
 void SmartHome::init_PIR()
 {
@@ -632,6 +647,8 @@ void SmartHome::on_Key_SmartHome_clicked()
 {
     if(ui->Key_SmartHome->isChecked())//按钮按下操作
     {
+        if(!faceUtils->faceHasTrain())
+            faceUtils->startTrainFace();
         m_client_ocr->disconnectFromHost();
         m_client_pir->disconnectFromHost();
         m_client_dht11->disconnectFromHost();
@@ -648,6 +665,7 @@ void SmartHome::on_Key_SmartHome_clicked()
         ui->Connect_DHT11->setEnabled(false);
         ui->Connect_LEDB->setEnabled(false);
         connect(cameraThread, SIGNAL(Collect_complete(QImage)),this,SLOT(SmartHome_videoDisplay(QImage)));
+
     }else{
         on_Connect_OCR_clicked();
         on_Connect_PIR_clicked();
@@ -794,13 +812,83 @@ void SmartHome::SmartHome_videoDisplay(const QImage image)
     image1 = image1.mirrored(false, false);
 
     Mat img = this->QImage2Mat(image1);
-    if(ui->Key_SmartHome->isChecked()){
-        img = FaceRecognition(img);            //人脸识别
+    cv::resize(img,img,Size(320, 240));
+
+    videos_times++;
+    if(ui->Key_SmartHome->isChecked()&&videos_times>10){
+        img.copyTo(image_tmp);
+        videos_times = 0;
+        //img = FaceRecognition(img);            //人脸识别
+        vector<Rect> faces= faceUtils->faceDetection(img);
+
+        foreach (Rect face, faces)
+            rectangle((Mat)img, face, Scalar(0, 0, 255), 2, 8);
+
+        foreach (Rect face, faces)
+        {
+            Mat imageRIO = img(face);
+            cv::resize(imageRIO, imageRIO, Size(92, 112));
+
+            RecognizerModel recognizerModel = PCA_MODEL;
+            if(ui->eigenfacesRb->isChecked())
+                recognizerModel = PCA_MODEL;
+            else if(ui->fisherfacesRb->isChecked())
+                recognizerModel = FISHER_MODEL;
+            else if(ui->lbphRb->isChecked())
+                recognizerModel = LBPH_MODEL;
+            int result = faceUtils->faceRecognition(imageRIO, recognizerModel);
+            cout << result << endl;
+            if(0<result &&result<6){
+                if(qsound_master->isFinished())
+                     qsound_master->play();
+            }else{
+                if(qsound_guest->isFinished())
+                     qsound_guest->play();
+            }
+
+            switch(result)
+            {
+            case 1:
+                cv::putText(img, "1", Point(face.x, face.y),
+                        FONT_HERSHEY_COMPLEX, 1, Scalar(0, 0, 255));
+
+//                if(this->mediaPlayer->state() != QMediaPlayer::PlayingState)
+//                    this->mediaPlayer->play();
+                break;
+            case 2:
+                cv::putText(img, "2", Point(face.x, face.y),
+                        FONT_HERSHEY_COMPLEX, 1, Scalar(0, 0, 255));
+                break;
+            case 3:
+                cv::putText(img, "3", Point(face.x, face.y),
+                        FONT_HERSHEY_COMPLEX, 1, Scalar(0, 0, 255));
+                break;
+            case 4:
+                cv::putText(img, "4", Point(face.x, face.y),
+                        FONT_HERSHEY_COMPLEX, 1, Scalar(0, 0, 255));
+                break;
+            case 5:
+                cv::putText(img, "5", Point(face.x, face.y),
+                        FONT_HERSHEY_COMPLEX, 1, Scalar(0, 0, 255));
+                break;
+            default:
+                cv::putText(img, "?", Point(face.x, face.y),
+                        FONT_HERSHEY_COMPLEX, 1, Scalar(0, 0, 255));
+            }
+            QImage qimg_rio = this->Mat2QImage(imageRIO);
+            QPixmap pixmap_rio = QPixmap::fromImage(qimg_rio);
+            ui->video_1->setPixmap(pixmap_rio.scaled(ui->video_1->size(),Qt::IgnoreAspectRatio));//Qt::SmoothTransformation 保持比例
+        }
+        QImage qimg = this->Mat2QImage(img);
+        QPixmap pixmap = QPixmap::fromImage(qimg);
+        ui->cameraShowLabel->setPixmap(pixmap.scaled(ui->cameraShowLabel->size(),Qt::IgnoreAspectRatio));//Qt::SmoothTransformation 保持比例
+        ui->video_0->setPixmap(pixmap.scaled(ui->video_0->size(),Qt::IgnoreAspectRatio));//Qt::SmoothTransformation 保持比例
     }
 
-    QImage qimg = this->Mat2QImage(img);
-    QPixmap pixmap = QPixmap::fromImage(qimg);
-    ui->video_0->setPixmap(pixmap.scaled(ui->video_0->size(),Qt::IgnoreAspectRatio));//, Qt::SmoothTransformation 保持比例
+//    QImage qimg = this->Mat2QImage(img);
+//    QPixmap pixmap = QPixmap::fromImage(qimg);
+//    ui->video_0->setPixmap(pixmap.scaled(ui->video_0->size(),Qt::IgnoreAspectRatio));//Qt::SmoothTransformation 保持比例
+
 }
 
 Mat SmartHome::FaceRecognition(const Mat &mat)
@@ -809,7 +897,7 @@ Mat SmartHome::FaceRecognition(const Mat &mat)
     Mat img1, gray;
 
     img1 = mat;
-    cv::resize(img1,img1,Size(320, 240));
+//    cv::resize(img1,img1,Size(320, 240));
 
     cvtColor(img1, gray, COLOR_BGR2GRAY); //转换成灰度图，因为harr特征从灰度图中提取
     equalizeHist(gray,gray);  //直方图均衡行
@@ -892,4 +980,159 @@ void SmartHome::on_speech_released()
     ui->textEdit->setText(text);
 
     ui->speech->setText("按住说话");
+}
+
+void SmartHome::on_reTrainFaceBtn_clicked()
+{
+    process->start("python3 data/create_csv.py data/resources/att_faces/ data/resources/at.txt");
+    process->waitForStarted();
+
+    if (process->waitForFinished()){
+        this->faceUtils->startTrainFace();
+    }
+}
+
+void SmartHome::on_captureBtn_clicked()
+{
+    if(image_tmp.empty())
+    {
+        //QMessageBox::information(this, "警告", "请打开摄像头后重试");
+        ui->prompt->setText("没有检测到人脸");
+        ui->imgShowLabel->clear();
+    }
+    else
+    {
+        QString member = ui->comboBox->currentText();
+
+        //正则只取数字
+        QRegExp rx("\\d+");
+        QString wndIndex;
+        rx.indexIn(member,0);
+        wndIndex = rx.cap(0);
+
+        QString imgSavePath = QCoreApplication::applicationDirPath() + "/data/resources/att_faces" + "/s" +wndIndex;
+
+        if(QFileInfo(imgSavePath).exists())
+        {
+            uint currentTime = QDateTime::currentDateTime().toTime_t();
+            if(!imgSavePath.endsWith("/"))
+                imgSavePath += "/";
+            if(!imgSavePath.endsWith(".pgm"))
+                imgSavePath += QString("%1.pgm").arg(currentTime);
+
+            vector<Rect> faces = faceUtils->faceDetection(image_tmp);
+            if(faces.empty()){
+                ui->prompt->setText("没有检测到人脸");
+                ui->imgShowLabel->clear();
+            }
+            foreach (Rect face, faces)
+            {
+                Mat imageRIO = image_tmp(face);
+                cv::resize(imageRIO, imageRIO, Size(92, 112));
+
+                Mat gray;
+                cvtColor(imageRIO,gray, COLOR_BGR2GRAY);
+
+                string str = imgSavePath.toLocal8Bit().toStdString();
+                cv::imwrite(str,gray);
+
+                QImage qImage = this->Mat2QImage(imageRIO);
+                ui->imgShowLabel->setPixmap(QPixmap::fromImage(qImage.scaled(ui->imgShowLabel->size(),Qt::KeepAspectRatio)));// 保持原图片的长宽比，且不超过矩形框的大小
+                ui->prompt->setText("录入成员" + wndIndex + "成功!");
+            }
+        }
+        else
+        {
+            QMessageBox::information(this, "警告", "路径不存在，截图保存失败");
+        }
+    }
+}
+
+void SmartHome::on_openImgBtn_clicked()
+{
+    QString path;
+    path = QCoreApplication::applicationDirPath() + "/data/resources/att_faces";
+    if(QFileInfo(path).exists())
+        QDesktopServices::openUrl(QUrl::fromLocalFile(path));
+    else
+        QMessageBox::information(this, "警告", "当前路径不存在，请检查路径后重试");
+}
+void SmartHome::startTrainSlot()
+{
+    ui->reTrainFaceBtn->setEnabled(false);
+}
+
+void SmartHome::finishTrainSlot(bool isSuccess)
+{
+    ui->reTrainFaceBtn->setEnabled(true);
+    if(!isSuccess)
+        QMessageBox::information(this, "警告", "样本训练失败");
+}
+
+void SmartHome::on_captureDel_clicked()
+{
+    QString member = ui->comboBox->currentText();
+    //正则只取数字
+    QRegExp rx("\\d+");
+    QString wndIndex;
+    rx.indexIn(member,0);
+    wndIndex = rx.cap(0);
+    QString file_path=  QCoreApplication::applicationDirPath() + "/data/resources/att_faces" + "/s"+ wndIndex;
+    if(removeFolderContent(file_path)){
+        ui->prompt->setText("成员" + wndIndex + "删除成功!");
+    }else{
+        ui->prompt->setText("成员" + wndIndex + "不存在或已被删除");
+    }
+    ui->imgShowLabel->clear();
+}
+bool SmartHome::removeFolderContent(const QString &folderDir)
+{
+    QDir dir(folderDir);
+    QFileInfoList fileList;
+    QFileInfo curFile;
+    if(!dir.exists())  {return false;}//文件不存，则返回false
+    fileList=dir.entryInfoList(QDir::Dirs|QDir::Files
+                               |QDir::Readable|QDir::Writable
+                               |QDir::Hidden|QDir::NoDotAndDotDot
+                               ,QDir::Name);
+    qDebug()<<"cjf ifle "<<fileList.size();
+    if(fileList.size()==0)
+        return false;
+    while(fileList.size()>0)
+    {
+        int infoNum=fileList.size();
+        for(int i=infoNum-1;i>=0;i--)
+        {
+            curFile=fileList[i];
+            if(curFile.isFile())//如果是文件，删除文件
+            {
+                QFile fileTemp(curFile.filePath());
+                fileTemp.remove();
+                fileList.removeAt(i);
+            }
+            /*if(curFile.isDir())//如果是文件夹
+            {
+                QDir dirTemp(curFile.filePath());
+                QFileInfoList fileList1=dirTemp.entryInfoList(QDir::Dirs|QDir::Files
+                                                              |QDir::Readable|QDir::Writable
+                                                              |QDir::Hidden|QDir::NoDotAndDotDot
+                                                              ,QDir::Name);
+                if(fileList1.size()==0)//下层没有文件或文件夹
+                {
+                    dirTemp.rmdir(".");
+                    fileList.removeAt(i);
+                }
+                else//下层有文件夹或文件
+                {
+                    for(int j=0;j<fileList1.size();j++)
+                    {
+                        if(!(fileList.contains(fileList1[j])))
+                            fileList.append(fileList1[j]);
+                    }
+                }
+            }*/
+        }
+    }
+//    dir.removeRecursively();
+    return true;
 }

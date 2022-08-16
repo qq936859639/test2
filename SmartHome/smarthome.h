@@ -15,6 +15,9 @@
 #include "BaiduSpeech/speech.h"
 
 #include "../MICDemo/hidmicdemo/hidmicdemo.h"
+#include "FaceRecognition/faceutils.h"
+#include <QSound>//声音
+#include <QProcess>
 using namespace std;
 using namespace cv;
 
@@ -87,6 +90,14 @@ private slots:
     void on_speech_pressed();
     void on_speech_released();
 
+    void on_reTrainFaceBtn_clicked();
+
+    void on_captureBtn_clicked();
+    void on_openImgBtn_clicked();
+    void startTrainSlot();                  // 开始训练人脸识别
+    void finishTrainSlot(bool isSuccess);   // 人脸识别训练完毕
+    void on_captureDel_clicked();
+
 private:
     Ui::SmartHome *ui;
 
@@ -109,6 +120,14 @@ private:
     Mat QImage2Mat(const QImage& image);
 
     Audio *audio;
+    QSound *qsound_master;
+    QSound *qsound_guest;
+
+    FaceUtils *faceUtils;                   // 人脸检测、识别工具类
+    quint8 videos_times=0;                  // 1秒显示帧数
+    QProcess *process;                       //
+    Mat image_tmp;
+    bool removeFolderContent(const QString &folderDir);
 protected:
     void closeEvent(QCloseEvent *event);
     Mat FaceRecognition(const Mat &mat);
