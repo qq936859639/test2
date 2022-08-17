@@ -1032,6 +1032,9 @@ void SmartHome::on_captureBtn_clicked()
 
                 Mat gray;
                 cvtColor(imageRIO,gray, COLOR_BGR2GRAY);
+//                        normalize(gray, gray, 0, 255, NORM_MINMAX);
+//                        gray.convertTo(gray, CV_8U);
+                equalizeHist(gray, gray);
 
                 string str = imgSavePath.toLocal8Bit().toStdString();
                 cv::imwrite(str,gray);

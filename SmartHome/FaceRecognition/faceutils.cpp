@@ -63,6 +63,8 @@ int FaceUtils::faceRecognition(const Mat &image, RecognizerModel recognizerModel
         Mat faceRecognizerGray;
 //        cvtColor(image, faceRecognizerGray, CV_BGR2GRAY);
         cvtColor(image, faceRecognizerGray, COLOR_BGR2GRAY);
+//                normalize(faceRecognizerGray, faceRecognizerGray, 0, 255, NORM_MINMAX);
+//                faceRecognizerGray.convertTo(faceRecognizerGray, CV_8U);
         equalizeHist(faceRecognizerGray, faceRecognizerGray);
   int pridicted_label = -1;
   double predicted_confidence = 0.0;
