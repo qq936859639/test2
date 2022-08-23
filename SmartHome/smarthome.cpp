@@ -840,10 +840,11 @@ void SmartHome::SmartHome_videoDisplay(const QImage image)
             cout << result << endl;
             if(0<result &&result<6){
                 if(qsound_master->isFinished())
-                     qsound_master->play();
+                    qsound_master->play();
+            }else if(result==-1){
             }else{
                 if(qsound_guest->isFinished())
-                     qsound_guest->play();
+                    qsound_guest->play();
             }
 
             switch(result)
@@ -1034,7 +1035,7 @@ void SmartHome::on_captureBtn_clicked()
                 cvtColor(imageRIO,gray, COLOR_BGR2GRAY);
 //                        normalize(gray, gray, 0, 255, NORM_MINMAX);
 //                        gray.convertTo(gray, CV_8U);
-                equalizeHist(gray, gray);
+//                equalizeHist(gray, gray);
 
                 string str = imgSavePath.toLocal8Bit().toStdString();
                 cv::imwrite(str,gray);

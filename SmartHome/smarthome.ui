@@ -1349,6 +1349,21 @@ color: rgb(238, 238, 236);</string>
                <string>成员5</string>
               </property>
              </item>
+             <item>
+              <property name="text">
+               <string>客人6</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>客人7</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>客人8</string>
+              </property>
+             </item>
             </widget>
            </item>
            <item>

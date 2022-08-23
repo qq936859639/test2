@@ -5,8 +5,7 @@ FaceUtils *FaceUtils::faceUtils = NULL;
 
 FaceUtils::FaceUtils()
 {
-
-    eigenFaceRecognizer = EigenFaceRecognizer::create(10,123.0);
+    eigenFaceRecognizer = EigenFaceRecognizer::create();
     fisherFaceRecognizer = FisherFaceRecognizer::create();
     LBPHFaceRecognizer = LBPHFaceRecognizer::create();
 
@@ -37,11 +36,10 @@ vector<Rect> FaceUtils::faceDetection(const Mat &image)
     }else{
 
         Mat faceDetectionGray;
-//        cvtColor(image, faceDetectionGray, CV_BGR2GRAY);
         cvtColor(image, faceDetectionGray, COLOR_BGR2GRAY);
         equalizeHist(faceDetectionGray, faceDetectionGray);
         cascadeClassifier.detectMultiScale(faceDetectionGray, faces,
-            1.1, 2, 0
+            1.1, 3, 0
             //|CASCADE_FIND_BIGGEST_OBJECT
             //|CASCADE_DO_ROUGH_SEARCH
             |CASCADE_SCALE_IMAGE,
@@ -61,24 +59,38 @@ int FaceUtils::faceRecognition(const Mat &image, RecognizerModel recognizerModel
     try
     {
         Mat faceRecognizerGray;
-//        cvtColor(image, faceRecognizerGray, CV_BGR2GRAY);
         cvtColor(image, faceRecognizerGray, COLOR_BGR2GRAY);
-//                normalize(faceRecognizerGray, faceRecognizerGray, 0, 255, NORM_MINMAX);
-//                faceRecognizerGray.convertTo(faceRecognizerGray, CV_8U);
-        equalizeHist(faceRecognizerGray, faceRecognizerGray);
-  int pridicted_label = -1;
-  double predicted_confidence = 0.0;
+
+        int pridicted_label = -1;
+        double predicted_confidence = 0.0;
+        int temp = -1;
 
         switch(recognizerModel)
         {
         case PCA_MODEL:
-            eigenFaceRecognizer->predict(faceRecognizerGray, pridicted_label, predicted_confidence);
-            qDebug("cjfcjf:%d,    %f",pridicted_label,predicted_confidence);
-            return eigenFaceRecognizer->predict(faceRecognizerGray);
+            temp = eigenFaceRecognizer->predict(faceRecognizerGray);
+            if(0 < temp && temp < 6){
+                eigenFaceRecognizer->predict(faceRecognizerGray, pridicted_label, predicted_confidence);
+                qDebug("faces_label:%d,confidence:%f",pridicted_label,predicted_confidence);
+                if(predicted_confidence < 2000)
+                        return temp;
+                return -1;
+            }else
+                return temp;
         case FISHER_MODEL:
+            fisherFaceRecognizer->predict(faceRecognizerGray, pridicted_label, predicted_confidence);
+            qDebug("faces_label:%d,confidence:%f",pridicted_label,predicted_confidence);
             return fisherFaceRecognizer->predict(faceRecognizerGray);
         case LBPH_MODEL:
-            return LBPHFaceRecognizer->predict(faceRecognizerGray);
+            temp = LBPHFaceRecognizer->predict(faceRecognizerGray);
+            if(0 < temp && temp < 6){
+                LBPHFaceRecognizer->predict(faceRecognizerGray, pridicted_label, predicted_confidence);
+                qDebug("faces_label:%d,confidence:%f",pridicted_label,predicted_confidence);
+                if(predicted_confidence < 80)
+                    return temp;
+                return -1;
+            }else
+                return temp;
         default:
             return -1;
         }
@@ -141,7 +153,8 @@ bool FaceUtils::faceTrain()
     //
     // 如果你使用所有特征并且使用一个阈值，使用以下语句：
     //      cv::createEigenFaceRecognizer(0, 123.0);
-
+    eigenFaceRecognizer = EigenFaceRecognizer::create(80);
+    LBPHFaceRecognizer = LBPHFaceRecognizer::create(1,8,8,8);
     try
     {
         eigenFaceRecognizer->train(images, labels);
