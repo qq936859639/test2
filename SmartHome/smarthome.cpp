@@ -85,11 +85,8 @@ void SmartHome::init_PIR()
             {
                 if(cJSON_GetObjectItem(parray,"RE200B") != NULL)
                 {
-                    //int data = cJSON_GetObjectItem(parray,"RE200B")->valueint;
                     char *data = cJSON_GetObjectItem(parray, "RE200B")->valuestring;//字符串
-                    qDebug()<<"cjf"<<data;//<<":"<<cJSON_GetObjectItem(parray, "RE200B")->valuestring;
                     ui->state_PIR_data->setText(data);
-//                    ui->PIR_data->setText(data);
                     if(pir_flag ==1){
                         if(ui->state_PIR_data->text() == "abnormal")
                             on_BUZZER_ON_clicked();
@@ -1099,7 +1096,7 @@ bool SmartHome::removeFolderContent(const QString &folderDir)
                                |QDir::Readable|QDir::Writable
                                |QDir::Hidden|QDir::NoDotAndDotDot
                                ,QDir::Name);
-    qDebug()<<"cjf ifle "<<fileList.size();
+//    qDebug()<<"cjf ifle "<<fileList.size();
     if(fileList.size()==0)
         return false;
     while(fileList.size()>0)
