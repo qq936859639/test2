@@ -1252,6 +1252,22 @@ color: rgb(238, 238, 236);</string>
        <enum>Qt::Vertical</enum>
       </property>
      </widget>
+     <widget class="QRadioButton" name="fisherfacesRb">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>570</x>
+        <y>410</y>
+        <width>103</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Fisherfaces</string>
+      </property>
+     </widget>
      <widget class="QWidget" name="">
       <property name="geometry">
        <rect>
@@ -1294,7 +1310,7 @@ color: rgb(238, 238, 236);</string>
        <rect>
         <x>460</x>
         <y>180</y>
-        <width>216</width>
+        <width>221</width>
         <height>231</height>
        </rect>
       </property>
@@ -1432,6 +1448,18 @@ color: rgb(238, 238, 236);</string>
           <layout class="QVBoxLayout" name="verticalLayout_2">
            <item>
             <widget class="QLabel" name="label_4">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>23</height>
+              </size>
+             </property>
              <property name="text">
               <string>识别算法：</string>
              </property>
@@ -1444,13 +1472,6 @@ color: rgb(238, 238, 236);</string>
              </property>
              <property name="checked">
               <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QRadioButton" name="fisherfacesRb">
-             <property name="text">
-              <string>Fisherfaces</string>
              </property>
             </widget>
            </item>

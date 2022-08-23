@@ -6,7 +6,7 @@ FaceUtils *FaceUtils::faceUtils = NULL;
 FaceUtils::FaceUtils()
 {
     eigenFaceRecognizer = EigenFaceRecognizer::create();
-    fisherFaceRecognizer = FisherFaceRecognizer::create();
+//    fisherFaceRecognizer = FisherFaceRecognizer::create();
     LBPHFaceRecognizer = LBPHFaceRecognizer::create();
 
     isFaceTrained = false;
@@ -78,9 +78,9 @@ int FaceUtils::faceRecognition(const Mat &image, RecognizerModel recognizerModel
             }else
                 return temp;
         case FISHER_MODEL:
-            fisherFaceRecognizer->predict(faceRecognizerGray, pridicted_label, predicted_confidence);
-            qDebug("faces_label:%d,confidence:%f",pridicted_label,predicted_confidence);
-            return fisherFaceRecognizer->predict(faceRecognizerGray);
+//            fisherFaceRecognizer->predict(faceRecognizerGray, pridicted_label, predicted_confidence);
+//            qDebug("faces_label:%d,confidence:%f",pridicted_label,predicted_confidence);
+//            return fisherFaceRecognizer->predict(faceRecognizerGray);
         case LBPH_MODEL:
             temp = LBPHFaceRecognizer->predict(faceRecognizerGray);
             if(0 < temp && temp < 6){
@@ -158,10 +158,10 @@ bool FaceUtils::faceTrain()
     try
     {
         eigenFaceRecognizer->train(images, labels);
-        fisherFaceRecognizer->train(images, labels);
+//        fisherFaceRecognizer->train(images, labels);
         LBPHFaceRecognizer->train(images, labels);
         eigenFaceRecognizer->save(FACE_PCA_MODEL_XML_PATH);
-        fisherFaceRecognizer->save(FACE_FISHER_MODEL_XML_PATH);
+//        fisherFaceRecognizer->save(FACE_FISHER_MODEL_XML_PATH);
         LBPHFaceRecognizer->save(FACE_LBPH_MODEL_XML_PATH);
     }
     catch (cv::Exception& e)
@@ -179,7 +179,7 @@ bool FaceUtils::loadFaceTrainFile()
     try
     {
         eigenFaceRecognizer->read(FACE_PCA_MODEL_XML_PATH);
-        fisherFaceRecognizer->read(FACE_FISHER_MODEL_XML_PATH);
+//        fisherFaceRecognizer->read(FACE_FISHER_MODEL_XML_PATH);
         LBPHFaceRecognizer->read(FACE_LBPH_MODEL_XML_PATH);
         return true;
     }

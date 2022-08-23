@@ -34,7 +34,7 @@ SmartHome::SmartHome(QWidget *parent, CameraThread *camerathread) :
     init_OCR();
 
     this->cameraThread = camerathread;
-    string xmlPath="./data/haarcascade_frontalface_alt.xml";
+//    string xmlPath="./data/haarcascade_frontalface_alt.xml";
 //    string xmlPath="./data/haarcascade_frontalface_default.xml";
 //    string xmlPath="./data/haarcascade_frontalface_alt2.xml";
 //    if(!ccf.load(xmlPath))   //加载训练文件
@@ -55,6 +55,8 @@ SmartHome::SmartHome(QWidget *parent, CameraThread *camerathread) :
     qsound_master = new QSound("./mp3/master_visit.wav", this);
     qsound_guest = new QSound("./mp3/guests_visit.wav", this);
     process = new QProcess(this);
+
+    ui->fisherfacesRb->setVisible(false);
 }
 void SmartHome::init_PIR()
 {
@@ -812,7 +814,7 @@ void SmartHome::SmartHome_videoDisplay(const QImage image)
     cv::resize(img,img,Size(320, 240));
 
     videos_times++;
-    if(ui->Key_SmartHome->isChecked()&&videos_times>10){
+    if(ui->Key_SmartHome->isChecked()&&videos_times>1){
         img.copyTo(image_tmp);
         videos_times = 0;
         //img = FaceRecognition(img);            //人脸识别
@@ -849,9 +851,6 @@ void SmartHome::SmartHome_videoDisplay(const QImage image)
             case 1:
                 cv::putText(img, "1", Point(face.x, face.y),
                         FONT_HERSHEY_COMPLEX, 1, Scalar(0, 0, 255));
-
-//                if(this->mediaPlayer->state() != QMediaPlayer::PlayingState)
-//                    this->mediaPlayer->play();
                 break;
             case 2:
                 cv::putText(img, "2", Point(face.x, face.y),
@@ -882,11 +881,6 @@ void SmartHome::SmartHome_videoDisplay(const QImage image)
         ui->cameraShowLabel->setPixmap(pixmap.scaled(ui->cameraShowLabel->size(),Qt::IgnoreAspectRatio));//Qt::SmoothTransformation 保持比例
         ui->video_0->setPixmap(pixmap.scaled(ui->video_0->size(),Qt::IgnoreAspectRatio));//Qt::SmoothTransformation 保持比例
     }
-
-//    QImage qimg = this->Mat2QImage(img);
-//    QPixmap pixmap = QPixmap::fromImage(qimg);
-//    ui->video_0->setPixmap(pixmap.scaled(ui->video_0->size(),Qt::IgnoreAspectRatio));//Qt::SmoothTransformation 保持比例
-
 }
 
 Mat SmartHome::FaceRecognition(const Mat &mat)
@@ -1030,9 +1024,6 @@ void SmartHome::on_captureBtn_clicked()
 
                 Mat gray;
                 cvtColor(imageRIO,gray, COLOR_BGR2GRAY);
-//                        normalize(gray, gray, 0, 255, NORM_MINMAX);
-//                        gray.convertTo(gray, CV_8U);
-//                equalizeHist(gray, gray);
 
                 string str = imgSavePath.toLocal8Bit().toStdString();
                 cv::imwrite(str,gray);
@@ -1096,7 +1087,7 @@ bool SmartHome::removeFolderContent(const QString &folderDir)
                                |QDir::Readable|QDir::Writable
                                |QDir::Hidden|QDir::NoDotAndDotDot
                                ,QDir::Name);
-//    qDebug()<<"cjf ifle "<<fileList.size();
+
     if(fileList.size()==0)
         return false;
     while(fileList.size()>0)
