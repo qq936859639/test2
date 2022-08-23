@@ -511,7 +511,7 @@ void SmartHome::setClientPort_ledb(int p)
 
 void SmartHome::on_Subscribe_LEDB_clicked()
 {
-    ui->topic_LEDB_data->setText("$baidu/iot/shadow/LEDBUZZER/update/accepted");
+    ui->topic_LEDB_data->setText("$baidu/iot/shadow/LED/update/accepted");
     auto subscription = m_client_ledb->subscribe(ui->topic_LEDB_data->text());
     if (!subscription) {
         QMessageBox::critical(this, QLatin1String("Error"), QLatin1String("Could not subscribe. Is there a valid connection?"));
@@ -521,7 +521,7 @@ void SmartHome::on_Subscribe_LEDB_clicked()
 
 void SmartHome::on_Publish_LEDB_clicked()
 {
-    ui->topic_LEDB_data->setText("$baidu/iot/shadow/LEDBUZZER/update");
+    ui->topic_LEDB_data->setText("$baidu/iot/shadow/LED/update");
     if (m_client_ledb->publish(ui->topic_LEDB_data->text(), ui->message_LEDB_data->text().toUtf8()) == -1)
         QMessageBox::critical(this, QLatin1String("Error"), QLatin1String("Could not publish message"));
 }
@@ -534,28 +534,28 @@ void SmartHome::on_Ping_LEDB_clicked()
 
 void SmartHome::on_LED_ON_clicked()
 {
-    QString topic ="$baidu/iot/shadow/LEDBUZZER/update";//百度LED主题地址
+    QString topic ="$baidu/iot/shadow/LED/update";//百度LED主题地址
     QString data  ="{\"desired\":{\"LED\":\"on\"}}";
     m_client_ledb->publish(topic,data.toUtf8());
 }
 
 void SmartHome::on_LED_OFF_clicked()
 {
-    QString topic ="$baidu/iot/shadow/LEDBUZZER/update";//百度LED主题地址
+    QString topic ="$baidu/iot/shadow/LED/update";//百度LED主题地址
     QString data  ="{\"desired\":{\"LED\":\"off\"}}";
     m_client_ledb->publish(topic,data.toUtf8());
 }
 
 void SmartHome::on_BUZZER_ON_clicked()
 {
-    QString topic ="$baidu/iot/shadow/LEDBUZZER/update";//百度LED主题地址
+    QString topic ="$baidu/iot/shadow/LED/update";//百度LED主题地址
     QString data  ="{\"desired\":{\"BUZZER\":\"on\"}}";
     m_client_ledb->publish(topic,data.toUtf8());
 }
 
 void SmartHome::on_BUZZER_OFF_clicked()
 {
-    QString topic ="$baidu/iot/shadow/LEDBUZZER/update";//百度LED主题地址
+    QString topic ="$baidu/iot/shadow/LED/update";//百度LED主题地址
     QString data  ="{\"desired\":{\"BUZZER\":\"off\"}}";
     m_client_ledb->publish(topic,data.toUtf8());
 }
@@ -608,7 +608,7 @@ void SmartHome::setClientPort_ocr(int p)
 
 void SmartHome::on_Subscribe_OCR_clicked()
 {
-    ui->topic_OCR_data->setText("$baidu/iot/shadow/OCRelayII/update/accepted");
+    ui->topic_OCR_data->setText("$baidu/iot/shadow/OCRelay/update/accepted");
     auto subscription = m_client_ocr->subscribe(ui->topic_OCR_data->text());
     if (!subscription) {
         QMessageBox::critical(this, QLatin1String("Error"), QLatin1String("Could not subscribe. Is there a valid connection?"));
@@ -618,7 +618,7 @@ void SmartHome::on_Subscribe_OCR_clicked()
 
 void SmartHome::on_Publish_OCR_clicked()
 {
-    ui->topic_OCR_data->setText("$baidu/iot/shadow/OCRelayII/update");
+    ui->topic_OCR_data->setText("$baidu/iot/shadow/OCRelay/update");
     if (m_client_ocr->publish(ui->topic_OCR_data->text(), ui->message_OCR_data->text().toUtf8()) == -1)
         QMessageBox::critical(this, QLatin1String("Error"), QLatin1String("Could not publish message"));
 }
@@ -631,14 +631,14 @@ void SmartHome::on_Ping_OCR_clicked()
 
 void SmartHome::on_OCR_ON_clicked()
 {
-    QString topic ="$baidu/iot/shadow/OCRelayII/update";//百度OCR主题地址
+    QString topic ="$baidu/iot/shadow/OCRelay/update";//百度OCR主题地址
     QString data  ="{\"desired\":{\"OCRelay\":\"on\"}}";
     m_client_ocr->publish(topic,data.toUtf8());
 }
 
 void SmartHome::on_OCR_OFF_clicked()
 {
-    QString topic ="$baidu/iot/shadow/OCRelayII/update";//百度OCR主题地址
+    QString topic ="$baidu/iot/shadow/OCRelay/update";//百度OCR主题地址
     QString data  ="{\"desired\":{\"OCRelay\":\"off\"}}";
     m_client_ocr->publish(topic,data.toUtf8());
 }

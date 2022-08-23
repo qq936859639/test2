@@ -48,7 +48,7 @@
       <item row="0" column="1">
        <widget class="QLineEdit" name="topic_DHT11_data">
         <property name="text">
-         <string>$baidu/iot/shadow/DHT11TWO/update/accepted</string>
+         <string>$baidu/iot/shadow/DHT11/update/accepted</string>
         </property>
        </widget>
       </item>
@@ -233,7 +233,7 @@
         <item row="2" column="1">
          <widget class="QLineEdit" name="user_DHT11_data">
           <property name="text">
-           <string>83miwvc/DHT11TWO</string>
+           <string>83miwvc/DHT11</string>
           </property>
          </widget>
         </item>
@@ -247,7 +247,7 @@
         <item row="3" column="1">
          <widget class="QLineEdit" name="password_DHT11_data">
           <property name="text">
-           <string>15gpdqi43jdb64x5</string>
+           <string>g9snxkrfgcw4hy7q</string>
           </property>
          </widget>
         </item>
@@ -286,7 +286,7 @@
       <item row="0" column="1">
        <widget class="QLineEdit" name="topic_LEDB_data">
         <property name="text">
-         <string>$baidu/iot/shadow/LEDBUZZER/update/accepted</string>
+         <string>$baidu/iot/shadow/LED/update/accepted</string>
         </property>
        </widget>
       </item>
@@ -471,7 +471,7 @@
         <item row="2" column="1">
          <widget class="QLineEdit" name="user_LEDB_data">
           <property name="text">
-           <string>83miwvc/LEDBUZZER</string>
+           <string>83miwvc/LED</string>
           </property>
          </widget>
         </item>
@@ -485,7 +485,7 @@
         <item row="3" column="1">
          <widget class="QLineEdit" name="password_LEDB_data">
           <property name="text">
-           <string>80tw2xvs8jw8793g</string>
+           <string>uX1L34PieZnrkX7c</string>
           </property>
          </widget>
         </item>
@@ -564,7 +564,7 @@
         <item row="2" column="1">
          <widget class="QLineEdit" name="user_PIR_data">
           <property name="text">
-           <string>83miwvc/RE200BTWO</string>
+           <string>83miwvc/RE200B</string>
           </property>
          </widget>
         </item>
@@ -578,7 +578,7 @@
         <item row="3" column="1">
          <widget class="QLineEdit" name="password_PIR_data">
           <property name="text">
-           <string>2ahjsbvw7nwywrm5</string>
+           <string>2xy1m6650e3z3qzn</string>
           </property>
          </widget>
         </item>
@@ -630,7 +630,7 @@
       <item row="0" column="1">
        <widget class="QLineEdit" name="topic_PIR_data">
         <property name="text">
-         <string>$baidu/iot/shadow/RE200BTWO/update/accepted</string>
+         <string>$baidu/iot/shadow/RE200B/update/accepted</string>
         </property>
        </widget>
       </item>
@@ -710,7 +710,7 @@
       <item row="0" column="1">
        <widget class="QLineEdit" name="topic_OCR_data">
         <property name="text">
-         <string>$baidu/iot/shadow/OCRelayII/update/accepted</string>
+         <string>$baidu/iot/shadow/OCRelay/update/accepted</string>
         </property>
        </widget>
       </item>
@@ -874,7 +874,7 @@
         <item row="2" column="1">
          <widget class="QLineEdit" name="user_OCR_data">
           <property name="text">
-           <string>83miwvc/OCRelayII</string>
+           <string>83miwvc/OCRelay</string>
           </property>
          </widget>
         </item>
@@ -888,7 +888,7 @@
         <item row="3" column="1">
          <widget class="QLineEdit" name="password_OCR_data">
           <property name="text">
-           <string>rvsjbz9zrnqsdipj</string>
+           <string>m859p6vhi8gwxpkb</string>
           </property>
          </widget>
         </item>
