@@ -40,6 +40,8 @@ SOURCES += main.cpp\
         MICDemo/micdemo.cpp \
         SmartHome/smarthome.cpp \
         mainwindow.cpp \
+        services/faces/faces.cpp \
+        services/faces/mtcnn.cpp \
         services/modbusthread.cpp \
         services/v4l.cpp
 
@@ -82,6 +84,10 @@ HEADERS  += mainwindow.h \
     LCDCheck/lcdcheck.h \
     MICDemo/micdemo.h \
     SmartHome/smarthome.h \
+    services/faces/faces.h \
+    services/faces/mtcnn.h \
+    services/faces/stb_image.h \
+    services/faces/stb_image_write.h \
     services/modbusthread.h \
     services/v4l.h
 
