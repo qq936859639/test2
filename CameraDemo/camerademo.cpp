@@ -45,7 +45,8 @@ CameraDemo::CameraDemo(QWidget *parent, CameraThread *camerathread, ModbusThread
     connect(this, SIGNAL(Camera_writeRead(int, quint16, quint16,quint16)),modbusThread,SLOT(on_writeRead(int, quint16, quint16,quint16)));
 
     connect(modbusThread, SIGNAL(on_change_connet(bool)),this,SLOT(Camera_change_connet(bool)));
-    string xmlPath="./data/haarcascade_frontalface_default.xml";
+//    string xmlPath="./data/haarcascade_frontalface_default.xml";
+    string xmlPath="./data/haarcascade_frontalface_alt.xml";
     if(!ccf.load(xmlPath))   //加载训练文件
     {
         perror("不能加载指定的xml文件");
@@ -110,13 +111,12 @@ void CameraDemo::videoDisplay(const QImage image)
         cvtColor(img2, img2, COLOR_BGR2RGB);
         cvtColor(img2, gray, COLOR_BGR2GRAY); //转换成灰度图，因为harr特征从灰度图中提取
         equalizeHist(gray,gray);  //直方图均衡行
-        ccf.detectMultiScale(gray,faces,1.3,3,0,Size(50,50),Size(150,150)); //检测人脸
+        ccf.detectMultiScale(gray,faces,1.3,3,0,Size(50,50)); //检测人脸
         for(vector<Rect>::const_iterator iter=faces.begin();iter!=faces.end();iter++)
         {
 //            rectangle(img2,*iter,Scalar(0,0,255),2,10); //画出脸部矩形
             rectangle(img2,iter[0],Scalar(0,0,255),2,10); //画出脸部矩形
             qDebug()<<"cjfx"<<iter->x<<"y:"<<iter->y<<"w:"<<iter->width<<"h:"<<iter->height;
-
             {
             if( iter->x+(iter->width/2) > 200)
                 H_Angle_num = H_Angle_num +2;//right

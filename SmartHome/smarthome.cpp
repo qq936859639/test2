@@ -57,6 +57,7 @@ SmartHome::SmartHome(QWidget *parent, CameraThread *camerathread) :
     process = new QProcess(this);
 
     ui->fisherfacesRb->setVisible(false);
+    get_ip();
 }
 void SmartHome::init_PIR()
 {
@@ -664,7 +665,7 @@ void SmartHome::on_Key_SmartHome_clicked()
         ui->Connect_DHT11->setEnabled(false);
         ui->Connect_LEDB->setEnabled(false);
         connect(cameraThread, SIGNAL(Collect_complete(QImage)),this,SLOT(SmartHome_videoDisplay(QImage)));
-
+save_ip();
     }else{
         on_Connect_OCR_clicked();
         on_Connect_PIR_clicked();
@@ -1127,4 +1128,60 @@ bool SmartHome::removeFolderContent(const QString &folderDir)
     }
 //    dir.removeRecursively();
     return true;
+}
+void SmartHome::save_ip()
+{
+    QString host_data = ui->host_DHT11_data->text();
+    QString port_data = ui->port_DHT11_data->text();
+    QString user_data = ui->user_DHT11_data->text();
+    QString password_data = ui->password_DHT11_data->text();
+    QFile *myFile;
+    QTextStream *outFile;
+    QString filename="./data/baidu_mqtt.sh";
+    myFile=new QFile(filename);
+    if(myFile->open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        outFile=new QTextStream(myFile);
+        *outFile<<host_data<<endl;
+        *outFile<<port_data<<endl;
+        *outFile<<user_data<<endl;
+        *outFile<<password_data<<endl;
+        myFile->close();
+    }
+}
+void SmartHome::get_ip()
+{
+    // QFile 构造函数中打开文件
+    QFile *myFile;
+    QString filename="./data/baidu_mqtt.sh";
+    myFile=new QFile(filename);
+
+    // 只读打开文件
+    if(myFile->open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        QString buffer;
+        // 返回字节数，
+        buffer  = myFile->readLine();
+        if (!buffer.isNull())
+        {
+            ui->host_DHT11_data->setText(buffer.trimmed());
+        }
+        buffer  = myFile->readLine();
+
+        if (!buffer.isNull())
+        {
+            ui->port_DHT11_data->setValue(buffer.toInt());
+        }
+        buffer  = myFile->readLine();
+        if (!buffer.isNull())
+        {
+            ui->user_DHT11_data->setText(buffer.trimmed());
+        }
+        buffer  = myFile->readLine();
+        if (!buffer.isNull())
+        {
+            ui->password_DHT11_data->setText(buffer.trimmed());
+        }
+        myFile->close();
+    }
 }

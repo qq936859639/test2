@@ -50,3 +50,8 @@ void LCDCheck::mouseReleaseEvent(QMouseEvent *ev){
 }
 
 
+
+void LCDCheck::on_quit_clicked()
+{
+    LCDCheck::deleteLater();//关闭当前窗口
+}

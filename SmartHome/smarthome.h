@@ -128,6 +128,8 @@ private:
     QProcess *process;                       //
     Mat image_tmp;
     bool removeFolderContent(const QString &folderDir);
+    void save_ip();
+    void get_ip();
 protected:
     void closeEvent(QCloseEvent *event);
     Mat FaceRecognition(const Mat &mat);

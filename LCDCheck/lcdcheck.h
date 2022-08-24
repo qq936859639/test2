@@ -25,6 +25,9 @@ public slots:
 protected:
     void mouseReleaseEvent(QMouseEvent *ev);
 
+private slots:
+    void on_quit_clicked();
+
 private:
     Ui::LCDCheck *ui;
 };

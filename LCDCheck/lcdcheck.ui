@@ -13,7 +13,19 @@
   <property name="windowTitle">
    <string>LCDCheck</string>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout"/>
+  <widget class="QPushButton" name="quit">
+   <property name="geometry">
+    <rect>
+     <x>502</x>
+     <y>480</y>
+     <width>100</width>
+     <height>50</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>退出</string>
+   </property>
+  </widget>
  </widget>
  <resources/>
  <connections/>
