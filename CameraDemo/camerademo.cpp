@@ -32,7 +32,7 @@ CameraDemo::CameraDemo(QWidget *parent, CameraThread *camerathread, ModbusThread
     ui->right->setAutoRepeatDelay(500);
     ui->right->setAutoRepeatInterval(200);
 
-//    ui->faceTrack->setCheckable(true);
+//  ui->faceTrack->setCheckable(true);
 //  connect(cameraThread, SIGNAL(errorshow()), this, SLOT(errorshowslot()));
 //  connect(this,SIGNAL(Show_complete()),cameraThread,SLOT(startCapture()));
 
@@ -45,13 +45,30 @@ CameraDemo::CameraDemo(QWidget *parent, CameraThread *camerathread, ModbusThread
     connect(this, SIGNAL(Camera_writeRead(int, quint16, quint16,quint16)),modbusThread,SLOT(on_writeRead(int, quint16, quint16,quint16)));
 
     connect(modbusThread, SIGNAL(on_change_connet(bool)),this,SLOT(Camera_change_connet(bool)));
-//    string xmlPath="./data/haarcascade_frontalface_default.xml";
+
+    faces = new FACES();
+    connect(faces,SIGNAL(locationInfo(int,int,int,int)),this,SLOT(faceLocation(int,int,int,int)));
+    /*
     string xmlPath="./data/haarcascade_frontalface_alt.xml";
     if(!ccf.load(xmlPath))   //加载训练文件
     {
         perror("不能加载指定的xml文件");
-    }
+    }*/
     get_ip();
+    pid_x = (PID *)malloc(sizeof(PID));
+    pid_y = (PID *)malloc(sizeof(PID));
+    pid_x->Kp=3;
+    pid_x->Ki=0;
+    pid_x->Kd=1;
+    pid_x->LastError=0;
+    pid_x->PrevError=0;
+    pid_x->SumError=0;
+    pid_y->Kp=3;
+    pid_y->Ki=0;
+    pid_y->Kd=1;
+    pid_y->LastError=0;
+    pid_y->PrevError=0;
+    pid_y->SumError=0;
 }
 
 CameraDemo::~CameraDemo(){
@@ -70,6 +87,9 @@ void CameraDemo::closeEvent(QCloseEvent *event)
     disconnect(this, SIGNAL(Camera_writeRead(int, quint16, quint16)),modbusThread,SLOT(on_writeRead(int, quint16, quint16)));
 
     disconnect(modbusThread, SIGNAL(on_change_connet(bool)),this,SLOT(Camera_change_connet(bool)));
+    disconnect(faces,SIGNAL(locationInfo(int,int,int,int)),this,SLOT(faceLocation(int,int,int,int)));
+    free(pid_x);pid_x=nullptr;
+    free(pid_y);pid_y=nullptr;
 }
 
 void CameraDemo::keyPressEvent(QKeyEvent *event)
@@ -90,80 +110,87 @@ void CameraDemo::errorshowslot()
 {
     ui->labelCamera->setText(tr("摄像头初始化失败，请检查是否插好，并重新启动！"));
 }
+QImage CameraDemo::Mat2QImage(const Mat &mat)
+{
+    switch (mat.type())
+    {
+    // 8-bit, 4 channel
+    case CV_8UC4:
+    {
+        QImage image(mat.data, mat.cols, mat.rows, mat.step, QImage::Format_ARGB32);
+        return image;
+    }
+    // 8-bit, 3 channel
+    case CV_8UC3:
+    {
+        QImage image(mat.data, mat.cols, mat.rows, mat.step, QImage::Format_RGB888);
+        return image.rgbSwapped();
+    }
+    // 8-bit, 1 channel
+    case CV_8UC1:
+    {
+#if QT_VERSION < QT_VERSION_CHECK(5, 5, 0)
+        QImage image(mat.data, mat.cols, mat.rows, int(mat.step), QImage::Format_Grayscale8);
+#else
+        QVector<QRgb> sColorTable;
+        if (sColorTable.isEmpty())
+        {
+            sColorTable.resize( 256 );
 
+            for ( int i =0; i <256; ++i )
+            {
+                sColorTable[i] = qRgb( i, i, i );
+            }
+        }
+        QImage image(mat.data, mat.cols, mat.rows, mat.step, QImage::Format_Indexed8 );
+        image.setColorTable(sColorTable);
+#endif
+        return image;
+    }
+    // wrong
+    default:
+        qDebug() << "ERROR: Mat could not be converted to QImage.";
+        break;
+    }
+    return QImage();
+}
+
+Mat CameraDemo::QImage2Mat(const QImage& image)
+{
+    cv::Mat mat,mat_out;    //如果把mat_out变更为mat，那么参数image的r/b被调换。即使被const修饰，依然被更改，比较诡异。参数变为值传递，也依然被更改。
+    switch (image.format())
+    {
+    case QImage::Format_RGB32:                              //一般Qt读入本地彩色图后为此格式
+        mat = cv::Mat(image.height(), image.width(), CV_8UC4, (void*)image.constBits(), image.bytesPerLine());
+        cv::cvtColor(mat, mat_out, cv::COLOR_BGRA2BGR);     //转3通道，OpenCV一般用3通道的
+        break;
+    case QImage::Format_RGB888:
+        mat = cv::Mat(image.height(), image.width(), CV_8UC3, (void*)image.constBits(), image.bytesPerLine());
+        cv::cvtColor(mat, mat_out, cv::COLOR_RGB2BGR);
+        break;
+    case QImage::Format_Indexed8:
+        mat = cv::Mat(image.height(), image.width(), CV_8UC1, (void*)image.constBits(), image.bytesPerLine());
+        break;
+    }
+    return mat_out;
+}
 void CameraDemo::videoDisplay(const QImage image)
 {
+    if(image.isNull())
+        return;
     image_tmp = image.copy().mirrored(true, false);
 
     if(faces_flag == true){
-//        video_times ++;
-//        if(video_times>3)
-        {
-//            video_times=0;
-        QImage qImage ;
-        vector<Rect> faces;  //创建一个容器保存检测出来的脸
+        Mat img = this->QImage2Mat(image_tmp);
+        cv::resize(img,img,Size(IMAGE_WIDTH/2, IMAGE_HEIGHT/2));
+        img = faces->face_recognition(img);
 
-        Mat img1, img2, gray;
-        img1=Mat(image_tmp.height(), image_tmp.width(), CV_8UC3, (void*)image_tmp.constBits(), image_tmp.bytesPerLine());
-        //flip(img1,img1,1);
-        cv::resize(img1,img2,Size(320, 240));
-
-        cvtColor(img2, img2, COLOR_BGR2RGB);
-        cvtColor(img2, gray, COLOR_BGR2GRAY); //转换成灰度图，因为harr特征从灰度图中提取
-        equalizeHist(gray,gray);  //直方图均衡行
-        ccf.detectMultiScale(gray,faces,1.3,3,0,Size(50,50)); //检测人脸
-        for(vector<Rect>::const_iterator iter=faces.begin();iter!=faces.end();iter++)
-        {
-//            rectangle(img2,*iter,Scalar(0,0,255),2,10); //画出脸部矩形
-            rectangle(img2,iter[0],Scalar(0,0,255),2,10); //画出脸部矩形
-            qDebug()<<"cjfx"<<iter->x<<"y:"<<iter->y<<"w:"<<iter->width<<"h:"<<iter->height;
-            {
-            if( iter->x+(iter->width/2) > 200)
-                H_Angle_num = H_Angle_num +2;//right
-            if( iter->x+(iter->width/2) < 100)
-                H_Angle_num = H_Angle_num -2;//left
-            if ( iter->y+(iter->height/2)  > 140)
-                V_Angle_num = V_Angle_num + 2;//down
-            if ( iter->y+(iter->height/2)  < 80)
-                V_Angle_num = V_Angle_num - 2;//up
-
-            if(H_Angle_num < 45)
-                H_Angle_num = 45;
-            if(H_Angle_num > 225)
-                H_Angle_num = 225;
-
-            if(V_Angle_num < 45)
-                V_Angle_num = 45;
-            if(V_Angle_num > 100)
-                V_Angle_num = 100;
-
-            emit Camera_writeRead(CAMERA_ADDR1, 2, H_Angle_num,V_Angle_num);
-//            emit Camera_writeRead(CAMERA_ADDR1, 1, H_Angle_num);
-//            emit Camera_writeRead(CAMERA_ADDR2, 1, V_Angle_num);
-//QDateTime current_date_time = QDateTime::currentDateTime();
-//QString current_date = current_date_time.toString("yyyy-MM-dd");
-//QString current_time = current_date_time.toString("hh:mm:ss.zzz ");
-//qDebug()<<"time "<<current_date_time<<"H:"<<H_Angle_num<<"V:"<<V_Angle_num;
-            }
-        }
-
-        cvtColor(img2,img2, COLOR_BGR2RGB);
-        if(img2.channels() == 3)
-        {
-            qImage = QImage((const unsigned char*)(img2.data),img2.cols,img2.rows,img2.cols * img2.channels(),
-                            QImage::Format_RGB888);
-        }else{
-            qImage = QImage((const unsigned char*)(img2.data),img2.cols,img2.rows,img2.cols * img2.channels(),
-                            QImage::Format_RGB888);
-        }
-//        ui->labelCamera->setPixmap(QPixmap::fromImage(qImage));
-        ui->labelCamera->setPixmap(QPixmap::fromImage(qImage.scaled(ui->labelCamera->size(),Qt::KeepAspectRatio)));//全屏显示
-    }
+        QImage qimg = this->Mat2QImage(img);
+        QPixmap pixmap = QPixmap::fromImage(qimg);
+        ui->labelCamera->setPixmap(pixmap.scaled(ui->labelCamera->size(),Qt::KeepAspectRatio));//Qt::SmoothTransformation 保持比例
     }
     else
     {
-//        QPixmap pixmap = QPixmap::fromImage(image_tmp);
-//        ui->labelCamera->setPixmap(pixmap);
         ui->labelCamera->setPixmap(QPixmap::fromImage(image_tmp.scaled(ui->labelCamera->size(),Qt::KeepAspectRatio)));//全屏显示
     }
 }
@@ -204,7 +231,6 @@ void CameraDemo::Camera_change_connet(bool data)
         ui->right->setDisabled(false);
         save_ip();
     }
-
 }
 
 void CameraDemo::on_connect_clicked()
@@ -284,6 +310,53 @@ void CameraDemo::save_ip()
         myFile->close();
     }
 }
+double CameraDemo::PIDCalc(PID *pp,double NextPoint)
+{
+        double dError,Error;
+        Error = NextPoint;//Error = pp->SetPoint - NextPoint;
+        pp->SumError += Error;
+        dError = pp->LastError - pp->PrevError;
+        pp->PrevError = pp->LastError;
+        pp->LastError = Error;
+
+        return(pp->Kp*Error + pp->Ki*pp->SumError+pp->Kd*dError);
+}
+void CameraDemo::faceLocation(int x,int y,int width,int height)
+{
+    int error_x , error_y, pid_x_p, pid_y_p;
+    int Xcent = x + (width-x) / 2;//计算距离x、y轴中点
+    int Ycent = y + (height-y) / 2;
+    error_x = Xcent - IMAGE_WIDTH/2/2;//获取误差(x和y方向)
+    error_y = Ycent - IMAGE_HEIGHT/2/2;
+
+    pid_x_p  = PIDCalc(pid_x,error_x);
+    pid_y_p  = PIDCalc(pid_y,error_y);
+    if(pid_x_p/60==0&&pid_y_p/60==0)
+        return;
+    if(pid_x_p>320)
+            pid_x_p=320/2;
+    if(pid_x_p<-320)
+            pid_x_p=-320/2;
+    if(pid_y_p>240)
+            pid_x_p=240/2;
+    if(pid_y_p<-240)
+            pid_x_p=-240/2;
+
+    H_Angle_num = H_Angle_num + (int)(pid_x_p/60.0);
+    V_Angle_num = V_Angle_num + (int)(pid_y_p/60.0);
+
+    if(H_Angle_num < 45)
+        H_Angle_num = 45;
+    if(H_Angle_num > 225)
+        H_Angle_num = 225;
+
+    if(V_Angle_num < 45)
+        V_Angle_num = 45;
+    if(V_Angle_num > 100)
+        V_Angle_num = 100;
+
+    emit Camera_writeRead(CAMERA_ADDR1, 2, H_Angle_num,V_Angle_num);
+}
 void CameraDemo::on_quit_clicked()
 {
     faces_flag = false;
@@ -297,6 +370,9 @@ void CameraDemo::on_quit_clicked()
     disconnect(this, SIGNAL(Camera_writeRead(int, quint16, quint16)),modbusThread,SLOT(on_writeRead(int, quint16, quint16)));
 
     disconnect(modbusThread, SIGNAL(on_change_connet(bool)),this,SLOT(Camera_change_connet(bool)));
+    disconnect(faces,SIGNAL(locationInfo(int,int,int,int)),this,SLOT(faceLocation(int,int,int,int)));
 
+    free(pid_x);pid_x=nullptr;
+    free(pid_y);pid_y=nullptr;
     CameraDemo::deleteLater();//关闭当前窗口
 }

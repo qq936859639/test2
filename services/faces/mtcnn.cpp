@@ -263,17 +263,17 @@ void MTCNN::detect(ncnn::Mat &img_, std::vector<Bbox> &finalBbox_) {
     if (firstBbox.empty()) return;
     nms(firstBbox, nms_threshold[0]);
     refine(firstBbox, img_h, img_w, true);
-    printf("firstBbox_.size()=%d\n", (int) firstBbox.size());
+//    printf("firstBbox_.size()=%d\n", (int) firstBbox.size());
     //second stage
     RNet();
-    printf("secondBbox_.size()=%d\n", (int) secondBbox.size());
+//    printf("secondBbox_.size()=%d\n", (int) secondBbox.size());
     if (secondBbox.empty())
         return;
     nms(secondBbox, nms_threshold[1]);
     refine(secondBbox, img_h, img_w, true);
-    //third stage 
+    //third stage
     ONet();
-    printf("thirdBbox_.size()=%d\n", (int) thirdBbox.size());
+//    printf("thirdBbox_.size()=%d\n", (int) thirdBbox.size());
     if (thirdBbox.empty())
         return;
     refine(thirdBbox, img_h, img_w, true);

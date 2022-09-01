@@ -2,33 +2,30 @@
 #define FACES_H
 
 #include <opencv2/opencv.hpp>
+#include <QString>
+#include <QImage>
+#include <QDebug>
+
 #include "mtcnn.h"
+#define MODEL_PATH  "./data/faces/models"
 using namespace cv;
 
-class FACES {
+
+class FACES: public QObject
+{
+    Q_OBJECT
 public:
-    FACES();
-//    Mat  test_mtcnn_plate(Mat img);
-//    string LPR_Data;
+    FACES(QObject *parent=nullptr);
+
     Mat face_recognition(Mat img);
     MTCNN *mtcnn;
     Mat face_data;
+signals:
+    void locationInfo(int x1,int y1,int x2, int y2);
 private:
-
-//    PlateDetector detector;
-//    LPRRecognizer lpr ;
-
-//    Mat draw_plate_results(std::vector<pr::PlateInfo> &objects, cv::Mat &image);
-
-    /*
-    void facialPoseCorrection(unsigned char *inputImage, int Width, int Height, int Channels, int left_eye_x,
-                              int left_eye_y,
-                              int right_eye_x, int right_eye_y);
-    void RotateBilinear(unsigned char *srcData, int srcWidth, int srcHeight, int Channels, int srcStride,
-                        unsigned char *dstData, int dstWidth, int dstHeight, int dstStride, float degree,
-                        int fillColorR = 255, int fillColorG = 255, int fillColorB = 255);
-    void
-    RemoveRedEyes(unsigned char *input, unsigned char *output, int width, int height, int depth, int CenterX, int CenterY,
-                  int Radius);*/
+    std::vector<Bbox> finalBbox;
+    void drawPoint(unsigned char *bits, int width, int depth, int x, int y, const uint8_t *color);
+    void drawLine(unsigned char *bits, int width, int depth, int startX, int startY, int endX, int endY, const uint8_t *col);
+    void drawRectangle(unsigned char *bits, int width, int depth, int x1, int y1, int x2, int y2, const uint8_t *col);
 };
 #endif // FACES_H

@@ -135,7 +135,7 @@ void ModbusThread::readReady()
 //        quint16 data = unit.value(0);  //状态（位与关系）
 
         //待处理
-        qDebug()<<i<<"cjf"<<unit.startAddress()+i<<"-cjf-"<<unit.value(i);
+//        qDebug()<<i<<"cjf"<<unit.startAddress()+i<<"-cjf-"<<unit.value(i);
         emit on_read_data(unit.startAddress()+i, unit.value(i));
 
         }
@@ -189,11 +189,6 @@ void ModbusThread::on_writeRead(int startAddress, quint16 numberOfEntries, quint
     QModbusDataUnit writeUnit = QModbusDataUnit(QModbusDataUnit::HoldingRegisters, startAddress, numberOfEntries);
     QModbusDataUnit readUnit = QModbusDataUnit(QModbusDataUnit::HoldingRegisters, startAddress, numberOfEntries);
     for (uint i = 0; i < writeUnit.valueCount(); i++) {
-//        int ii = static_cast<int>(i);
-//        int j = 4*ii;
-//        QString t = "45";
-//        QString st = t.mid (j,4);
-//        bool ok;
 //        int hex =st.toInt(&ok,16);//将读取到的数据转换为16进制发送
 //        quint16 qhex =static_cast<quint16>(hex);
 //        qDebug()<<writeUnit.valueCount();
@@ -207,7 +202,7 @@ void ModbusThread::on_writeRead(int startAddress, quint16 numberOfEntries, quint
         }
     }
 
-    if (auto *reply = modbusDevice->sendWriteRequest(writeUnit, 1)) {
+    if (auto *reply = modbusDevice->sendReadWriteRequest(readUnit,writeUnit, 1)) {
         if (!reply->isFinished())
             connect(reply, &QModbusReply::finished, this, &ModbusThread::readReady);
         else

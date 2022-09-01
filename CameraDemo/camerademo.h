@@ -4,6 +4,7 @@
 #include <QWidget>
 #include "services/camerathread.h"
 #include "services/modbusthread.h"
+#include "services/faces/faces.h"
 
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
@@ -37,6 +38,17 @@ public:
     void get_ip();
     void save_ip();
     void keyPressEvent(QKeyEvent *event) override;
+
+    typedef struct PID{
+        double SetPoint;
+        double Kp;
+        double Ki;
+        double Kd;
+        double LastError;
+        double PrevError;
+        double SumError;
+    }PID;
+    PID *pid_x, *pid_y;
 signals:
     void Show_complete();
 
@@ -49,6 +61,7 @@ private slots:
     void videoDisplay(const QImage img);
     void Camera_read_data(int startAddress, int data);
     void Camera_change_connet(bool data);
+    void faceLocation(int,int,int,int);
 
     void errorshowslot();
 
@@ -58,11 +71,8 @@ private slots:
     void on_right_clicked();
 
     void on_connect_clicked();
-
     void on_faceTrack_clicked();
-
     void on_quit_clicked();
-
 protected:
     void closeEvent(QCloseEvent *event);
 
@@ -70,6 +80,11 @@ private:
     Ui::test *ui;
     CascadeClassifier ccf;   //创建分类器对象
     QImage image_tmp;
+    FACES *faces;
+    QImage Mat2QImage(const Mat &mat);
+    Mat QImage2Mat(const QImage& image);
+
+    double PIDCalc(PID *pp,double NextPoint);
 };
 
 #endif // CAMERADEMO_H
