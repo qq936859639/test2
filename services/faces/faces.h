@@ -17,9 +17,11 @@ class FACES: public QObject
 public:
     FACES(QObject *parent=nullptr);
 
-    Mat face_recognition(Mat img);
+    QImage face_recognition(QImage img);
     MTCNN *mtcnn;
     Mat face_data;
+    QImage mat2Qimg(const Mat &mat);
+    Mat qimg2Mat(QImage image);
 signals:
     void locationInfo(int x1,int y1,int x2, int y2);
 private:
