@@ -181,8 +181,8 @@ void CameraDemo::videoDisplay(const QImage image)
     image_tmp = image.copy().mirrored(true, false);
 
     if(faces_flag == true){
+        image_tmp = image_tmp.scaled(IMAGE_WIDTH/2,IMAGE_HEIGHT/2);
         Mat img = this->QImage2Mat(image_tmp);
-        cv::resize(img,img,Size(IMAGE_WIDTH/2, IMAGE_HEIGHT/2));
         img = faces->face_recognition(img);
 
         QImage qimg = this->Mat2QImage(img);
@@ -334,9 +334,9 @@ void CameraDemo::faceLocation(int x,int y,int width,int height)
     if(pid_x_p/60==0&&pid_y_p/60==0)
         return;
     if(pid_x_p>320)
-            pid_x_p=320/2;
+            pid_x_p=pid_x_p/2;
     if(pid_x_p<-320)
-            pid_x_p=-320/2;
+            pid_x_p=-pid_x_p/2;
     if(pid_y_p>240)
             pid_x_p=240/2;
     if(pid_y_p<-240)
