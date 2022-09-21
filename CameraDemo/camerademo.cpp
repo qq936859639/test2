@@ -181,18 +181,9 @@ void CameraDemo::videoDisplay(const QImage image)
     image_tmp = image.copy().mirrored(true, false);
 
     if(faces_flag == true){
-<<<<<<< HEAD
-        image_tmp = image_tmp.scaled(IMAGE_WIDTH/2,IMAGE_HEIGHT/2);
-        Mat img = this->QImage2Mat(image_tmp);
-        img = faces->face_recognition(img);
-=======
-//        Mat img = this->QImage2Mat(image_tmp);
-//        cv::resize(img,img,Size(IMAGE_WIDTH/2, IMAGE_HEIGHT/2));
         image_tmp = image_tmp.scaled(IMAGE_WIDTH/2,IMAGE_HEIGHT/2);
         QImage  qimg = faces->face_recognition(image_tmp);
->>>>>>> cbf7d025a583f5d38620c371056d0d0aed5c259c
 
-//        QImage qimg = this->Mat2QImage(img);
         QPixmap pixmap = QPixmap::fromImage(qimg);
         ui->labelCamera->setPixmap(pixmap.scaled(ui->labelCamera->size(),Qt::KeepAspectRatio));//Qt::SmoothTransformation 保持比例
     }
