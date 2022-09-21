@@ -110,70 +110,7 @@ void CameraDemo::errorshowslot()
 {
     ui->labelCamera->setText(tr("摄像头初始化失败，请检查是否插好，并重新启动！"));
 }
-QImage CameraDemo::Mat2QImage(const Mat &mat)
-{
-    switch (mat.type())
-    {
-    // 8-bit, 4 channel
-    case CV_8UC4:
-    {
-        QImage image(mat.data, mat.cols, mat.rows, mat.step, QImage::Format_ARGB32);
-        return image;
-    }
-    // 8-bit, 3 channel
-    case CV_8UC3:
-    {
-        QImage image(mat.data, mat.cols, mat.rows, mat.step, QImage::Format_RGB888);
-        return image.rgbSwapped();
-    }
-    // 8-bit, 1 channel
-    case CV_8UC1:
-    {
-#if QT_VERSION < QT_VERSION_CHECK(5, 5, 0)
-        QImage image(mat.data, mat.cols, mat.rows, int(mat.step), QImage::Format_Grayscale8);
-#else
-        QVector<QRgb> sColorTable;
-        if (sColorTable.isEmpty())
-        {
-            sColorTable.resize( 256 );
 
-            for ( int i =0; i <256; ++i )
-            {
-                sColorTable[i] = qRgb( i, i, i );
-            }
-        }
-        QImage image(mat.data, mat.cols, mat.rows, mat.step, QImage::Format_Indexed8 );
-        image.setColorTable(sColorTable);
-#endif
-        return image;
-    }
-    // wrong
-    default:
-        qDebug() << "ERROR: Mat could not be converted to QImage.";
-        break;
-    }
-    return QImage();
-}
-
-Mat CameraDemo::QImage2Mat(const QImage& image)
-{
-    cv::Mat mat,mat_out;    //如果把mat_out变更为mat，那么参数image的r/b被调换。即使被const修饰，依然被更改，比较诡异。参数变为值传递，也依然被更改。
-    switch (image.format())
-    {
-    case QImage::Format_RGB32:                              //一般Qt读入本地彩色图后为此格式
-        mat = cv::Mat(image.height(), image.width(), CV_8UC4, (void*)image.constBits(), image.bytesPerLine());
-        cv::cvtColor(mat, mat_out, cv::COLOR_BGRA2BGR);     //转3通道，OpenCV一般用3通道的
-        break;
-    case QImage::Format_RGB888:
-        mat = cv::Mat(image.height(), image.width(), CV_8UC3, (void*)image.constBits(), image.bytesPerLine());
-        cv::cvtColor(mat, mat_out, cv::COLOR_RGB2BGR);
-        break;
-    case QImage::Format_Indexed8:
-        mat = cv::Mat(image.height(), image.width(), CV_8UC1, (void*)image.constBits(), image.bytesPerLine());
-        break;
-    }
-    return mat_out;
-}
 void CameraDemo::videoDisplay(const QImage image)
 {
     if(image.isNull())
@@ -186,9 +123,7 @@ void CameraDemo::videoDisplay(const QImage image)
 
         QPixmap pixmap = QPixmap::fromImage(qimg);
         ui->labelCamera->setPixmap(pixmap.scaled(ui->labelCamera->size(),Qt::KeepAspectRatio));//Qt::SmoothTransformation 保持比例
-    }
-    else
-    {
+    }else{
         ui->labelCamera->setPixmap(QPixmap::fromImage(image_tmp.scaled(ui->labelCamera->size(),Qt::KeepAspectRatio)));//全屏显示
     }
 }

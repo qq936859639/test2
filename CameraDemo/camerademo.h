@@ -81,8 +81,6 @@ private:
     CascadeClassifier ccf;   //创建分类器对象
     QImage image_tmp;
     FACES *faces;
-    QImage Mat2QImage(const Mat &mat);
-    Mat QImage2Mat(const QImage& image);
 
     double PIDCalc(PID *pp,double NextPoint);
 };
