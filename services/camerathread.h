@@ -15,11 +15,11 @@ public:
     ~CameraThread();
     V4L *camera;
     QImage getImage();
-
+bool startflag;
 signals:
     void Collect_complete(const QImage);
 protected:
-    bool startflag;
+
     void run();
 
 private:

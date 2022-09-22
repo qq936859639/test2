@@ -99,6 +99,8 @@ private slots:
 
     void rplidar_data();
 
+    void on_radar_clicked();
+
 protected:
     void closeEvent(QCloseEvent *event);
 
@@ -145,9 +147,13 @@ private:
 
     quint8 Car_state_flag;
     quint8 Car_state1_flag;
-quint8 Car_rplidar_flag;
-quint8 Car_rplidar_flag_stop;
-QMovie *pm;
+    quint8 Car_rplidar_flag;
+    quint8 Car_rplidar_flag_stop;
+    QMovie *pm;
+
+    void Open_Radar();
+    void Close_Radar();
+    quint8 Car_millimeter_radar=0;
 };
 
 #endif // AICARDEMO_H

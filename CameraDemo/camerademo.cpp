@@ -48,12 +48,7 @@ CameraDemo::CameraDemo(QWidget *parent, CameraThread *camerathread, ModbusThread
 
     faces = new FACES();
     connect(faces,SIGNAL(locationInfo(int,int,int,int)),this,SLOT(faceLocation(int,int,int,int)));
-    /*
-    string xmlPath="./data/haarcascade_frontalface_alt.xml";
-    if(!ccf.load(xmlPath))   //加载训练文件
-    {
-        perror("不能加载指定的xml文件");
-    }*/
+
     get_ip();
     pid_x = (PID *)malloc(sizeof(PID));
     pid_y = (PID *)malloc(sizeof(PID));

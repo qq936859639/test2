@@ -93,6 +93,7 @@ AICarDemo::AICarDemo(QWidget *parent, CameraThread *camerathread, ModbusThread *
     pm = new QMovie(":/image/res/image/rplidar_0.gif");
     ui->rplidar_0->setScaledContents(true);
     ui->rplidar_0->setMovie(pm);
+
 }
 
 AICarDemo::~AICarDemo()
@@ -114,12 +115,39 @@ void AICarDemo::closeEvent(QCloseEvent *event)
 
     disconnect(cameraThread, SIGNAL(Collect_complete(QImage)),this,SLOT(Car_videoDisplay(QImage)));
     disconnect(AutoPilot,SIGNAL(timeout()),this,SLOT(AutoPilotSystem()));
-    if(ui->rplidar->text()=="断开")
+    if(ui->rplidar->text()=="关")
         rplidar->rplidar_close();
     Car_rplidar_state->stop();
     pm->stop();
 }
+void AICarDemo::Open_Radar()
+{
+    on_radar_clicked();
+    on_ul_clicked();
+    on_rplidar_clicked();
+}
+void AICarDemo::Close_Radar()
+{
+    if(ui->radar->text()=="关")
+    {
+        Car_millimeter_radar = 0;
+        ui->radar->setText(tr("开"));
+    }
 
+    if(ui->rplidar->text()=="关")
+    {
+        rplidar->rplidar_close();
+        Car_rplidar_state->stop();
+        pm->stop();
+        ui->rplidar->setText(tr("开"));
+    }
+
+    if(ui->ul->text()=="关")//按钮按下操作
+    {
+        Uart_Close();
+        ui->ul->setText(tr("开"));
+    }
+}
 void AICarDemo::on_turnLeft_clicked()
 {
     car->turnLeft();
@@ -288,7 +316,6 @@ void AICarDemo::on_connect_clicked()
 {
     Car_Reset();
     emit Car_connect(ui->lineEdit->text());
-
 }
 void AICarDemo::Car_change_connet(bool data)
 {
@@ -298,6 +325,7 @@ void AICarDemo::Car_change_connet(bool data)
         ui->tabWidget->setDisabled(true);
         ui->Car_reset->setDisabled(true);
         car_state->stop();
+        Close_Radar();
         ui->frame->setVisible(true);
     }
     if(data == true){
@@ -306,10 +334,10 @@ void AICarDemo::Car_change_connet(bool data)
         ui->Car_reset->setDisabled(false);
         Car_Reset();
         car_state->start();
+        Open_Radar();
         ui->frame->setVisible(false);
         save_ip();
     }
-
 }
 void AICarDemo::get_ip()
 {
@@ -442,31 +470,33 @@ void AICarDemo::Car_read_data(int address, int data)
     }
     if(address == 0x0018)
     {
-        if(0 < data && data < 30){
-            if(Car_END_flag==0 && Car_AD_flag < 0 && Car_state_flag == 0){
-                Car_Reset();
-                Car_state_flag = 1;
+        if(Car_millimeter_radar == 1){
+            if(0 < data && data < 30){
+                if(Car_END_flag==0 && Car_AD_flag < 0 && Car_state_flag == 0){
+                    Car_Reset();
+                    Car_state_flag = 1;
 
-                if(ul_play_flag == 0){
-                    QSound *success = new QSound("./mp3/radar_obstacles.wav", this);
-                    success->play();
-                    ul_play_flag = 1;
-                    video_play->start();
+                    if(ul_play_flag == 0){
+                        QSound *success = new QSound("./mp3/radar_obstacles.wav", this);
+                        success->play();
+                        ul_play_flag = 1;
+                        video_play->start();
+                    }
                 }
             }
-        }
-        else{
-            if(0 < Car_AD_flag){
-                Car_state_flag = 0;
-            }
-            if(Car_END_flag==0 && Car_state_flag == 1){
-                on_accelerate_clicked();
-                Car_state_flag = 0;
-            }
+            else{
+                if(0 < Car_AD_flag){
+                    Car_state_flag = 0;
+                }
+                if(Car_END_flag==0 && Car_state_flag == 1){
+                    on_accelerate_clicked();
+                    Car_state_flag = 0;
+                }
 
+            }
+            radar_data = QString::number(data);
+            ui->radar_data->setText(radar_data);
         }
-        radar_data = QString::number(data);
-        ui->radar_data->setText(radar_data);
     }
 }
 QImage AICarDemo::Mat2QImage(const Mat &mat)
@@ -754,7 +784,7 @@ void AICarDemo::Uart_Connect()
     }
     if(SerialPort.open(QIODevice::ReadOnly))//打开串口，并设置串口为只读模式
     {
-        ui->ul->setText(tr("断开"));
+        ui->ul->setText(tr("关"));
         SerialPort.setBaudRate(QSerialPort::Baud9600);//设置串口波特率（9600）
         SerialPort.setDataBits(QSerialPort::Data8);//设置数据位（8）
         SerialPort.setParity(QSerialPort::NoParity); //设置奇偶校检（无）
@@ -801,7 +831,7 @@ void AICarDemo::Uart_ReadData()
                 if(ch == temp[2])
                 {
                     int temp_data = temp[0]<<8 | temp[1];
-                    ui->ultrasound_data->setText(QString::number(temp_data));
+                    ui->ultrasound_data->setText(QString::number(temp_data/10.0));
                     if(temp_data <240)
                     {
                         //ui->ultrasound_data->setText(tr("数据无效"));
@@ -1456,30 +1486,41 @@ void AICarDemo::on_gym_clicked()
     }
 }
 
+void AICarDemo::on_radar_clicked()
+{
+    if(ui->radar->text() == "开"){
+        Car_millimeter_radar = 1;
+        ui->radar->setText(tr("关"));
+    }else{
+        Car_millimeter_radar = 0;
+        ui->radar->setText(tr("开"));
+    }
+}
+
 void AICarDemo::on_ul_clicked()
 {
-    if(ui->ul->text()== "打开")//按钮按下操作
+    if(ui->ul->text()== "开")//按钮按下操作
     {
         Uart_Connect();
     }else{
         Uart_Close();
-        ui->ul->setText(tr("打开"));
+        ui->ul->setText(tr("开"));
     }
 }
 
 void AICarDemo::on_rplidar_clicked()
 {
-    if(ui->rplidar->text()=="打开")
+    if(ui->rplidar->text()=="开")
     {
         if(rplidar->rplidar_open()==0){
-            ui->rplidar->setText(tr("断开"));
+            ui->rplidar->setText(tr("关"));
             on_Car_reset_clicked();
             Car_rplidar_state->start();
             pm->start();
         }
     }else{
         Car_Reset();
-        ui->rplidar->setText(tr("打开"));
+        ui->rplidar->setText(tr("开"));
         Car_rplidar_state->stop();
         pm->stop();
         rplidar->rplidar_close();
@@ -1488,11 +1529,10 @@ void AICarDemo::on_rplidar_clicked()
 
 void AICarDemo::rplidar_data()
 {
-    if(ui->rplidar->text()=="断开" && Car_END_flag==0)
+    if(ui->rplidar->text()=="关" && Car_END_flag==0)
     {
         rplidar->rplidar_read();
 
-        qDebug()<<"cjf:  "<<Car_rplidar_flag << "  :"<<rplidar->rplidar_ranges_flag;
         if(Car_rplidar_flag == rplidar->rplidar_ranges_flag && rplidar->rplidar_ranges_flag != 0)
         {
             return;
@@ -1574,3 +1614,5 @@ void AICarDemo::rplidar_data()
 
     }
 }
+
+
