@@ -51,10 +51,9 @@ CameraThread::CameraThread(QObject *parent) : QThread(parent)
 CameraThread::~CameraThread()
 {
    // delete ;
+    startflag = false;
     camera->closeVideo(camera->videofd);
     camera->uninitVideo();
-    startflag = false;
-    qDebug()<<"cjf camerathread";
 }
 
 void CameraThread::run(){

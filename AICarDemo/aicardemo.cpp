@@ -102,7 +102,8 @@ AICarDemo::~AICarDemo()
 }
 void AICarDemo::closeEvent(QCloseEvent *event)
 {
-    Car_Reset();
+    if(ui->connect->text()=="Disconnect")
+        Car_Reset();
     emit Car_connect(ui->lineEdit->text());
     Uart_Close();//关闭串口
     disconnect(this, SIGNAL(Car_connect(QString)),modbusThread,SLOT(on_connect(QString)));
@@ -314,7 +315,8 @@ void AICarDemo::on_decelerate_clicked()
 
 void AICarDemo::on_connect_clicked()
 {
-    Car_Reset();
+    if(ui->connect->text()=="Disconnect")
+        Car_Reset();
     emit Car_connect(ui->lineEdit->text());
 }
 void AICarDemo::Car_change_connet(bool data)

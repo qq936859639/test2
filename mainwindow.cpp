@@ -27,6 +27,16 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
+    modbusThread->deleteLater();
+    modbusThread->wait();
+
+    cameraThread->startflag=false;
+    cameraThread->deleteLater();
+    cameraThread->wait();
+
+    delete modbusThread;
+    delete cameraThread;
+
     delete ui;
 }
 

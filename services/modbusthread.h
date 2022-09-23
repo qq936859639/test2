@@ -64,6 +64,8 @@ protected:
     void onStateChanged(int state);
 
     void on_connectType_currentIndexChanged();
+
+    void run();
 private:
     QModbusReply *lastRequest;
     QModbusClient *modbusDevice;

@@ -25,7 +25,7 @@ class CameraDemo : public QWidget
 {
     Q_OBJECT
 public:
-    explicit CameraDemo(QWidget *parent = nullptr, CameraThread *camerathread=nullptr, ModbusThread *modbusthread=nullptr);
+    explicit CameraDemo(QWidget *parent = nullptr, CameraThread *cameraThread=nullptr, ModbusThread *modbusThread=nullptr);
     ~CameraDemo();
     CameraThread *cameraThread;
     ModbusThread *modbusThread;

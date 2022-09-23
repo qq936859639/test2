@@ -223,3 +223,7 @@ void ModbusThread::onStateChanged(int state)//连接状态发生改变时处理�
         emit on_change_connet(isConnected);
     }
 }
+void ModbusThread::run()
+{
+
+}
