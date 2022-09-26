@@ -61,7 +61,8 @@ signals:
     void Car_connect(const QString ip);
     void Car_writeRead(int startAddress, quint16 numberOfEntries, quint16 data);
     void Car_read(int startAddress, quint16 numberOfEntries);
-    void Car_times(bool data);
+
+    void Car_radar(int mi_data,int ul_data,int la_radar);
 private slots:
     void on_turnLeft_clicked();
     void on_turnRight_clicked();
@@ -81,26 +82,17 @@ private slots:
 
     void Uart_ReadData();//串口读取接口槽函数
     void on_pushButton_clicked();
-
     void AutoPilotSystem();
-
-
     void on_townhall_clicked();
-
     void on_mall_clicked();
-
     void on_school_clicked();
-
     void on_gym_clicked();
-
     void on_ul_clicked();
-
     void on_rplidar_clicked();
-
     void rplidar_data();
-
     void on_radar_clicked();
 
+    void Read_Radar(int mi_data,int ul_data,int la_radar);
 protected:
     void closeEvent(QCloseEvent *event);
 
@@ -147,6 +139,7 @@ private:
 
     quint8 Car_state_flag;
     quint8 Car_state1_flag;
+    quint8 Car_state2_flag;
     quint8 Car_rplidar_flag;
     quint8 Car_rplidar_flag_stop;
     QMovie *pm;
@@ -154,6 +147,7 @@ private:
     void Open_Radar();
     void Close_Radar();
     quint8 Car_millimeter_radar=0;
+    int ul_last_data;
 };
 
 #endif // AICARDEMO_H
