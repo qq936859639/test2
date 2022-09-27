@@ -114,7 +114,7 @@
     </size>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>1</number>
    </property>
    <property name="iconSize">
     <size>
@@ -122,6 +122,208 @@
      <height>16</height>
     </size>
    </property>
+   <widget class="QWidget" name="tab">
+    <attribute name="title">
+     <string>雷达</string>
+    </attribute>
+    <widget class="QPushButton" name="rplidar">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>70</y>
+       <width>51</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>开</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="rplidar_text">
+     <property name="geometry">
+      <rect>
+       <x>70</x>
+       <y>70</y>
+       <width>81</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>激光雷达</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="rplidar_3">
+     <property name="geometry">
+      <rect>
+       <x>90</x>
+       <y>130</y>
+       <width>61</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QLabel" name="rplidar_4">
+     <property name="geometry">
+      <rect>
+       <x>170</x>
+       <y>180</y>
+       <width>31</width>
+       <height>61</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QLabel" name="rplidar_1">
+     <property name="geometry">
+      <rect>
+       <x>90</x>
+       <y>260</y>
+       <width>61</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QLabel" name="rplidar_2">
+     <property name="geometry">
+      <rect>
+       <x>40</x>
+       <y>180</y>
+       <width>31</width>
+       <height>61</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QLabel" name="rplidar_0">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>110</y>
+       <width>200</width>
+       <height>200</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">border-image: url(:/image/res/image/1.jpg);</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QLabel" name="radar_data">
+     <property name="geometry">
+      <rect>
+       <x>180</x>
+       <y>10</y>
+       <width>50</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>0</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="radar_text">
+     <property name="geometry">
+      <rect>
+       <x>70</x>
+       <y>10</y>
+       <width>100</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>毫米波雷达cm:</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="ultrasound_data">
+     <property name="geometry">
+      <rect>
+       <x>180</x>
+       <y>40</y>
+       <width>50</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>0</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="ul">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>40</y>
+       <width>51</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>开</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="ultrasound_data_3">
+     <property name="geometry">
+      <rect>
+       <x>70</x>
+       <y>40</y>
+       <width>100</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>超声波雷达cm:</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="radar">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>10</y>
+       <width>51</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>开</string>
+     </property>
+    </widget>
+    <zorder>rplidar</zorder>
+    <zorder>rplidar_text</zorder>
+    <zorder>rplidar_0</zorder>
+    <zorder>rplidar_1</zorder>
+    <zorder>rplidar_4</zorder>
+    <zorder>rplidar_3</zorder>
+    <zorder>rplidar_2</zorder>
+    <zorder>radar_data</zorder>
+    <zorder>radar_text</zorder>
+    <zorder>ultrasound_data</zorder>
+    <zorder>ul</zorder>
+    <zorder>ultrasound_data_3</zorder>
+    <zorder>radar</zorder>
+   </widget>
    <widget class="QWidget" name="tab_1">
     <property name="minimumSize">
      <size>
@@ -135,9 +337,9 @@
     <widget class="QWidget" name="horizontalLayoutWidget">
      <property name="geometry">
       <rect>
-       <x>20</x>
+       <x>10</x>
        <y>10</y>
-       <width>201</width>
+       <width>221</width>
        <height>101</height>
       </rect>
      </property>
@@ -679,208 +881,6 @@
       <string>开始</string>
      </property>
     </widget>
-   </widget>
-   <widget class="QWidget" name="tab">
-    <attribute name="title">
-     <string>雷达</string>
-    </attribute>
-    <widget class="QPushButton" name="rplidar">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>70</y>
-       <width>51</width>
-       <height>25</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>开</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="rplidar_text">
-     <property name="geometry">
-      <rect>
-       <x>70</x>
-       <y>70</y>
-       <width>81</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>激光雷达</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="rplidar_3">
-     <property name="geometry">
-      <rect>
-       <x>90</x>
-       <y>130</y>
-       <width>61</width>
-       <height>31</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true"/>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
-    <widget class="QLabel" name="rplidar_4">
-     <property name="geometry">
-      <rect>
-       <x>170</x>
-       <y>180</y>
-       <width>31</width>
-       <height>61</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true"/>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
-    <widget class="QLabel" name="rplidar_1">
-     <property name="geometry">
-      <rect>
-       <x>90</x>
-       <y>260</y>
-       <width>61</width>
-       <height>31</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true"/>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
-    <widget class="QLabel" name="rplidar_2">
-     <property name="geometry">
-      <rect>
-       <x>40</x>
-       <y>180</y>
-       <width>31</width>
-       <height>61</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true"/>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
-    <widget class="QLabel" name="rplidar_0">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>110</y>
-       <width>200</width>
-       <height>200</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">border-image: url(:/image/res/image/1.jpg);</string>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
-    <widget class="QLabel" name="radar_data">
-     <property name="geometry">
-      <rect>
-       <x>180</x>
-       <y>10</y>
-       <width>50</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>0</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="radar_text">
-     <property name="geometry">
-      <rect>
-       <x>70</x>
-       <y>10</y>
-       <width>100</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>毫米波雷达cm:</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="ultrasound_data">
-     <property name="geometry">
-      <rect>
-       <x>180</x>
-       <y>40</y>
-       <width>50</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>0</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="ul">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>40</y>
-       <width>51</width>
-       <height>25</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>开</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="ultrasound_data_3">
-     <property name="geometry">
-      <rect>
-       <x>70</x>
-       <y>40</y>
-       <width>100</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>超声波雷达cm:</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="radar">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>10</y>
-       <width>51</width>
-       <height>25</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>开</string>
-     </property>
-    </widget>
-    <zorder>rplidar</zorder>
-    <zorder>rplidar_text</zorder>
-    <zorder>rplidar_0</zorder>
-    <zorder>rplidar_1</zorder>
-    <zorder>rplidar_4</zorder>
-    <zorder>rplidar_3</zorder>
-    <zorder>rplidar_2</zorder>
-    <zorder>radar_data</zorder>
-    <zorder>radar_text</zorder>
-    <zorder>ultrasound_data</zorder>
-    <zorder>ul</zorder>
-    <zorder>ultrasound_data_3</zorder>
-    <zorder>radar</zorder>
    </widget>
   </widget>
   <widget class="QLabel" name="school_rgy_light">

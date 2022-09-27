@@ -7,12 +7,19 @@ ModbusThread::ModbusThread(QObject *parent)
     , modbusDevice(nullptr)
 {
     on_connectType_currentIndexChanged();
+
+    rplidar = new RPLIDAR();
+    if(rplidar->rplidar_open()==0){
+
+    rplidar_flag = true;
+    }
 }
 ModbusThread::~ModbusThread()
 {
     if (modbusDevice)
         modbusDevice->disconnectDevice();
     delete modbusDevice;
+    rplidar->rplidar_close();
 }
 void ModbusThread::on_connectType_currentIndexChanged()
 {
@@ -225,5 +232,8 @@ void ModbusThread::onStateChanged(int state)//连接状态发生改变时处理�
 }
 void ModbusThread::run()
 {
-
+    while(rplidar_flag==true){
+    rplidar->rplidar_read();
+    emit rplidar_read(-1,-1,rplidar->rplidar_ranges_flag);
+    }
 }

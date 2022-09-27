@@ -11,6 +11,8 @@
 #include <QStatusBar>
 #include <QUrl>
 
+#include "AICarDemo/rplidar/rplidar.h"
+
 #define HOST_NAME "192.168.88.132:8232"      //云台IP地址(ESP32)
 //#define HOST_NAME "192.168.88.180:502"      //IP地址
 #define CAMERA_ADDR1 0x000B //舵机1轴旋转角度
@@ -45,9 +47,13 @@ public:
     explicit ModbusThread(QObject *parent = nullptr);
     ~ModbusThread();
     bool isConnected;
+
+    RPLIDAR *rplidar;
+    bool rplidar_flag = false;
 signals:
     void on_read_data(int startAddress, int data);
     void on_change_connet(bool);
+    void rplidar_read(int data1,int data2,int data3);
 private slots:
     void on_connect(const QString ip);
     void on_write(quint16 data);
@@ -69,6 +75,7 @@ protected:
 private:
     QModbusReply *lastRequest;
     QModbusClient *modbusDevice;
+
 };
 
 #endif // MODBUSTHREAD_H

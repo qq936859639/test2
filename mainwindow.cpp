@@ -27,6 +27,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
+    modbusThread->rplidar_flag=false;
     modbusThread->deleteLater();
     modbusThread->wait();
 

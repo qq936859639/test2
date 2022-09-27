@@ -258,7 +258,7 @@ int RPLIDAR::rplidar_read() {
 
                 if(225 < rplidar_theta && rplidar_theta <= 315)
                 {
-                    if(0 < rplidar_dist && rplidar_dist < 400)
+                    if(0 < rplidar_dist && rplidar_dist < 350)
                     {
                         rplidar_ranges_flag |= 0x08;
                     }

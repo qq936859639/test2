@@ -22,7 +22,7 @@
 #include <QSerialPortInfo>
 #include <QSerialPort>
 
-#include "rplidar/rplidar.h"
+//#include "rplidar/rplidar.h"
 using namespace std;
 using namespace cv;
 
@@ -56,7 +56,7 @@ public:
     void get_ip();
     void save_ip();
 
-    RPLIDAR *rplidar;
+//    RPLIDAR *rplidar;
 signals:
     void Car_connect(const QString ip);
     void Car_writeRead(int startAddress, quint16 numberOfEntries, quint16 data);
@@ -89,7 +89,6 @@ private slots:
     void on_gym_clicked();
     void on_ul_clicked();
     void on_rplidar_clicked();
-    void rplidar_data();
     void on_radar_clicked();
 
     void Read_Radar(int mi_data,int ul_data,int la_radar);
@@ -108,7 +107,6 @@ private:
     QTimer *car_state;
     QTimer *video_play;
     QTimer *AutoPilot;
-    QTimer *Car_rplidar_state;
 
     QImage image_tmp;
 

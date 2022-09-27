@@ -47,11 +47,10 @@ AICarDemo::AICarDemo(QWidget *parent, CameraThread *camerathread, ModbusThread *
     video_play = new QTimer(this);
     video_play->setInterval(3000);
     connect(video_play,SIGNAL(timeout()),this,SLOT(Car_traffic_light_Play()));
-//    car_rgy_light_play->start();
     rgy_light_play_flag = 0;
 
     AutoPilot = new QTimer(this);
-    AutoPilot->setInterval(50);//1000
+    AutoPilot->setInterval(1000);
     connect(AutoPilot,SIGNAL(timeout()),this,SLOT(AutoPilotSystem()));
 
 //    lower_red = Scalar(2, 100, 100);
@@ -64,6 +63,7 @@ AICarDemo::AICarDemo(QWidget *parent, CameraThread *camerathread, ModbusThread *
 
     this->cameraThread = camerathread;
     this->modbusThread = modbusthread;
+
     connect(this, SIGNAL(Car_connect(QString)),modbusThread,SLOT(on_connect(QString)));
     connect(modbusThread, SIGNAL(on_change_connet(bool)),this,SLOT(Car_change_connet(bool)));
 
@@ -85,18 +85,15 @@ AICarDemo::AICarDemo(QWidget *parent, CameraThread *camerathread, ModbusThread *
 
     get_ip();
 
-    rplidar = new RPLIDAR();
     Car_rplidar_flag = 0;
     Car_rplidar_flag_stop = 0;
-    Car_rplidar_state = new QTimer(this);
-    Car_rplidar_state->setInterval(1000);
-    connect(Car_rplidar_state,SIGNAL(timeout()),this,SLOT(rplidar_data()));
+
     pm = new QMovie(":/image/res/image/rplidar_0.gif");
     ui->rplidar_0->setScaledContents(true);
     ui->rplidar_0->setMovie(pm);
 
     connect(this, SIGNAL(Car_radar(int,int,int)),this,SLOT(Read_Radar(int,int,int)));//获取雷达数据
-
+    connect(modbusThread, SIGNAL(rplidar_read(int,int,int)),this,SLOT(Read_Radar(int,int,int)));
 }
 
 AICarDemo::~AICarDemo()
@@ -119,10 +116,10 @@ void AICarDemo::closeEvent(QCloseEvent *event)
 
     disconnect(cameraThread, SIGNAL(Collect_complete(QImage)),this,SLOT(Car_videoDisplay(QImage)));
     disconnect(AutoPilot,SIGNAL(timeout()),this,SLOT(AutoPilotSystem()));
-    if(ui->rplidar->text()=="关")
-        rplidar->rplidar_close();
-    Car_rplidar_state->stop();
+
     pm->stop();
+    disconnect(this, SIGNAL(Car_radar(int,int,int)),this,SLOT(Read_Radar(int,int,int)));//获取雷达数据
+    disconnect(modbusThread, SIGNAL(rplidar_read(int,int,int)),this,SLOT(Read_Radar(int,int,int)));
 }
 void AICarDemo::Open_Radar()
 {
@@ -193,7 +190,7 @@ void AICarDemo::Read_Radar(int mi_data,int ul_data,int la_radar)
     }
     //激光雷达处理
     if(la_radar!=-1){
-        if(Car_rplidar_flag == rplidar->rplidar_ranges_flag && rplidar->rplidar_ranges_flag != 0)
+        if(Car_rplidar_flag == la_radar&& la_radar != 0)
         {
             return;
         }
@@ -205,98 +202,96 @@ void AICarDemo::Read_Radar(int mi_data,int ul_data,int la_radar)
             ui->rplidar_4->setStyleSheet("");
             Car_rplidar_flag_stop = 0;
         }
-        Car_rplidar_flag = rplidar->rplidar_ranges_flag;
+        Car_rplidar_flag = la_radar;
 
-        if(rplidar->rplidar_ranges_flag == 0x00 &&Car_rplidar_flag_stop == 0)//周围无障碍物
+        if(la_radar == 0x00 &&Car_rplidar_flag_stop == 0)//周围无障碍物
         {
             Car_rplidar_flag_stop = 1;
             ui->rplidar_1->setStyleSheet("");
             ui->rplidar_2->setStyleSheet("");
             ui->rplidar_3->setStyleSheet("");
             ui->rplidar_4->setStyleSheet("");
-            if(Car_state2_flag == 1){
+            if(Car_state2_flag == 1&&Car_END_flag==0){
                 on_accelerate_clicked();
                 Car_state2_flag = 0;
             }
-            if(Car_state2_flag == 2){
+            if(Car_state2_flag == 2&&Car_END_flag==0){
                 on_decelerate_clicked();
                 Car_state2_flag = 0;
             }
-            if(Car_turn_flag < 0)
+            if(Car_END_flag==0){
+                Car_turn_flag = -1;
                 on_turnRight_clicked();
-            if(Car_turn_flag > 0)
-                on_turnLeft_clicked();
-
-        }else if(rplidar->rplidar_ranges_flag == 0x01)//前
+            }
+        }else if(la_radar == 0x01)//前
         {
             ui->rplidar_1->setStyleSheet("border-image:url(:/image/res/image/rplidar_1.png);");
-            if(Car_AD_flag < 0){
+            if(Car_AD_flag < 0&&Car_END_flag==0){
                 Car_Reset();
                 Car_state2_flag = 1;
             }
-        }else if(rplidar->rplidar_ranges_flag == 0x02){//右
+        }else if(la_radar == 0x02){//右
             ui->rplidar_2->setStyleSheet("border-image:url(:/image/res/image/rplidar_2.png);");
-            if(Car_AD_flag != 0){
+            if(Car_AD_flag != 0&&Car_END_flag==0){
                 on_turnLeft_clicked();
             }
-        }else if(rplidar->rplidar_ranges_flag == 0x04){//后
+        }else if(la_radar == 0x04){//后
             ui->rplidar_3->setStyleSheet("border-image:url(:/image/res/image/rplidar_3.png);");
-            if(Car_AD_flag > 0){
+            if(Car_AD_flag > 0&&Car_END_flag==0){
                 Car_Reset();
                 Car_state2_flag = 2;
             }
-        }else if(rplidar->rplidar_ranges_flag == 0x08){//左
+        }else if(la_radar == 0x08){//左
             ui->rplidar_4->setStyleSheet("border-image:url(:/image/res/image/rplidar_4.png);");
-            if(Car_AD_flag != 0){
+            if(Car_AD_flag != 0&&Car_END_flag==0){
                 on_turnRight_clicked();
             }
-        }else if(rplidar->rplidar_ranges_flag == 0x03){//前右
-            if(Car_AD_flag < 0)
+        }else if(la_radar == 0x03){//前右
+            if(Car_AD_flag < 0&&Car_END_flag==0)
                 on_turnLeft_clicked();
             ui->rplidar_1->setStyleSheet("border-image:url(:/image/res/image/rplidar_1.png);");
             ui->rplidar_2->setStyleSheet("border-image:url(:/image/res/image/rplidar_2.png);");
-        }else if(rplidar->rplidar_ranges_flag == 0x06){//右后
-            if(Car_AD_flag > 0)
+        }else if(la_radar == 0x06){//右后
+            if(Car_AD_flag > 0&&Car_END_flag==0)
                 on_turnLeft_clicked();
             ui->rplidar_2->setStyleSheet("border-image:url(:/image/res/image/rplidar_2.png);");
             ui->rplidar_3->setStyleSheet("border-image:url(:/image/res/image/rplidar_3.png);");
-        }else if(rplidar->rplidar_ranges_flag == 0x0C){//后左
-            if(Car_AD_flag > 0)
+        }else if(la_radar == 0x0C){//后左
+            if(Car_AD_flag > 0&&Car_END_flag==0)
                 on_turnRight_clicked();
             ui->rplidar_3->setStyleSheet("border-image:url(:/image/res/image/rplidar_3.png);");
             ui->rplidar_4->setStyleSheet("border-image:url(:/image/res/image/rplidar_4.png);");
-        }else if(rplidar->rplidar_ranges_flag == 0x09){//左前
-            if(Car_AD_flag < 0)
+        }else if(la_radar == 0x09){//左前
+            if(Car_AD_flag < 0&&Car_END_flag==0)
                 on_turnRight_clicked();
             ui->rplidar_4->setStyleSheet("border-image:url(:/image/res/image/rplidar_4.png);");
             ui->rplidar_1->setStyleSheet("border-image:url(:/image/res/image/rplidar_1.png);");
-        }else if(rplidar->rplidar_ranges_flag == 0x0B){//左前右
-            if(Car_AD_flag < 0)
-                on_decelerate_clicked();
+        }else if(la_radar == 0x0B){//左前右
             ui->rplidar_4->setStyleSheet("border-image:url(:/image/res/image/rplidar_4.png);");
             ui->rplidar_1->setStyleSheet("border-image:url(:/image/res/image/rplidar_1.png);");
             ui->rplidar_2->setStyleSheet("border-image:url(:/image/res/image/rplidar_2.png);");
-        }else if(rplidar->rplidar_ranges_flag == 0x0A){//左右
-            Car_Reset();
+        }else if(la_radar == 0x0A){//左右
             ui->rplidar_2->setStyleSheet("border-image:url(:/image/res/image/rplidar_2.png);");
             ui->rplidar_4->setStyleSheet("border-image:url(:/image/res/image/rplidar_4.png);");
-        }else if(rplidar->rplidar_ranges_flag == 0x05){//前后
-            Car_Reset();
+        }else if(la_radar == 0x05){//前后
             ui->rplidar_1->setStyleSheet("border-image:url(:/image/res/image/rplidar_1.png);");
             ui->rplidar_3->setStyleSheet("border-image:url(:/image/res/image/rplidar_3.png);");
-        }else if(rplidar->rplidar_ranges_flag == 0x0E){//前右后左
-            Car_Reset();
+        }else if(la_radar == 0x0F){//前右后左
+            if(Car_END_flag==0)
+                Car_Reset();
             ui->rplidar_1->setStyleSheet("border-image:url(:/image/res/image/rplidar_1.png);");
             ui->rplidar_2->setStyleSheet("border-image:url(:/image/res/image/rplidar_2.png);");
             ui->rplidar_3->setStyleSheet("border-image:url(:/image/res/image/rplidar_3.png);");
             ui->rplidar_4->setStyleSheet("border-image:url(:/image/res/image/rplidar_4.png);");
-        }else if(rplidar->rplidar_ranges_flag == 0x07){//前右后
-            Car_Reset();
+        }else if(la_radar == 0x0E){//右后左
+            ui->rplidar_2->setStyleSheet("border-image:url(:/image/res/image/rplidar_2.png);");
+            ui->rplidar_3->setStyleSheet("border-image:url(:/image/res/image/rplidar_3.png);");
+            ui->rplidar_4->setStyleSheet("border-image:url(:/image/res/image/rplidar_4.png);");
+        }else if(la_radar == 0x07){//前右后
             ui->rplidar_1->setStyleSheet("border-image:url(:/image/res/image/rplidar_1.png);");
             ui->rplidar_2->setStyleSheet("border-image:url(:/image/res/image/rplidar_2.png);");
             ui->rplidar_3->setStyleSheet("border-image:url(:/image/res/image/rplidar_3.png);");
-        }else if(rplidar->rplidar_ranges_flag == 0x0D){//前左后
-            Car_Reset();
+        }else if(la_radar == 0x0D){//前左后
             ui->rplidar_1->setStyleSheet("border-image:url(:/image/res/image/rplidar_1.png);");
             ui->rplidar_3->setStyleSheet("border-image:url(:/image/res/image/rplidar_3.png);");
             ui->rplidar_4->setStyleSheet("border-image:url(:/image/res/image/rplidar_4.png);");
@@ -317,8 +312,6 @@ void AICarDemo::Close_Radar()
     }
     if(ui->rplidar->text()=="关")//激光雷达
     {
-        rplidar->rplidar_close();
-        Car_rplidar_state->stop();
         pm->stop();
         ui->rplidar->setText(tr("开"));
     }
@@ -415,7 +408,7 @@ void AICarDemo::on_accelerate_clicked()
 {
     car->accelerate();
     //-5 -4 -3 -2 -1 0 1 2 3 4 5 由Car_turn_flag控制,前后方向各5个档位,0停止
-    //500-900 对应档位, 由Car_turn_LR_Angle_num控制
+    //500-900 对应档位, 由Car_AD_Rate_num控制
     //900 = -5 ,800 = -4, 700 = -3, 600 = -2, 500 = -1, 0 ,500 = 1, 600 = 2,...,900 = 5
     Car_AD_flag -= 1;
 
@@ -471,7 +464,7 @@ void AICarDemo::on_decelerate_clicked()
             Car_AD_Rate_num = 900;
         emit Car_writeRead(CAR_DECELERATE_ADDR_DATA, 1, Car_AD_Rate_num);
         emit Car_writeRead(CAR_COMMAND_ADDR, 1, CAR_DECELERATE_DATA | CAR_LEFT_DATA | CAR_RIGHT_DATA);
-//        qDebug()<<"cjf LL1 num"<<Car_turnLeft_Angle_num <<"time"<<Car_turn_flag;
+
         emit Car_writeRead(CAR_LEFT_REAR_LED_DATA, 1, Car_AD_flag * 200);
         emit Car_writeRead(CAR_RIGHT_REAR_LED_DATA, 1, Car_AD_flag * 200);
         emit Car_writeRead(CAR_COMMAND_LED_ADDR, 1, CAR_LEFT_REAR_LED | CAR_RIGHT_REAR_LED);
@@ -647,33 +640,6 @@ void AICarDemo::Car_read_data(int address, int data)
     if(address == 0x0018)
     {
         emit Car_radar(data, -1,-1);
-/*        if(Car_millimeter_radar == 1){
-            if(0 < data && data < 30){
-                if(Car_END_flag==0 && Car_AD_flag < 0 && Car_state_flag == 0){
-                    Car_Reset();
-                    Car_state_flag = 1;
-
-                    if(ul_play_flag == 0){
-                        QSound *success = new QSound("./mp3/radar_obstacles.wav", this);
-                        success->play();
-                        ul_play_flag = 1;
-                        video_play->start();
-                    }
-                }
-            }
-            else{
-                if(0 < Car_AD_flag){
-                    Car_state_flag = 0;
-                }
-                if(Car_END_flag==0 && Car_state_flag == 1){
-                    on_accelerate_clicked();
-                    Car_state_flag = 0;
-                }
-
-            }
-            radar_data = QString::number(data);
-            ui->radar_data->setText(radar_data);
-        }*/
     }
 }
 QImage AICarDemo::Mat2QImage(const Mat &mat)
@@ -704,20 +670,16 @@ QImage AICarDemo::Mat2QImage(const Mat &mat)
             if (sColorTable.isEmpty())
             {
                 sColorTable.resize( 256 );
-
                 for ( int i =0; i <256; ++i )
                 {
                     sColorTable[i] = qRgb( i, i, i );
                 }
             }
-
             QImage image(mat.data, mat.cols, mat.rows, mat.step, QImage::Format_Indexed8 );
             image.setColorTable(sColorTable);
 #endif
-
             return image;
         }
-
         // wrong
         default:
             qDebug() << "ERROR: Mat could not be converted to QImage.";
@@ -1024,33 +986,6 @@ void AICarDemo::Uart_ReadData()
                     ul_last_data = temp_data;
 
                     emit Car_radar(-1,temp_data,-1);
-                    /*
-                    ui->ultrasound_data->setText(QString::number(temp_data/10.0));
-                    if(temp_data <240)
-                    {
-                        //ui->ultrasound_data->setText(tr("数据无效"));
-                    }else if (240 < temp_data && temp_data<500){
-                        if(Car_END_flag==0 && Car_AD_flag > 0 && Car_state1_flag == 0){
-                            Car_Reset();
-                            Car_state1_flag = 1;
-
-                            if(ul_play_flag == 0){
-                                QSound *success = new QSound("./mp3/ur_obstacles.wav", this);
-                                success->play();
-                                ul_play_flag = 1;
-                                video_play->start();
-                            }
-                        }
-                    }else if(temp_data > 500){
-                        if(Car_AD_flag < 0){
-                            Car_state1_flag = 0;
-                        }
-
-                        if(Car_END_flag==0 && Car_state1_flag == 1){
-                            on_decelerate_clicked();
-                            Car_state1_flag = 0;
-                        }
-                    }*/
                 }
                 status = 0;
                 break;
@@ -1706,107 +1641,11 @@ void AICarDemo::on_rplidar_clicked()
 {
     if(ui->rplidar->text()=="开")
     {
-        if(rplidar->rplidar_open()==0){
-            ui->rplidar->setText(tr("关"));
-            on_Car_reset_clicked();
-            Car_rplidar_state->start();
-            pm->start();
-        }
+        ui->rplidar->setText(tr("关"));
+        pm->start();
     }else{
         Car_Reset();
         ui->rplidar->setText(tr("开"));
-        Car_rplidar_state->stop();
         pm->stop();
-        rplidar->rplidar_close();
     }
 }
-
-void AICarDemo::rplidar_data()
-{
-    if(ui->rplidar->text()=="关" && Car_END_flag==0)
-    {
-        rplidar->rplidar_read();
-        emit Car_radar(-1,-1,Car_rplidar_flag);
-        /*
-        if(Car_rplidar_flag == rplidar->rplidar_ranges_flag && rplidar->rplidar_ranges_flag != 0)
-        {
-            return;
-        }
-        if(Car_rplidar_flag !=0)
-        {
-            ui->rplidar_1->setStyleSheet("");
-            ui->rplidar_2->setStyleSheet("");
-            ui->rplidar_3->setStyleSheet("");
-            ui->rplidar_4->setStyleSheet("");
-            Car_rplidar_flag_stop = 0;
-        }
-        Car_rplidar_flag = rplidar->rplidar_ranges_flag;
-        
-        if(rplidar->rplidar_ranges_flag == 0x00 &&Car_rplidar_flag_stop == 0)//
-        {
-            Car_Reset();
-            on_accelerate_clicked();
-            Car_rplidar_flag_stop = 1;
-            ui->rplidar_1->setStyleSheet("");
-            ui->rplidar_2->setStyleSheet("");
-            ui->rplidar_3->setStyleSheet("");
-            ui->rplidar_4->setStyleSheet("");
-        }else if(rplidar->rplidar_ranges_flag == 0x01)//前
-        {
-            Car_Reset();
-            ui->rplidar_1->setStyleSheet("border-image:url(:/image/res/image/rplidar_1.png);");
-        }else if(rplidar->rplidar_ranges_flag == 0x02){//右
-            on_turnLeft_clicked();
-            ui->rplidar_2->setStyleSheet("border-image:url(:/image/res/image/rplidar_2.png);");
-        }else if(rplidar->rplidar_ranges_flag == 0x04){//后
-            Car_Reset();
-            ui->rplidar_3->setStyleSheet("border-image:url(:/image/res/image/rplidar_3.png);");
-        }else if(rplidar->rplidar_ranges_flag == 0x08){//左
-            on_turnRight_clicked();
-            ui->rplidar_4->setStyleSheet("border-image:url(:/image/res/image/rplidar_4.png);");
-        }else if(rplidar->rplidar_ranges_flag == 0x03){//前右
-            on_turnLeft_clicked();
-            ui->rplidar_1->setStyleSheet("border-image:url(:/image/res/image/rplidar_1.png);");
-            ui->rplidar_2->setStyleSheet("border-image:url(:/image/res/image/rplidar_2.png);");
-        }else if(rplidar->rplidar_ranges_flag == 0x06){//右后
-            on_turnLeft_clicked();
-            ui->rplidar_2->setStyleSheet("border-image:url(:/image/res/image/rplidar_2.png);");
-            ui->rplidar_3->setStyleSheet("border-image:url(:/image/res/image/rplidar_3.png);");
-        }else if(rplidar->rplidar_ranges_flag == 0x0C){//后左
-            on_turnRight_clicked();
-            ui->rplidar_3->setStyleSheet("border-image:url(:/image/res/image/rplidar_3.png);");
-            ui->rplidar_4->setStyleSheet("border-image:url(:/image/res/image/rplidar_4.png);");
-        }else if(rplidar->rplidar_ranges_flag == 0x09){//左前
-            on_turnRight_clicked();
-            ui->rplidar_4->setStyleSheet("border-image:url(:/image/res/image/rplidar_4.png);");
-            ui->rplidar_1->setStyleSheet("border-image:url(:/image/res/image/rplidar_1.png);");
-        }else if(rplidar->rplidar_ranges_flag == 0x0B){//左前右
-            on_decelerate_clicked();
-            ui->rplidar_4->setStyleSheet("border-image:url(:/image/res/image/rplidar_4.png);");
-            ui->rplidar_1->setStyleSheet("border-image:url(:/image/res/image/rplidar_1.png);");
-            ui->rplidar_2->setStyleSheet("border-image:url(:/image/res/image/rplidar_2.png);");
-        }else if(rplidar->rplidar_ranges_flag == 0x0A){//左右
-            Car_Reset();
-            ui->rplidar_2->setStyleSheet("border-image:url(:/image/res/image/rplidar_2.png);");
-            ui->rplidar_4->setStyleSheet("border-image:url(:/image/res/image/rplidar_4.png);");
-        }else if(rplidar->rplidar_ranges_flag == 0x05){//前后
-            Car_Reset();
-            ui->rplidar_1->setStyleSheet("border-image:url(:/image/res/image/rplidar_1.png);");
-            ui->rplidar_3->setStyleSheet("border-image:url(:/image/res/image/rplidar_3.png);");
-        }else if(rplidar->rplidar_ranges_flag == 0x0B){//前右后左
-            Car_Reset();
-            ui->rplidar_1->setStyleSheet("border-image:url(:/image/res/image/rplidar_1.png);");
-            ui->rplidar_2->setStyleSheet("border-image:url(:/image/res/image/rplidar_2.png);");
-            ui->rplidar_3->setStyleSheet("border-image:url(:/image/res/image/rplidar_3.png);");
-            ui->rplidar_4->setStyleSheet("border-image:url(:/image/res/image/rplidar_4.png);");
-        }else if(rplidar->rplidar_ranges_flag == 0x07){//前右后
-            on_turnLeft_clicked();
-            ui->rplidar_1->setStyleSheet("border-image:url(:/image/res/image/rplidar_1.png);");
-            ui->rplidar_2->setStyleSheet("border-image:url(:/image/res/image/rplidar_2.png);");
-            ui->rplidar_3->setStyleSheet("border-image:url(:/image/res/image/rplidar_3.png);");
-        }
-        */
-    }
-}
-
-
