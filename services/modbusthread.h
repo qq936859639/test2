@@ -50,6 +50,9 @@ public:
 
     RPLIDAR *rplidar;
     bool rplidar_flag = false;
+
+    void modbus_rplidar_startMotor();
+    void modbus_rplidar_stopMotor();
 signals:
     void on_read_data(int startAddress, int data);
     void on_change_connet(bool);

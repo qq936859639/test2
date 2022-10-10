@@ -201,7 +201,7 @@ int RPLIDAR::rplidar_open() {
 
     signal(SIGINT, ctrlc);
 
-    drv->startMotor();
+//    drv->startMotor();
     // start scan...
     drv->startScan(0,1);
     return 0;
@@ -281,7 +281,21 @@ int RPLIDAR::rplidar_read() {
         }
     return 0;
 }
+void RPLIDAR::rplidar_startMotor() {
+    if(!drv)
+        return;
+    drv->startMotor();
+}
+
+void RPLIDAR::rplidar_stopMotor() {
+    if(!drv)
+        return;
+    drv->stopMotor();
+}
+
 int RPLIDAR::rplidar_close() {
+    if(!drv)
+        return -1;
     drv->stop();
     drv->stopMotor();
     // done!

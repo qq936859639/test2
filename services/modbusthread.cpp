@@ -230,6 +230,12 @@ void ModbusThread::onStateChanged(int state)//连接状态发生改变时处理�
         emit on_change_connet(isConnected);
     }
 }
+void ModbusThread::modbus_rplidar_startMotor(){
+    rplidar->rplidar_startMotor();
+}
+void ModbusThread::modbus_rplidar_stopMotor(){
+    rplidar->rplidar_stopMotor();
+}
 void ModbusThread::run()
 {
     while(rplidar_flag==true){

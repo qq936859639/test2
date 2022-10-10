@@ -53,7 +53,8 @@ public:
     int rplidar_open();
     int rplidar_read();
     int rplidar_close();
-
+    void rplidar_startMotor();
+    void rplidar_stopMotor();
     uint8_t rplidar_ranges_flag;
 private:
     u_result     op_result;

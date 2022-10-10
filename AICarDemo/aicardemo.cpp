@@ -120,6 +120,7 @@ void AICarDemo::closeEvent(QCloseEvent *event)
     pm->stop();
     disconnect(this, SIGNAL(Car_radar(int,int,int)),this,SLOT(Read_Radar(int,int,int)));//获取雷达数据
     disconnect(modbusThread, SIGNAL(rplidar_read(int,int,int)),this,SLOT(Read_Radar(int,int,int)));
+    modbusThread->modbus_rplidar_stopMotor();
 }
 void AICarDemo::Open_Radar()
 {
@@ -220,8 +221,9 @@ void AICarDemo::Read_Radar(int mi_data,int ul_data,int la_radar)
                 Car_state2_flag = 0;
             }
             if(Car_END_flag==0){
-                Car_turn_flag = -1;
-                on_turnRight_clicked();
+//                Car_turn_flag = 0;//左右方向复位
+//                on_turnLeft_clicked();
+//                on_turnRight_clicked();
             }
         }else if(la_radar == 0x01)//前
         {
@@ -1641,9 +1643,11 @@ void AICarDemo::on_rplidar_clicked()
 {
     if(ui->rplidar->text()=="开")
     {
+        modbusThread->modbus_rplidar_startMotor();
         ui->rplidar->setText(tr("关"));
         pm->start();
     }else{
+        modbusThread->modbus_rplidar_stopMotor();
         Car_Reset();
         ui->rplidar->setText(tr("开"));
         pm->stop();
