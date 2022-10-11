@@ -90,7 +90,6 @@ void Car::timerEvent(QTimerEvent *event)
     Q_UNUSED(event);
 
     const qreal axelDistance = 54;
-    qDebug()<<"cjf "<<speed <<speed_flag;
 
     qreal wheelsAngleRads = qDegreesToRadians(wheelsAngle);
     qreal turnDistance = ::cos(wheelsAngleRads) * axelDistance * 2;
