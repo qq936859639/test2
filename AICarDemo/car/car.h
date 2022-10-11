@@ -29,6 +29,8 @@ private:
     QBrush color;
     qreal wheelsAngle; // used when applying rotation
     qreal speed; // delta movement along the body axis
+    quint8 flag=0;
+    qint8 speed_flag=0;
 };
 
 #endif // CAR_H

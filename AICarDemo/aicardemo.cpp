@@ -27,6 +27,18 @@ AICarDemo::AICarDemo(QWidget *parent, CameraThread *camerathread, ModbusThread *
     ui->graphicsView->show();
     ui->graphicsView->setStyleSheet("border-image:url(:/image/res/image/car_map.png);");
 
+    QRectF rec(-500+180, -500+174, 720-1, 530-1);
+    QLineF topLine(rec.topLeft(),rec.topRight());
+    QLineF leftLine(rec.topLeft(),rec.bottomLeft());
+    QLineF rightLine(rec.topRight(),rec.bottomRight());
+    QLineF bottomLine(rec.bottomLeft(),rec.bottomRight());
+    QPen mypen(Qt::red);
+    scene->addLine(topLine,mypen);
+    scene->addLine(leftLine,mypen);
+    scene->addLine(rightLine,mypen);
+    scene->addLine(bottomLine,mypen);
+
+
     ui->townhall->setCheckable(true);
     ui->mall->setCheckable(true);
     ui->school->setCheckable(true);

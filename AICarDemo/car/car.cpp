@@ -41,6 +41,8 @@ void Car::reset()
 {
     speed = 0;
     wheelsAngle = 0;
+
+    speed_flag = 0;
 }
 
 void Car::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
@@ -88,6 +90,8 @@ void Car::timerEvent(QTimerEvent *event)
     Q_UNUSED(event);
 
     const qreal axelDistance = 54;
+    qDebug()<<"cjf "<<speed <<speed_flag;
+
     qreal wheelsAngleRads = qDegreesToRadians(wheelsAngle);
     qreal turnDistance = ::cos(wheelsAngleRads) * axelDistance * 2;
     qreal turnRateRads = wheelsAngleRads / turnDistance;  // rough estimate
@@ -97,4 +101,39 @@ void Car::timerEvent(QTimerEvent *event)
     setTransform(QTransform().rotate(rotation), true);
     setTransform(QTransform::fromTranslate(0, -speed), true);
     update();
+
+    if(flag>0)
+    {
+        flag = flag -1;//0;
+        if(flag == 0)
+            speed = 0;
+    }
+
+    if(speed_flag < 0){
+        if(speed_flag<-5)
+            speed_flag = -5;
+         if(speed >0){
+             speed_flag = speed_flag + 1;
+             speed = 0;
+         }
+    }
+    if(speed_flag > 0){
+        if(speed_flag>5)
+            speed_flag = 5;
+        if(speed < 0)
+        {
+            speed_flag = speed_flag - 1;
+            speed = 0;
+        }
+     }
+
+    if(!collidingItems().isEmpty()){
+        flag = 1;//小车撞墙反弹，数值越大，反弹越大
+        speed_flag = speed_flag + speed;//记录撞墙次数
+        speed=-speed;
+    }
+    //小车没有顿挫感
+//    setTransform(QTransform().rotate(rotation), true);
+//    setTransform(QTransform::fromTranslate(0, -speed), true);
+//    update();
 }
