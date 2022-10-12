@@ -47,5 +47,6 @@
         <file>image/rplidar_1.png</file>
         <file>image/bg.jpg</file>
         <file>image/lcd.png</file>
+        <file>image/car_map_1.png</file>
     </qresource>
 </RCC>
