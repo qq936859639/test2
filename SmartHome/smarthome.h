@@ -98,6 +98,8 @@ private slots:
     void finishTrainSlot(bool isSuccess);   // 人脸识别训练完毕
     void on_captureDel_clicked();
 
+    void on_face_button_clicked();
+
 private:
     Ui::SmartHome *ui;
 
@@ -122,6 +124,7 @@ private:
     Audio *audio;
     QSound *qsound_master;
     QSound *qsound_guest;
+    quint8 qsound_play_flag=0;                  //音频播放标志位
 
     FaceUtils *faceUtils;                   // 人脸检测、识别工具类
     quint8 videos_times=0;                  // 1秒显示帧数

@@ -610,6 +610,7 @@ void AICarDemo::on_Car_reset_clicked()
 //    ui->car_pole_3->setVisible(true);
 
 //    ui->passengers->setVisible(true);
+
 //    QPointF point = car->mapToScene(scene->sceneRect().x(),scene->sceneRect().y());
 //    qDebug()<<"cjf debug"<<point.x()<<point.y();
 }

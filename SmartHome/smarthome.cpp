@@ -815,7 +815,7 @@ void SmartHome::SmartHome_videoDisplay(const QImage image)
     cv::resize(img,img,Size(320, 240));
 
     videos_times++;
-    if(ui->Key_SmartHome->isChecked()&&videos_times>1){
+    if(ui->Key_SmartHome->isChecked()&&videos_times>3){
         img.copyTo(image_tmp);
         videos_times = 0;
         //img = FaceRecognition(img);            //人脸识别
@@ -839,12 +839,16 @@ void SmartHome::SmartHome_videoDisplay(const QImage image)
             int result = faceUtils->faceRecognition(imageRIO, recognizerModel);
             cout << result << endl;
             if(0<result &&result<6){
-                if(qsound_master->isFinished())
-                    qsound_master->play();
+                if(qsound_play_flag ==0){
+                    if(qsound_master->isFinished())
+                        qsound_master->play();
+                }
             }else if(result==-1){
             }else{
-                if(qsound_guest->isFinished())
-                    qsound_guest->play();
+                if(qsound_play_flag ==0){
+                    if(qsound_guest->isFinished())
+                        qsound_guest->play();
+                }
             }
 
             switch(result)
@@ -1183,5 +1187,16 @@ void SmartHome::get_ip()
             ui->password_DHT11_data->setText(buffer.trimmed());
         }
         myFile->close();
+    }
+}
+
+void SmartHome::on_face_button_clicked()
+{
+    if(ui->face_button->text() == "提示音关"){
+        qsound_play_flag = 1;
+        ui->face_button->setText(tr("提示音开"));
+    }else{
+        qsound_play_flag = 0;
+        ui->face_button->setText(tr("提示音关"));
     }
 }
