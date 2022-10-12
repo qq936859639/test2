@@ -815,7 +815,7 @@ void SmartHome::SmartHome_videoDisplay(const QImage image)
     cv::resize(img,img,Size(320, 240));
 
     videos_times++;
-    if(ui->Key_SmartHome->isChecked()&&videos_times>3){
+    if(ui->Key_SmartHome->isChecked()&&videos_times>1){
         img.copyTo(image_tmp);
         videos_times = 0;
         //img = FaceRecognition(img);            //人脸识别
