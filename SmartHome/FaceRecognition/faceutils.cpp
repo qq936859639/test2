@@ -72,7 +72,7 @@ int FaceUtils::faceRecognition(const Mat &image, RecognizerModel recognizerModel
             if(0 < temp && temp < 6){
                 eigenFaceRecognizer->predict(faceRecognizerGray, pridicted_label, predicted_confidence);
                 qDebug("faces_label:%d,confidence:%f",pridicted_label,predicted_confidence);
-                if(predicted_confidence < 2000)
+                if(predicted_confidence < 5000)
                         return temp;
                 return -1;
             }else
@@ -86,7 +86,7 @@ int FaceUtils::faceRecognition(const Mat &image, RecognizerModel recognizerModel
             if(0 < temp && temp < 6){
                 LBPHFaceRecognizer->predict(faceRecognizerGray, pridicted_label, predicted_confidence);
                 qDebug("faces_label:%d,confidence:%f",pridicted_label,predicted_confidence);
-                if(predicted_confidence < 80)
+                if(predicted_confidence < 100)
                     return temp;
                 return -1;
             }else
