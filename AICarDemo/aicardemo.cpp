@@ -8,6 +8,11 @@
 //#include <fstream>   //文本读写
 #include <QMovie>
 
+enum ModbusConnection {
+    Serial,
+    Tcp
+};
+
 AICarDemo::AICarDemo(QWidget *parent, CameraThread *camerathread, ModbusThread *modbusthread) :
     QWidget(parent),
     ui(new Ui::AICarDemo)
@@ -95,7 +100,7 @@ AICarDemo::AICarDemo(QWidget *parent, CameraThread *camerathread, ModbusThread *
     ui->tabWidget->setDisabled(true);
     ui->Car_reset->setDisabled(true);
 
-    get_ip();
+//    get_ip();
 
     Car_rplidar_flag = 0;
     Car_rplidar_flag_stop = 0;
@@ -110,6 +115,8 @@ AICarDemo::AICarDemo(QWidget *parent, CameraThread *camerathread, ModbusThread *
     if(ui->scene->text()=="场景关"){
             on_scene_clicked();
     }
+
+    on_connectType_currentIndexChanged(0);
 }
 
 AICarDemo::~AICarDemo()
@@ -428,32 +435,34 @@ void AICarDemo::on_accelerate_clicked()
     //-5 -4 -3 -2 -1 0 1 2 3 4 5 由Car_turn_flag控制,前后方向各5个档位,0停止
     //500-900 对应档位, 由Car_AD_Rate_num控制
     //900 = -5 ,800 = -4, 700 = -3, 600 = -2, 500 = -1, 0 ,500 = 1, 600 = 2,...,900 = 5
-    Car_AD_flag -= 1;
+    Car_AD_flag += 1;
 
-    if(Car_AD_flag < -5)
-        Car_AD_flag = -5;
+    if(Car_AD_flag > 5)
+        Car_AD_flag = 5;
 
     if(Car_AD_flag == 0){
-        Car_AD_Rate_num -= 50;
+        Car_AD_Rate_num = 0;
         emit Car_writeRead(CAR_COMMAND_ADDR, 1, (CAR_LEFT_DATA | CAR_RIGHT_DATA) & 0x0F);//小车后退复位
 
         emit Car_writeRead(CAR_LEFT_REAR_LED_DATA, 1, 0);
         emit Car_writeRead(CAR_RIGHT_REAR_LED_DATA, 1, 0);
         emit Car_writeRead(CAR_COMMAND_LED_ADDR, 1, CAR_LEFT_REAR_LED | CAR_RIGHT_REAR_LED);
+
+        emit Car_writeRead(CAR_ACCELERATE_ADDR_DATA, 1, Car_AD_Rate_num);
     }
 
-    if(Car_AD_flag < 0){
-        Car_AD_Rate_num += 50;
-        if(Car_AD_Rate_num > 900)
-            Car_AD_Rate_num = 900;
+    if(Car_AD_flag > 0){
+        Car_AD_Rate_num += 1;
+        if(Car_AD_Rate_num > 5)
+            Car_AD_Rate_num = 5;
         emit Car_writeRead(CAR_ACCELERATE_ADDR_DATA, 1, Car_AD_Rate_num);
         emit Car_writeRead(CAR_COMMAND_ADDR, 1, CAR_ACCELERATE_DATA | CAR_LEFT_DATA | CAR_RIGHT_DATA);
     }
 
-    if(Car_AD_flag > 0){
-        Car_AD_Rate_num -= 50;
-        if(Car_AD_Rate_num < 500)
-            Car_AD_Rate_num = 500;
+    if(Car_AD_flag < 0){
+        Car_AD_Rate_num += 1;
+//        if(Car_AD_Rate_num < -5)
+//            Car_AD_Rate_num = -5;
         emit Car_writeRead(CAR_DECELERATE_ADDR_DATA, 1, Car_AD_Rate_num);//小车后退
         emit Car_writeRead(CAR_COMMAND_ADDR, 1, CAR_DECELERATE_DATA | CAR_LEFT_DATA | CAR_RIGHT_DATA);
 
@@ -461,25 +470,27 @@ void AICarDemo::on_accelerate_clicked()
         emit Car_writeRead(CAR_RIGHT_REAR_LED_DATA, 1, Car_AD_flag * 200);
         emit Car_writeRead(CAR_COMMAND_LED_ADDR, 1, CAR_LEFT_REAR_LED | CAR_RIGHT_REAR_LED);
     }
+    qDebug()<<"cjf car a"<<Car_AD_flag<<"  "<<Car_AD_Rate_num;
 }
 
 void AICarDemo::on_decelerate_clicked()
 {
     car->decelerate();
-    Car_AD_flag += 1;
+    Car_AD_flag -= 1;
 
-    if(Car_AD_flag > 5)
-        Car_AD_flag = 5;
+    if(Car_AD_flag < -5)
+        Car_AD_flag = -5;
 
     if(Car_AD_flag == 0){
-        Car_AD_Rate_num -= 50;
+        Car_AD_Rate_num = 0;
         emit Car_writeRead(CAR_COMMAND_ADDR, 1, (CAR_LEFT_DATA | CAR_RIGHT_DATA) & 0x0F);//小车后退复位
+        emit Car_writeRead(CAR_ACCELERATE_ADDR_DATA, 1, Car_AD_Rate_num);
     }
 
-    if(Car_AD_flag > 0){
-        Car_AD_Rate_num += 50;
-        if(Car_AD_Rate_num > 900)
-            Car_AD_Rate_num = 900;
+    if(Car_AD_flag < 0){
+        Car_AD_Rate_num -= 1;
+        if(Car_AD_Rate_num < -5)
+            Car_AD_Rate_num = -5;
         emit Car_writeRead(CAR_DECELERATE_ADDR_DATA, 1, Car_AD_Rate_num);
         emit Car_writeRead(CAR_COMMAND_ADDR, 1, CAR_DECELERATE_DATA | CAR_LEFT_DATA | CAR_RIGHT_DATA);
 
@@ -488,14 +499,15 @@ void AICarDemo::on_decelerate_clicked()
         emit Car_writeRead(CAR_COMMAND_LED_ADDR, 1, CAR_LEFT_REAR_LED | CAR_RIGHT_REAR_LED);
     }
 
-    if(Car_AD_flag < 0){
-        Car_AD_Rate_num -= 50;
-        if(Car_AD_Rate_num < 500)
-            Car_AD_Rate_num = 500;
+    if(Car_AD_flag > 0){
+        Car_AD_Rate_num -= 1;
+//        if(Car_AD_Rate_num > 5)
+//            Car_AD_Rate_num = 5;
         emit Car_writeRead(CAR_ACCELERATE_ADDR_DATA, 1, Car_AD_Rate_num);//小车后退
         emit Car_writeRead(CAR_COMMAND_ADDR, 1, CAR_ACCELERATE_DATA | CAR_LEFT_DATA | CAR_RIGHT_DATA);
 
     }
+    qDebug()<<"cjf car d"<<Car_AD_flag<<"  "<<Car_AD_Rate_num;
 }
 
 void AICarDemo::on_connect_clicked()
@@ -561,10 +573,13 @@ void AICarDemo::Car_Reset()
 {
     Car_turn_flag = 0;
     Car_AD_flag = 0;
-    Car_turn_LR_Angle_num = 750;
-    Car_AD_Rate_num = 500;
+    Car_turn_LR_Angle_num = 0;
+    Car_AD_Rate_num = 0;
     car->reset();
     emit Car_writeRead(CAR_COMMAND_ADDR, 1, 0);//小车复位
+    emit Car_writeRead(CAR_TURNLEFT_ADDR_DATA, 1, 0);//小车复位
+    emit Car_writeRead(CAR_ACCELERATE_ADDR_DATA, 1, 0);//小车复位
+
     emit Car_writeRead(CAR_COMMAND_LED_ADDR, 1, 0);//小车LED复位
 }
 void AICarDemo::on_Car_reset_clicked()
@@ -1728,4 +1743,43 @@ void AICarDemo::on_scene_clicked()
         ui->school_rgy_light->setVisible(true);
         ui->scene->setText(tr("场景关"));
     }
+}
+
+void AICarDemo::on_connectType_currentIndexChanged(int index)
+{
+    auto type = static_cast<ModbusConnection> (index);
+    if (type == Serial) {
+        portFind();
+qDebug()<<"cjf 0a";
+    }else if (type == Tcp) {
+
+//        get_ip();
+//        qDebug()<<"cjf 1a";
+    }
+}
+
+/*自动查询串口*/
+void AICarDemo::portFind()
+{
+    QList<QSerialPortInfo> list3;//获取串口列表
+    list3 = QSerialPortInfo::availablePorts();
+    for(int i = 0; i < list3.size(); i++)
+        qDebug()<<list3[i].portName();//打印串口信息
+
+    //检查可用的端口，添加到下拉框以供选择
+    foreach (const QSerialPortInfo &info, QSerialPortInfo::availablePorts())
+    {
+        qDebug() << "Name : " << info.portName();
+        QSerialPort serial_num;
+        serial_num.setPort(info);
+        if(serial_num.open(QIODevice::ReadWrite))
+        {
+         //   ui->com->addItem(serial_num.portName());
+            serial_num.close();
+        }
+//        if(serial_num.portName()=="ttyUSB1"){
+//            ui->lineEdit->setText(QLatin1Literal("ttyUSB1"));
+//        }
+    }
+
 }

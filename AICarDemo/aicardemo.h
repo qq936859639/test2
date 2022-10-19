@@ -43,8 +43,8 @@ public:
 
     CameraThread *cameraThread;
     ModbusThread *modbusThread;
-    quint16 Car_turn_LR_Angle_num = 750;
-    quint16 Car_AD_Rate_num = 450;
+    qint8 Car_turn_LR_Angle_num = 0;
+    qint8 Car_AD_Rate_num = 0;
     qint8 Car_turn_flag = 0;
     qint8 Car_AD_flag = 0;
     float accx=0, accy=0, accz=0;
@@ -56,6 +56,7 @@ public:
     void get_ip();
     void save_ip();
 
+    void portFind();
 //    RPLIDAR *rplidar;
 signals:
     void Car_connect(const QString ip);
@@ -93,6 +94,8 @@ private slots:
 
     void Read_Radar(int mi_data,int ul_data,int la_radar);
     void on_scene_clicked();
+
+    void on_connectType_currentIndexChanged(int index);
 
 protected:
     void closeEvent(QCloseEvent *event);

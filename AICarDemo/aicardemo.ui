@@ -1090,9 +1090,9 @@
   <widget class="QFrame" name="frame">
    <property name="geometry">
     <rect>
-     <x>480</x>
+     <x>430</x>
      <y>9</y>
-     <width>251</width>
+     <width>301</width>
      <height>341</height>
     </rect>
    </property>
@@ -1115,13 +1115,13 @@
      </rect>
     </property>
     <property name="text">
-     <string>智能车的IP地址和端口号：</string>
+     <string>智能车连接方式：</string>
     </property>
    </widget>
    <widget class="QLineEdit" name="lineEdit">
     <property name="geometry">
      <rect>
-      <x>10</x>
+      <x>100</x>
       <y>40</y>
       <width>191</width>
       <height>31</height>
@@ -1133,6 +1133,26 @@
     <property name="text">
      <string>192.168.88.135:8232</string>
     </property>
+   </widget>
+   <widget class="QComboBox" name="connectType">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>40</y>
+      <width>81</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <item>
+     <property name="text">
+      <string>Serial</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>TCP</string>
+     </property>
+    </item>
    </widget>
   </widget>
   <widget class="QLabel" name="passengers">

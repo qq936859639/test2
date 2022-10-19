@@ -30,10 +30,10 @@
 #define CAR_RIGHT_REAR_LED 0x08   //小车右后灯
 
 #define CAR_TURNLEFT_ADDR_DATA 0x0006 //小车左转角度值
-#define CAR_TURNRIGHT_ADDR_DATA 0x0007 //小车右转角度值
-#define CAR_ACCELERATE_ADDR_DATA 0x0008 //小车前进值
-#define CAR_DECELERATE_ADDR_DATA 0x0009 //小车后退值
-#define CAR_COMMAND_ADDR 0x000A //小车运动控制命令
+#define CAR_TURNRIGHT_ADDR_DATA 0x0006 //小车右转角度值
+#define CAR_ACCELERATE_ADDR_DATA 0x0007 //小车前进值
+#define CAR_DECELERATE_ADDR_DATA 0x0007 //小车后退值
+#define CAR_COMMAND_ADDR 0x0006 //小车运动控制命令
 #define CAR_RESET_DATA 0x00 //小车复位(不转向不运动)
 #define CAR_LEFT_DATA 0x01 //小车左转
 #define CAR_RIGHT_DATA 0x02 //小车右转
@@ -53,6 +53,8 @@ public:
 
     void modbus_rplidar_startMotor();
     void modbus_rplidar_stopMotor();
+
+    quint8 connectType = 0;
 signals:
     void on_read_data(int startAddress, int data);
     void on_change_connet(bool);
@@ -72,7 +74,7 @@ protected:
     void readReady();
     void onStateChanged(int state);
 
-    void on_connectType_currentIndexChanged();
+    void on_connectType_currentIndexChanged(int index);
 
     void run();
 private:
