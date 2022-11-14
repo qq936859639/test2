@@ -339,7 +339,7 @@
       <rect>
        <x>10</x>
        <y>10</y>
-       <width>221</width>
+       <width>256</width>
        <height>101</height>
       </rect>
      </property>
@@ -1131,7 +1131,7 @@
      <string notr="true">background-color: rgb(255, 255, 255);</string>
     </property>
     <property name="text">
-     <string>192.168.88.135:8232</string>
+     <string>ttycar</string>
     </property>
    </widget>
    <widget class="QComboBox" name="connectType">

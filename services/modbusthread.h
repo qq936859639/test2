@@ -14,7 +14,7 @@
 #include "AICarDemo/rplidar/rplidar.h"
 
 #define HOST_NAME "192.168.88.132:8232"      //云台IP地址(ESP32)
-//#define HOST_NAME "192.168.88.180:502"      //IP地址
+
 #define CAMERA_ADDR1 0x000B //舵机1轴旋转角度
 #define CAMERA_ADDR2 0x000C //舵机2轴旋转角度
 
