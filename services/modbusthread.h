@@ -66,6 +66,8 @@ private slots:
     void on_readWrite(quint16 data);
 
     void on_writeRead(int startAddress, quint16 numberOfEntries, quint16 data,quint16 data2 = 0);
+
+    void on_connectType_currentIndexChanged(quint8 index);
 protected:
 
     //void on_connect();
@@ -73,8 +75,6 @@ protected:
 
     void readReady();
     void onStateChanged(int state);
-
-    void on_connectType_currentIndexChanged(int index);
 
     void run();
 private:

@@ -29,11 +29,11 @@
     <string notr="true"/>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>2</number>
    </property>
    <widget class="QWidget" name="tab_1">
     <attribute name="title">
-     <string>温湿度</string>
+     <string>连接信息</string>
     </attribute>
     <widget class="QWidget" name="layoutWidget_4">
      <property name="geometry">
@@ -46,30 +46,16 @@
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
       <item row="0" column="1">
-       <widget class="QLineEdit" name="topic_DHT11_data">
+       <widget class="QLineEdit" name="SubTopic_DHT11_data">
         <property name="text">
-         <string>$baidu/iot/shadow/DHT11/update/accepted</string>
+         <string>$iot/AIplatform01/user/update</string>
         </property>
        </widget>
       </item>
       <item row="0" column="0">
-       <widget class="QLabel" name="topic_DHT11">
+       <widget class="QLabel" name="SubTopic_DHT11">
         <property name="text">
-         <string>Topic:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="message_DHT11">
-        <property name="text">
-         <string>Message:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="2">
-       <widget class="QPushButton" name="Publish_DHT11">
-        <property name="text">
-         <string>Publish</string>
+         <string>SubTopic:</string>
         </property>
        </widget>
       </item>
@@ -80,85 +66,40 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="1">
+      <item row="2" column="1">
        <widget class="QLineEdit" name="message_DHT11_data">
         <property name="text">
-         <string>This is a test message</string>
+         <string>{&quot;desired&quot;:{&quot;LED&quot;:&quot;on&quot;,&quot;BUZZER&quot;:&quot;on&quot;,&quot;OCRelay&quot;:&quot;on&quot;}}</string>
         </property>
        </widget>
       </item>
-      <item row="2" column="2">
-       <widget class="QPushButton" name="Ping_DHT11">
+      <item row="1" column="1">
+       <widget class="QLineEdit" name="PubTopic_DHT11_data">
         <property name="text">
-         <string>Ping</string>
+         <string>$iot/AIplatform01/user/send</string>
         </property>
        </widget>
       </item>
       <item row="2" column="0">
-       <widget class="QLabel" name="state_DHT11">
+       <widget class="QLabel" name="message_DHT11">
         <property name="text">
-         <string>State:</string>
+         <string>Message:</string>
         </property>
        </widget>
       </item>
-      <item row="2" column="1">
-       <layout class="QHBoxLayout" name="horizontalLayout_13">
-        <item>
-         <widget class="QLabel" name="state_DHT11_temp">
-          <property name="text">
-           <string>温度:     </string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="state_DHT11_temp_data">
-          <property name="text">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="state_DHT11_temp_data_2">
-          <property name="text">
-           <string>℃</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="state_DHT11_humi">
-          <property name="text">
-           <string>湿度:     </string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="state_DHT11_humi_data">
-          <property name="text">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="state_DHT11_humi_data_2">
-          <property name="text">
-           <string>%</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <spacer name="horizontalSpacer_5">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-       </layout>
+      <item row="1" column="0">
+       <widget class="QLabel" name="PubTopic_DHT11">
+        <property name="text">
+         <string>PubTopic:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="QPushButton" name="Publish_DHT11">
+        <property name="text">
+         <string>Publish</string>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>
@@ -190,6 +131,9 @@
       </rect>
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <property name="spacing">
+       <number>4</number>
+      </property>
       <item>
        <layout class="QFormLayout" name="formLayout_2">
         <item row="0" column="0">
@@ -254,660 +198,315 @@
        </layout>
       </item>
       <item>
-       <widget class="QPushButton" name="Connect_DHT11">
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>0</height>
-         </size>
+       <layout class="QVBoxLayout" name="verticalLayout_5">
+        <property name="spacing">
+         <number>4</number>
         </property>
-        <property name="text">
-         <string>Connect</string>
-        </property>
-       </widget>
+        <item>
+         <widget class="QPushButton" name="Connect_DHT11">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Connect</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="Ping_DHT11">
+          <property name="text">
+           <string>Ping</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="verticalSpacer">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
       </item>
      </layout>
     </widget>
    </widget>
    <widget class="QWidget" name="tab_2">
     <attribute name="title">
-     <string>LED蜂鸣器</string>
+     <string>传感器信息</string>
     </attribute>
-    <widget class="QWidget" name="layoutWidget_8">
+    <widget class="QWidget" name="layoutWidget_2">
      <property name="geometry">
       <rect>
-       <x>20</x>
-       <y>150</y>
-       <width>661</width>
-       <height>101</height>
+       <x>140</x>
+       <y>90</y>
+       <width>501</width>
+       <height>31</height>
       </rect>
      </property>
-     <layout class="QGridLayout" name="gridLayout_4">
-      <item row="0" column="1">
-       <widget class="QLineEdit" name="topic_LEDB_data">
-        <property name="text">
-         <string>$baidu/iot/shadow/LED/update/accepted</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="message_LEDB">
-        <property name="text">
-         <string>Message:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="2">
-       <widget class="QPushButton" name="Ping_LEDB">
-        <property name="text">
-         <string>Ping</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="2">
-       <widget class="QPushButton" name="Publish_LEDB">
-        <property name="text">
-         <string>Publish</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0">
-       <widget class="QLabel" name="topic_LEDB">
-        <property name="text">
-         <string>Topic:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="2">
-       <widget class="QPushButton" name="Subscribe_LEDB">
-        <property name="text">
-         <string>Subscribe</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QLineEdit" name="message_LEDB_data">
-        <property name="text">
-         <string>{&quot;desired&quot;:{&quot;BUZZER&quot;:&quot;on&quot;,&quot;LED&quot;:&quot;on&quot;}}</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1">
-       <layout class="QHBoxLayout" name="horizontalLayout_11">
-        <item>
-         <widget class="QPushButton" name="LED_ON">
-          <property name="text">
-           <string>LED开</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="LED_OFF">
-          <property name="text">
-           <string>LED关</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="BUZZER_ON">
-          <property name="text">
-           <string>BUZZER开</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="BUZZER_OFF">
-          <property name="text">
-           <string>BUZZER关</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="state_LED_data">
-          <property name="text">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="state_BUZZER_data">
-          <property name="text">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <spacer name="horizontalSpacer_3">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>108</width>
-            <height>17</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-       </layout>
-      </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="state_LEDB">
-        <property name="text">
-         <string>State:</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-    <widget class="QGroupBox" name="groupBox_LEDB">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>260</y>
-       <width>661</width>
-       <height>170</height>
-      </rect>
-     </property>
-     <property name="title">
-      <string>Log Messages</string>
-     </property>
-     <layout class="QHBoxLayout" name="horizontalLayout_9">
+     <layout class="QHBoxLayout" name="horizontalLayout_13">
       <item>
-       <widget class="QPlainTextEdit" name="editLog_LEDB"/>
-      </item>
-     </layout>
-    </widget>
-    <widget class="QWidget" name="layoutWidget_9">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>10</y>
-       <width>661</width>
-       <height>131</height>
-      </rect>
-     </property>
-     <layout class="QHBoxLayout" name="horizontalLayout_10">
-      <item>
-       <layout class="QFormLayout" name="formLayout_4">
-        <item row="0" column="0">
-         <widget class="QLabel" name="host_LEDB">
-          <property name="text">
-           <string>Host:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <widget class="QLineEdit" name="host_LEDB_data">
-          <property name="text">
-           <string>83miwvc.mqtt.iot.bj.baidubce.com</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QLabel" name="port_LEDB">
-          <property name="text">
-           <string>Port:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <widget class="QSpinBox" name="port_LEDB_data">
-          <property name="maximum">
-           <number>99999</number>
-          </property>
-          <property name="value">
-           <number>1883</number>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="0">
-         <widget class="QLabel" name="uart_LEDB">
-          <property name="text">
-           <string>User:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="1">
-         <widget class="QLineEdit" name="user_LEDB_data">
-          <property name="text">
-           <string>83miwvc/LED</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="0">
-         <widget class="QLabel" name="password_LEDB">
-          <property name="text">
-           <string>Password:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="1">
-         <widget class="QLineEdit" name="password_LEDB_data">
-          <property name="text">
-           <string>uX1L34PieZnrkX7c</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
+       <widget class="QLabel" name="state_DHT11_temp">
+        <property name="text">
+         <string>温度:     </string>
+        </property>
+       </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="Connect_LEDB">
-        <property name="minimumSize">
+       <widget class="QLabel" name="state_DHT11_temp_data">
+        <property name="text">
+         <string>NULL</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="state_DHT11_temp_data_2">
+        <property name="text">
+         <string>℃</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="state_DHT11_humi">
+        <property name="text">
+         <string>湿度:     </string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="state_DHT11_humi_data">
+        <property name="text">
+         <string>NULL</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="state_DHT11_humi_data_2">
+        <property name="text">
+         <string>%</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_5">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
          <size>
-          <width>0</width>
-          <height>0</height>
+          <width>40</width>
+          <height>20</height>
          </size>
         </property>
-        <property name="text">
-         <string>Connect</string>
-        </property>
-       </widget>
+       </spacer>
       </item>
      </layout>
     </widget>
-   </widget>
-   <widget class="QWidget" name="tab_3">
-    <attribute name="title">
-     <string>热释红外</string>
-    </attribute>
+    <widget class="QWidget" name="">
+     <property name="geometry">
+      <rect>
+       <x>140</x>
+       <y>170</y>
+       <width>503</width>
+       <height>33</height>
+      </rect>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_11">
+      <item>
+       <widget class="QPushButton" name="LED_ON">
+        <property name="text">
+         <string>LED开</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="LED_OFF">
+        <property name="text">
+         <string>LED关</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="BUZZER_ON">
+        <property name="text">
+         <string>BUZZER开</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="BUZZER_OFF">
+        <property name="text">
+         <string>BUZZER关</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="state_LED_data">
+        <property name="text">
+         <string>NULL</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="state_BUZZER_data">
+        <property name="text">
+         <string>NULL</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_3">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>108</width>
+          <height>17</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </widget>
+    <widget class="QLabel" name="LEDB">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>170</y>
+       <width>101</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>LED蜂鸣器:</string>
+     </property>
+    </widget>
     <widget class="QWidget" name="layoutWidget_3">
      <property name="geometry">
       <rect>
-       <x>20</x>
-       <y>10</y>
-       <width>661</width>
-       <height>131</height>
+       <x>140</x>
+       <y>250</y>
+       <width>501</width>
+       <height>33</height>
+      </rect>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_12">
+      <item>
+       <widget class="QPushButton" name="OCR_ON">
+        <property name="text">
+         <string>开</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="OCR_OFF">
+        <property name="text">
+         <string>关</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="state_OCR_data">
+        <property name="text">
+         <string>NULL</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_4">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </widget>
+    <widget class="QLabel" name="DHT11">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>90</y>
+       <width>101</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>温湿度:</string>
+     </property>
+    </widget>
+    <widget class="QWidget" name="horizontalLayoutWidget">
+     <property name="geometry">
+      <rect>
+       <x>140</x>
+       <y>340</y>
+       <width>501</width>
+       <height>31</height>
       </rect>
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
-       <layout class="QFormLayout" name="formLayout">
-        <item row="0" column="0">
-         <widget class="QLabel" name="host_PIR">
-          <property name="text">
-           <string>Host:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <widget class="QLineEdit" name="host_PIR_data">
-          <property name="text">
-           <string>83miwvc.mqtt.iot.bj.baidubce.com</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QLabel" name="port_PIR">
-          <property name="text">
-           <string>Port:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <widget class="QSpinBox" name="port_PIR_data">
-          <property name="maximum">
-           <number>99999</number>
-          </property>
-          <property name="value">
-           <number>1883</number>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="0">
-         <widget class="QLabel" name="uart_PIR">
-          <property name="text">
-           <string>User:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="1">
-         <widget class="QLineEdit" name="user_PIR_data">
-          <property name="text">
-           <string>83miwvc/RE200B</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="0">
-         <widget class="QLabel" name="password_PIR">
-          <property name="text">
-           <string>Password:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="1">
-         <widget class="QLineEdit" name="password_PIR_data">
-          <property name="text">
-           <string>2xy1m6650e3z3qzn</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item>
-       <widget class="QPushButton" name="Connect_PIR">
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>Connect</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-    <widget class="QGroupBox" name="groupBox_PIR">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>260</y>
-       <width>661</width>
-       <height>170</height>
-      </rect>
-     </property>
-     <property name="title">
-      <string>Log Messages</string>
-     </property>
-     <layout class="QHBoxLayout" name="horizontalLayout_5">
-      <item>
-       <widget class="QPlainTextEdit" name="editLog_PIR"/>
-      </item>
-     </layout>
-    </widget>
-    <widget class="QWidget" name="layoutWidget">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>150</y>
-       <width>661</width>
-       <height>101</height>
-      </rect>
-     </property>
-     <layout class="QGridLayout" name="gridLayout">
-      <item row="0" column="1">
-       <widget class="QLineEdit" name="topic_PIR_data">
-        <property name="text">
-         <string>$baidu/iot/shadow/RE200B/update/accepted</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0">
-       <widget class="QLabel" name="topic_PIR">
-        <property name="text">
-         <string>Topic:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="message_PIR">
-        <property name="text">
-         <string>Message:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="2">
-       <widget class="QPushButton" name="Publish_PIR">
-        <property name="text">
-         <string>Publish</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="2">
-       <widget class="QPushButton" name="Subscribe_PIR">
-        <property name="text">
-         <string>Subscribe</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QLineEdit" name="message_PIR_data">
-        <property name="text">
-         <string>This is a test message</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="2">
-       <widget class="QPushButton" name="Ping_PIR">
-        <property name="text">
-         <string>Ping</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="state_PIR">
-        <property name="text">
-         <string>State:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1">
        <widget class="QLabel" name="state_PIR_data">
         <property name="text">
-         <string/>
+         <string>NULL</string>
         </property>
        </widget>
-      </item>
-     </layout>
-    </widget>
-   </widget>
-   <widget class="QWidget" name="tab_4">
-    <attribute name="title">
-     <string>继电器</string>
-    </attribute>
-    <widget class="QWidget" name="layoutWidget_6">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>146</y>
-       <width>661</width>
-       <height>111</height>
-      </rect>
-     </property>
-     <layout class="QGridLayout" name="gridLayout_3">
-      <item row="0" column="1">
-       <widget class="QLineEdit" name="topic_OCR_data">
-        <property name="text">
-         <string>$baidu/iot/shadow/OCRelay/update/accepted</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0">
-       <widget class="QLabel" name="topic_OCR">
-        <property name="text">
-         <string>Topic:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="message_OCR">
-        <property name="text">
-         <string>Message:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="2">
-       <widget class="QPushButton" name="Publish_OCR">
-        <property name="text">
-         <string>Publish</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="2">
-       <widget class="QPushButton" name="Subscribe_OCR">
-        <property name="text">
-         <string>Subscribe</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QLineEdit" name="message_OCR_data">
-        <property name="text">
-         <string>{&quot;desired&quot;:{&quot;OCRelay&quot;:&quot;on&quot;}}</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="2">
-       <widget class="QPushButton" name="Ping_OCR">
-        <property name="text">
-         <string>Ping</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1">
-       <layout class="QHBoxLayout" name="horizontalLayout_12">
-        <item>
-         <widget class="QPushButton" name="OCR_ON">
-          <property name="text">
-           <string>开</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="OCR_OFF">
-          <property name="text">
-           <string>关</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="state_OCR_data">
-          <property name="text">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <spacer name="horizontalSpacer_4">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-       </layout>
-      </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="state_OCR">
-        <property name="text">
-         <string>State:</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-    <widget class="QGroupBox" name="groupBox_OCR">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>260</y>
-       <width>661</width>
-       <height>170</height>
-      </rect>
-     </property>
-     <property name="title">
-      <string>Log Messages</string>
-     </property>
-     <layout class="QHBoxLayout" name="horizontalLayout_7">
-      <item>
-       <widget class="QPlainTextEdit" name="editLog_OCR"/>
-      </item>
-     </layout>
-    </widget>
-    <widget class="QWidget" name="layoutWidget_7">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>10</y>
-       <width>661</width>
-       <height>131</height>
-      </rect>
-     </property>
-     <layout class="QHBoxLayout" name="horizontalLayout_8">
-      <item>
-       <layout class="QFormLayout" name="formLayout_3">
-        <item row="0" column="0">
-         <widget class="QLabel" name="host_OCR">
-          <property name="text">
-           <string>Host:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <widget class="QLineEdit" name="host_OCR_data">
-          <property name="text">
-           <string>83miwvc.mqtt.iot.bj.baidubce.com</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QLabel" name="port_OCR">
-          <property name="text">
-           <string>Port:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <widget class="QSpinBox" name="port_OCR_data">
-          <property name="maximum">
-           <number>99999</number>
-          </property>
-          <property name="value">
-           <number>1883</number>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="0">
-         <widget class="QLabel" name="uart_OCR">
-          <property name="text">
-           <string>User:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="1">
-         <widget class="QLineEdit" name="user_OCR_data">
-          <property name="text">
-           <string>83miwvc/OCRelay</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="0">
-         <widget class="QLabel" name="password_OCR">
-          <property name="text">
-           <string>Password:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="1">
-         <widget class="QLineEdit" name="password_OCR_data">
-          <property name="text">
-           <string>m859p6vhi8gwxpkb</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
       </item>
       <item>
-       <widget class="QPushButton" name="Connect_OCR">
-        <property name="minimumSize">
+       <spacer name="horizontalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
          <size>
-          <width>0</width>
-          <height>0</height>
+          <width>40</width>
+          <height>20</height>
          </size>
         </property>
-        <property name="text">
-         <string>Connect</string>
-        </property>
-       </widget>
+       </spacer>
       </item>
      </layout>
+    </widget>
+    <widget class="QLabel" name="OCRelay">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>250</y>
+       <width>101</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>继电器:</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="RE200B">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>340</y>
+       <width>101</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>热释红外:</string>
+     </property>
     </widget>
    </widget>
    <widget class="QWidget" name="tab_5">

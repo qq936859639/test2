@@ -36,6 +36,8 @@ CameraDemo::CameraDemo(QWidget *parent, CameraThread *camerathread, ModbusThread
 //  connect(cameraThread, SIGNAL(errorshow()), this, SLOT(errorshowslot()));
 //  connect(this,SIGNAL(Show_complete()),cameraThread,SLOT(startCapture()));
 
+    connect(this, SIGNAL(on_connectType(quint8)), modbusThread, SLOT(on_connectType_currentIndexChanged(quint8)));
+
     connect(cameraThread, SIGNAL(Collect_complete(QImage)),this,SLOT(videoDisplay(QImage)));
     connect(modbusThread, SIGNAL(on_read_data(int, int)),this,SLOT(Camera_read_data(int, int)));
 
@@ -104,6 +106,11 @@ void CameraDemo::keyPressEvent(QKeyEvent *event)
 void CameraDemo::errorshowslot()
 {
     ui->labelCamera->setText(tr("摄像头初始化失败，请检查是否插好，并重新启动！"));
+}
+
+void CameraDemo::on_connectType_currentIndexChanged(quint8 index)
+{
+    emit on_connectType(index);
 }
 
 void CameraDemo::videoDisplay(const QImage image)

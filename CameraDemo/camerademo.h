@@ -50,6 +50,7 @@ public:
     }PID;
     PID *pid_x, *pid_y;
 signals:
+    void on_connectType(quint8 index);
     void Show_complete();
 
     void Camera_connect(const QString ip);
@@ -73,6 +74,8 @@ private slots:
     void on_connect_clicked();
     void on_faceTrack_clicked();
     void on_quit_clicked();
+
+
 protected:
     void closeEvent(QCloseEvent *event);
 
@@ -82,6 +85,7 @@ private:
     QImage image_tmp;
     FACES *faces;
 
+    void on_connectType_currentIndexChanged(quint8 index);
     double PIDCalc(PID *pp,double NextPoint);
 };
 

@@ -7,7 +7,7 @@ ModbusThread::ModbusThread(QObject *parent)
     , lastRequest(nullptr)
     , modbusDevice(nullptr)
 {
-//    on_connectType_currentIndexChanged();
+    on_connectType_currentIndexChanged(0);
 
 //    rplidar = new RPLIDAR();
 //    if(rplidar->rplidar_open()==0){
@@ -22,7 +22,7 @@ ModbusThread::~ModbusThread()
     delete modbusDevice;
     rplidar->rplidar_close();
 }
-void ModbusThread::on_connectType_currentIndexChanged(int index)
+void ModbusThread::on_connectType_currentIndexChanged(quint8 index)
 {
     connectType = index;
     if (modbusDevice) {
@@ -47,9 +47,6 @@ void ModbusThread::on_connectType_currentIndexChanged(int index)
 }
 void ModbusThread::on_connect(QString userip)
 {
-    int a = 0;
-    on_connectType_currentIndexChanged(a);
-
     if (!modbusDevice)
         return;
 
@@ -66,8 +63,6 @@ void ModbusThread::on_connect(QString userip)
                 QSerialPort::Data8);
             modbusDevice->setConnectionParameter(QModbusDevice::SerialStopBitsParameter,
                 QSerialPort::OneStop);
-            qDebug()<<" cjf ok";
-
         }else if(connectType ==1){
             //处于非连接状态，进行连接
             //TCP连接,端口502，地址192.168.*.*
@@ -263,8 +258,7 @@ void ModbusThread::modbus_rplidar_stopMotor(){
 void ModbusThread::run()
 {
     rplidar = new RPLIDAR();
-    if(rplidar->rplidar_open()==0){
-
+    if(rplidar->rplidar_open() == 0){
         rplidar_flag = true;
     }
 
