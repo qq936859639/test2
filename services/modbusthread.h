@@ -29,16 +29,8 @@
 #define CAR_LEFT_REAR_LED 0x04    //小车左后灯
 #define CAR_RIGHT_REAR_LED 0x08   //小车右后灯
 
-#define CAR_TURNLEFT_ADDR_DATA 0x0006 //小车左转角度值
-#define CAR_TURNRIGHT_ADDR_DATA 0x0006 //小车右转角度值
-#define CAR_ACCELERATE_ADDR_DATA 0x0007 //小车前进值
-#define CAR_DECELERATE_ADDR_DATA 0x0007 //小车后退值
-#define CAR_COMMAND_ADDR 0x0006 //小车运动控制命令
-#define CAR_RESET_DATA 0x00 //小车复位(不转向不运动)
-#define CAR_LEFT_DATA 0x01 //小车左转
-#define CAR_RIGHT_DATA 0x02 //小车右转
-#define CAR_ACCELERATE_DATA 0x10 //小车前进
-#define CAR_DECELERATE_DATA 0x20 //小车后退
+#define CAR_TURN_ADDR_DATA 0x0006 //小车转向电机[-5,5]
+#define CAR_POWER_ADDR_DATA 0x0007 //小车动力电机[-5,5]
 
 class ModbusThread : public QThread
 {

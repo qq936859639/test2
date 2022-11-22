@@ -43,9 +43,9 @@ public:
 
     CameraThread *cameraThread;
     ModbusThread *modbusThread;
-    qint8 Car_turn_LR_Angle_num = 0;
-    qint8 Car_AD_Rate_num = 0;
-    qint8 Car_turn_flag = 0;
+//    qint8 Car_turn_LR_Angle_num = 0;
+//    qint8 Car_AD_Rate_num = 0;
+    qint8 Car_TURN_flag = 0;
     qint8 Car_AD_flag = 0;
     float accx=0, accy=0, accz=0;
     QString radar_data;

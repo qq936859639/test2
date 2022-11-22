@@ -100,7 +100,7 @@ AICarDemo::AICarDemo(QWidget *parent, CameraThread *camerathread, ModbusThread *
     ui->tabWidget->setDisabled(true);
     ui->Car_reset->setDisabled(true);
 
-//    get_ip();
+    get_ip();
 
     Car_rplidar_flag = 0;
     Car_rplidar_flag_stop = 0;
@@ -158,7 +158,7 @@ void AICarDemo::Read_Radar(int mi_data,int ul_data,int la_radar)
         int data = mi_data;
         if(Car_millimeter_radar == 1){
             if(0 < data && data < 30){
-                if(Car_END_flag==0 && Car_AD_flag < 0 && Car_state_flag == 0){
+                if(Car_END_flag==0 && Car_AD_flag > 0 && Car_state_flag == 0){
                     Car_Reset();
                     Car_state_flag = 1;
                     if(ul_play_flag == 0){
@@ -170,7 +170,7 @@ void AICarDemo::Read_Radar(int mi_data,int ul_data,int la_radar)
                 }
             }
             else{
-                if(0 < Car_AD_flag){
+                if(0 > Car_AD_flag){
                     Car_state_flag = 0;
                 }
                 if(Car_END_flag==0 && Car_state_flag == 1){
@@ -190,7 +190,7 @@ void AICarDemo::Read_Radar(int mi_data,int ul_data,int la_radar)
         {
             //ui->ultrasound_data->setText(tr("数据无效"));
         }else if (240 < temp_data && temp_data<500){
-            if(Car_END_flag==0 && Car_AD_flag > 0 && Car_state1_flag == 0){
+            if(Car_END_flag==0 && Car_AD_flag < 0 && Car_state1_flag == 0){
                 Car_Reset();
                 Car_state1_flag = 1;
 
@@ -202,7 +202,7 @@ void AICarDemo::Read_Radar(int mi_data,int ul_data,int la_radar)
                 }
             }
         }else if(temp_data > 500){
-            if(Car_AD_flag < 0){
+            if(Car_AD_flag > 0){
                 Car_state1_flag = 0;
             }
 
@@ -251,7 +251,7 @@ void AICarDemo::Read_Radar(int mi_data,int ul_data,int la_radar)
         }else if(la_radar == 0x01)//前
         {
             ui->rplidar_1->setStyleSheet("border-image:url(:/image/res/image/rplidar_1.png);");
-            if(Car_AD_flag < 0&&Car_END_flag==0){
+            if(Car_AD_flag > 0&&Car_END_flag==0){
                 Car_Reset();
                 Car_state2_flag = 1;
             }
@@ -262,7 +262,7 @@ void AICarDemo::Read_Radar(int mi_data,int ul_data,int la_radar)
             }
         }else if(la_radar == 0x04){//后
             ui->rplidar_3->setStyleSheet("border-image:url(:/image/res/image/rplidar_3.png);");
-            if(Car_AD_flag > 0&&Car_END_flag==0){
+            if(Car_AD_flag < 0&&Car_END_flag==0){
                 Car_Reset();
                 Car_state2_flag = 2;
             }
@@ -272,22 +272,22 @@ void AICarDemo::Read_Radar(int mi_data,int ul_data,int la_radar)
                 on_turnRight_clicked();
             }
         }else if(la_radar == 0x03){//前右
-            if(Car_AD_flag < 0&&Car_END_flag==0)
+            if(Car_AD_flag > 0&&Car_END_flag==0)
                 on_turnLeft_clicked();
             ui->rplidar_1->setStyleSheet("border-image:url(:/image/res/image/rplidar_1.png);");
             ui->rplidar_2->setStyleSheet("border-image:url(:/image/res/image/rplidar_2.png);");
         }else if(la_radar == 0x06){//右后
-            if(Car_AD_flag > 0&&Car_END_flag==0)
+            if(Car_AD_flag < 0&&Car_END_flag==0)
                 on_turnLeft_clicked();
             ui->rplidar_2->setStyleSheet("border-image:url(:/image/res/image/rplidar_2.png);");
             ui->rplidar_3->setStyleSheet("border-image:url(:/image/res/image/rplidar_3.png);");
         }else if(la_radar == 0x0C){//后左
-            if(Car_AD_flag > 0&&Car_END_flag==0)
+            if(Car_AD_flag < 0&&Car_END_flag==0)
                 on_turnRight_clicked();
             ui->rplidar_3->setStyleSheet("border-image:url(:/image/res/image/rplidar_3.png);");
             ui->rplidar_4->setStyleSheet("border-image:url(:/image/res/image/rplidar_4.png);");
         }else if(la_radar == 0x09){//左前
-            if(Car_AD_flag < 0&&Car_END_flag==0)
+            if(Car_AD_flag > 0&&Car_END_flag==0)
                 on_turnRight_clicked();
             ui->rplidar_4->setStyleSheet("border-image:url(:/image/res/image/rplidar_4.png);");
             ui->rplidar_1->setStyleSheet("border-image:url(:/image/res/image/rplidar_1.png);");
@@ -344,133 +344,39 @@ void AICarDemo::Close_Radar()
 void AICarDemo::on_turnLeft_clicked()
 {
     car->turnLeft();
+
     //-5 -4 -3 -2 -1 0 1 2 3 4 5 由Car_turn_flag控制,左右方向各5个档位,0停止
-    //800-1000 对应档位, 由Car_turn_LR_Angle_num控制
-    //1000 = -5 ,950 = -4, 900 = -3, 850 = -2, 800 = -1, 0 ,800 = 1, 850 = 2,...,1000 = 5
-    Car_turn_flag -= 1;
+    Car_TURN_flag -= 1;
 
-    if(Car_turn_flag < -5)
-        Car_turn_flag = -5;
+    if(Car_TURN_flag < -5)
+        Car_TURN_flag = -5;
 
-    if(Car_turn_flag == 0){
-        Car_turn_LR_Angle_num -= 50;
-        emit Car_writeRead(CAR_COMMAND_ADDR, 1, (CAR_ACCELERATE_DATA | CAR_DECELERATE_DATA) & 0xF0);//小车右转向复位
-
-        emit Car_writeRead(CAR_RIGHT_HEAD_LED_DATA, 1, 0);
-        emit Car_writeRead(CAR_RIGHT_REAR_LED_DATA, 1, 0);
-        emit Car_writeRead(CAR_COMMAND_LED_ADDR, 1, CAR_RIGHT_HEAD_LED | CAR_RIGHT_REAR_LED);
-    }
-
-    if(Car_turn_flag < 0){
-        Car_turn_LR_Angle_num += 50;
-        if(Car_turn_LR_Angle_num > 1000)
-            Car_turn_LR_Angle_num = 1000;
-        emit Car_writeRead(CAR_TURNLEFT_ADDR_DATA, 1, Car_turn_LR_Angle_num);
-        emit Car_writeRead(CAR_COMMAND_ADDR, 1, CAR_LEFT_DATA | CAR_ACCELERATE_DATA | CAR_DECELERATE_DATA);
-
-        emit Car_writeRead(CAR_LEFT_HEAD_LED_DATA, 1, Car_turn_flag * -200);
-        emit Car_writeRead(CAR_LEFT_REAR_LED_DATA, 1, Car_turn_flag * -200);
-        emit Car_writeRead(CAR_COMMAND_LED_ADDR, 1, CAR_LEFT_HEAD_LED | CAR_LEFT_REAR_LED);
-    }
-
-    if(Car_turn_flag > 0){
-        Car_turn_LR_Angle_num -= 50;
-        if(Car_turn_LR_Angle_num < 800)
-            Car_turn_LR_Angle_num = 800;
-        emit Car_writeRead(CAR_TURNRIGHT_ADDR_DATA, 1, Car_turn_LR_Angle_num);//小车右转
-        emit Car_writeRead(CAR_COMMAND_ADDR, 1, CAR_RIGHT_DATA | CAR_ACCELERATE_DATA | CAR_DECELERATE_DATA);
-
-        emit Car_writeRead(CAR_RIGHT_HEAD_LED_DATA, 1, Car_turn_flag * 200);
-        emit Car_writeRead(CAR_RIGHT_REAR_LED_DATA, 1, Car_turn_flag * 200);
-        emit Car_writeRead(CAR_COMMAND_LED_ADDR, 1, CAR_RIGHT_HEAD_LED | CAR_RIGHT_REAR_LED);
-    }
+    emit Car_writeRead(CAR_TURN_ADDR_DATA, 1, Car_TURN_flag);
 }
 
 void AICarDemo::on_turnRight_clicked()
 {
     car->turnRight();
 
-    Car_turn_flag += 1;
+    Car_TURN_flag += 1;
 
-    if(Car_turn_flag > 5)
-        Car_turn_flag = 5;
+    if(Car_TURN_flag > 5)
+        Car_TURN_flag = 5;
 
-    if(Car_turn_flag == 0){
-        Car_turn_LR_Angle_num -= 50;
-        emit Car_writeRead(CAR_COMMAND_ADDR, 1, (CAR_ACCELERATE_DATA | CAR_DECELERATE_DATA) & 0xF0);//小车左转向复位
-//      emit Car_writeRead(CAR_COMMAND_ADDR, 1, CAR_RESET_DATA);//小车复位
-        emit Car_writeRead(CAR_LEFT_HEAD_LED_DATA, 1, 0);
-        emit Car_writeRead(CAR_LEFT_REAR_LED_DATA, 1, 0);
-        emit Car_writeRead(CAR_COMMAND_LED_ADDR, 1, CAR_LEFT_HEAD_LED | CAR_LEFT_REAR_LED);
-    }
-
-    if(Car_turn_flag > 0){
-        Car_turn_LR_Angle_num += 50;
-        if(Car_turn_LR_Angle_num > 1000)
-            Car_turn_LR_Angle_num = 1000;
-        emit Car_writeRead(CAR_TURNRIGHT_ADDR_DATA, 1, Car_turn_LR_Angle_num);//小车右转
-        emit Car_writeRead(CAR_COMMAND_ADDR, 1, CAR_RIGHT_DATA | CAR_ACCELERATE_DATA | CAR_DECELERATE_DATA);
-
-        emit Car_writeRead(CAR_RIGHT_HEAD_LED_DATA, 1, Car_turn_flag * 200);
-        emit Car_writeRead(CAR_RIGHT_REAR_LED_DATA, 1, Car_turn_flag * 200);
-        emit Car_writeRead(CAR_COMMAND_LED_ADDR, 1, CAR_RIGHT_HEAD_LED | CAR_RIGHT_REAR_LED);
-    }
-
-    if(Car_turn_flag < 0){
-        Car_turn_LR_Angle_num -= 50;
-        if(Car_turn_LR_Angle_num < 800)
-            Car_turn_LR_Angle_num = 800;
-        emit Car_writeRead(CAR_TURNLEFT_ADDR_DATA, 1, Car_turn_LR_Angle_num);
-        emit Car_writeRead(CAR_COMMAND_ADDR, 1, CAR_LEFT_DATA | CAR_ACCELERATE_DATA | CAR_DECELERATE_DATA);
-//        qDebug()<<"cjf RL1 num"<<Car_turnLeft_Angle_num <<"time"<<Car_turn_flag;
-        emit Car_writeRead(CAR_LEFT_HEAD_LED_DATA, 1, Car_turn_flag * -200);
-        emit Car_writeRead(CAR_LEFT_REAR_LED_DATA, 1, Car_turn_flag * -200);
-        emit Car_writeRead(CAR_COMMAND_LED_ADDR, 1, CAR_LEFT_HEAD_LED | CAR_LEFT_REAR_LED);
-    }
+    emit Car_writeRead(CAR_TURN_ADDR_DATA, 1, Car_TURN_flag);
 }
 
 void AICarDemo::on_accelerate_clicked()
 {
     car->accelerate();
-    //-5 -4 -3 -2 -1 0 1 2 3 4 5 由Car_turn_flag控制,前后方向各5个档位,0停止
-    //500-900 对应档位, 由Car_AD_Rate_num控制
-    //900 = -5 ,800 = -4, 700 = -3, 600 = -2, 500 = -1, 0 ,500 = 1, 600 = 2,...,900 = 5
+
+    //-5 -4 -3 -2 -1 0 1 2 3 4 5 由Car_AD_flag控制,前后方向各5个档位,0停止
     Car_AD_flag += 1;
 
     if(Car_AD_flag > 5)
         Car_AD_flag = 5;
 
-    if(Car_AD_flag == 0){
-        Car_AD_Rate_num = 0;
-        emit Car_writeRead(CAR_COMMAND_ADDR, 1, (CAR_LEFT_DATA | CAR_RIGHT_DATA) & 0x0F);//小车后退复位
-
-        emit Car_writeRead(CAR_LEFT_REAR_LED_DATA, 1, 0);
-        emit Car_writeRead(CAR_RIGHT_REAR_LED_DATA, 1, 0);
-        emit Car_writeRead(CAR_COMMAND_LED_ADDR, 1, CAR_LEFT_REAR_LED | CAR_RIGHT_REAR_LED);
-
-        emit Car_writeRead(CAR_ACCELERATE_ADDR_DATA, 1, Car_AD_Rate_num);
-    }
-
-    if(Car_AD_flag > 0){
-        Car_AD_Rate_num += 1;
-        if(Car_AD_Rate_num > 5)
-            Car_AD_Rate_num = 5;
-        emit Car_writeRead(CAR_ACCELERATE_ADDR_DATA, 1, Car_AD_Rate_num);
-        emit Car_writeRead(CAR_COMMAND_ADDR, 1, CAR_ACCELERATE_DATA | CAR_LEFT_DATA | CAR_RIGHT_DATA);
-    }
-
-    if(Car_AD_flag < 0){
-        Car_AD_Rate_num += 1;
-//        if(Car_AD_Rate_num < -5)
-//            Car_AD_Rate_num = -5;
-        emit Car_writeRead(CAR_DECELERATE_ADDR_DATA, 1, Car_AD_Rate_num);//小车后退
-        emit Car_writeRead(CAR_COMMAND_ADDR, 1, CAR_DECELERATE_DATA | CAR_LEFT_DATA | CAR_RIGHT_DATA);
-
-        emit Car_writeRead(CAR_LEFT_REAR_LED_DATA, 1, Car_AD_flag * 200);
-        emit Car_writeRead(CAR_RIGHT_REAR_LED_DATA, 1, Car_AD_flag * 200);
-        emit Car_writeRead(CAR_COMMAND_LED_ADDR, 1, CAR_LEFT_REAR_LED | CAR_RIGHT_REAR_LED);
-    }
-    qDebug()<<"cjf car a"<<Car_AD_flag<<"  "<<Car_AD_Rate_num;
+    emit Car_writeRead(CAR_POWER_ADDR_DATA, 1, Car_AD_flag);
 }
 
 void AICarDemo::on_decelerate_clicked()
@@ -481,33 +387,7 @@ void AICarDemo::on_decelerate_clicked()
     if(Car_AD_flag < -5)
         Car_AD_flag = -5;
 
-    if(Car_AD_flag == 0){
-        Car_AD_Rate_num = 0;
-        emit Car_writeRead(CAR_COMMAND_ADDR, 1, (CAR_LEFT_DATA | CAR_RIGHT_DATA) & 0x0F);//小车后退复位
-        emit Car_writeRead(CAR_ACCELERATE_ADDR_DATA, 1, Car_AD_Rate_num);
-    }
-
-    if(Car_AD_flag < 0){
-        Car_AD_Rate_num -= 1;
-        if(Car_AD_Rate_num < -5)
-            Car_AD_Rate_num = -5;
-        emit Car_writeRead(CAR_DECELERATE_ADDR_DATA, 1, Car_AD_Rate_num);
-        emit Car_writeRead(CAR_COMMAND_ADDR, 1, CAR_DECELERATE_DATA | CAR_LEFT_DATA | CAR_RIGHT_DATA);
-
-        emit Car_writeRead(CAR_LEFT_REAR_LED_DATA, 1, Car_AD_flag * 200);
-        emit Car_writeRead(CAR_RIGHT_REAR_LED_DATA, 1, Car_AD_flag * 200);
-        emit Car_writeRead(CAR_COMMAND_LED_ADDR, 1, CAR_LEFT_REAR_LED | CAR_RIGHT_REAR_LED);
-    }
-
-    if(Car_AD_flag > 0){
-        Car_AD_Rate_num -= 1;
-//        if(Car_AD_Rate_num > 5)
-//            Car_AD_Rate_num = 5;
-        emit Car_writeRead(CAR_ACCELERATE_ADDR_DATA, 1, Car_AD_Rate_num);//小车后退
-        emit Car_writeRead(CAR_COMMAND_ADDR, 1, CAR_ACCELERATE_DATA | CAR_LEFT_DATA | CAR_RIGHT_DATA);
-
-    }
-    qDebug()<<"cjf car d"<<Car_AD_flag<<"  "<<Car_AD_Rate_num;
+    emit Car_writeRead(CAR_POWER_ADDR_DATA, 1, Car_AD_flag);
 }
 
 void AICarDemo::on_connect_clicked()
@@ -571,16 +451,14 @@ void AICarDemo::save_ip()
 }
 void AICarDemo::Car_Reset()
 {
-    Car_turn_flag = 0;
+    Car_TURN_flag = 0;
     Car_AD_flag = 0;
-    Car_turn_LR_Angle_num = 0;
-    Car_AD_Rate_num = 0;
-    car->reset();
-    emit Car_writeRead(CAR_COMMAND_ADDR, 1, 0);//小车复位
-    emit Car_writeRead(CAR_TURNLEFT_ADDR_DATA, 1, 0);//小车复位
-    emit Car_writeRead(CAR_ACCELERATE_ADDR_DATA, 1, 0);//小车复位
 
-    emit Car_writeRead(CAR_COMMAND_LED_ADDR, 1, 0);//小车LED复位
+    car->reset();
+
+    emit Car_writeRead(CAR_TURN_ADDR_DATA, 1, 0);//小车转向电机复位
+    emit Car_writeRead(CAR_POWER_ADDR_DATA, 1, 0);//小车动力电机复位
+    emit Car_writeRead(CAR_COMMAND_LED_ADDR, 1, 0);//小车LED自动联动电机
 }
 void AICarDemo::on_Car_reset_clicked()
 {
@@ -1750,9 +1628,7 @@ void AICarDemo::on_connectType_currentIndexChanged(int index)
     auto type = static_cast<ModbusConnection> (index);
     if (type == Serial) {
         portFind();
-qDebug()<<"cjf 0a";
     }else if (type == Tcp) {
-
 //        get_ip();
 //        qDebug()<<"cjf 1a";
     }
