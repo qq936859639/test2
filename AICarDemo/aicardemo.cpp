@@ -116,7 +116,7 @@ AICarDemo::AICarDemo(QWidget *parent, CameraThread *camerathread, ModbusThread *
             on_scene_clicked();
     }
 
-    on_connectType_currentIndexChanged(0);
+//    on_connectType_currentIndexChanged(0);
 }
 
 AICarDemo::~AICarDemo()
@@ -1627,7 +1627,7 @@ void AICarDemo::on_connectType_currentIndexChanged(int index)
 {
     auto type = static_cast<ModbusConnection> (index);
     if (type == Serial) {
-        portFind();
+//        portFind();
     }else if (type == Tcp) {
 //        get_ip();
 //        qDebug()<<"cjf 1a";

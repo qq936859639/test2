@@ -40,11 +40,11 @@ void GPSDemo::portFind()
         qDebug() << "Name : " << info.portName();
         QSerialPort serial_num;
         serial_num.setPort(info);
-        if(serial_num.open(QIODevice::ReadWrite))
-        {
+//        if(serial_num.open(QIODevice::ReadWrite))
+//        {
             ui->com->addItem(serial_num.portName());
-            serial_num.close();
-        }
+//            serial_num.close();
+//        }
         if(serial_num.portName()=="ttyS4")
             ui->com->setCurrentText("ttyS4");
     }
