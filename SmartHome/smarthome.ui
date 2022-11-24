@@ -45,38 +45,10 @@
       </rect>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
-      <item row="0" column="1">
-       <widget class="QLineEdit" name="SubTopic_DHT11_data">
+      <item row="1" column="2">
+       <widget class="QPushButton" name="Publish_DHT11">
         <property name="text">
-         <string>$iot/AIplatform01/user/update</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0">
-       <widget class="QLabel" name="SubTopic_DHT11">
-        <property name="text">
-         <string>SubTopic:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="2">
-       <widget class="QPushButton" name="Subscribe_DHT11">
-        <property name="text">
-         <string>Subscribe</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1">
-       <widget class="QLineEdit" name="message_DHT11_data">
-        <property name="text">
-         <string>{&quot;desired&quot;:{&quot;LED&quot;:&quot;on&quot;,&quot;BUZZER&quot;:&quot;on&quot;,&quot;OCRelay&quot;:&quot;on&quot;}}</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QLineEdit" name="PubTopic_DHT11_data">
-        <property name="text">
-         <string>$iot/AIplatform01/user/send</string>
+         <string>Publish</string>
         </property>
        </widget>
       </item>
@@ -87,6 +59,20 @@
         </property>
        </widget>
       </item>
+      <item row="1" column="1">
+       <widget class="QLineEdit" name="PubTopic_DHT11_data">
+        <property name="text">
+         <string>$iot/AIplatform01/user/send</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="SubTopic_DHT11">
+        <property name="text">
+         <string>SubTopic:</string>
+        </property>
+       </widget>
+      </item>
       <item row="1" column="0">
        <widget class="QLabel" name="PubTopic_DHT11">
         <property name="text">
@@ -94,10 +80,24 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="2">
-       <widget class="QPushButton" name="Publish_DHT11">
+      <item row="0" column="2">
+       <widget class="QPushButton" name="Subscribe_DHT11">
         <property name="text">
-         <string>Publish</string>
+         <string>Subscribe</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLineEdit" name="SubTopic_DHT11_data">
+        <property name="text">
+         <string>$iot/AIplatform01/user/update</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QLineEdit" name="message_DHT11_data">
+        <property name="text">
+         <string>{&quot;desired&quot;:{&quot;LED&quot;:&quot;on&quot;,&quot;BUZZER&quot;:&quot;on&quot;}}</string>
         </property>
        </widget>
       </item>
@@ -311,7 +311,7 @@
       </item>
      </layout>
     </widget>
-    <widget class="QWidget" name="">
+    <widget class="QWidget" name="layoutWidget">
      <property name="geometry">
       <rect>
        <x>140</x>
