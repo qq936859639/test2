@@ -120,11 +120,15 @@ void CameraDemo::videoDisplay(const QImage image)
     image_tmp = image.copy().mirrored(true, false);
 
     if(faces_flag == true){
-        image_tmp = image_tmp.scaled(IMAGE_WIDTH/2,IMAGE_HEIGHT/2);
-        QImage  qimg = faces->face_recognition(image_tmp);
+        video_times++;
+        if(video_times>1){
+            video_times = 0;
+            image_tmp = image_tmp.scaled(IMAGE_WIDTH/2,IMAGE_HEIGHT/2);
+            QImage  qimg = faces->face_recognition(image_tmp);
 
-        QPixmap pixmap = QPixmap::fromImage(qimg);
-        ui->labelCamera->setPixmap(pixmap.scaled(ui->labelCamera->size(),Qt::KeepAspectRatio));//Qt::SmoothTransformation 保持比例
+            QPixmap pixmap = QPixmap::fromImage(qimg);
+            ui->labelCamera->setPixmap(pixmap.scaled(ui->labelCamera->size(),Qt::KeepAspectRatio));//Qt::SmoothTransformation 保持比例
+        }
     }else{
         ui->labelCamera->setPixmap(QPixmap::fromImage(image_tmp.scaled(ui->labelCamera->size(),Qt::KeepAspectRatio)));//全屏显示
     }
