@@ -75,7 +75,9 @@ void CameraDemo::closeEvent(QCloseEvent *event)
 {
     faces_flag = false;
     connect_flag = false;
-    emit Camera_connect(ui->lineEdit->text());
+
+    if(ui->connect->text()=="Disconnect")
+        emit Camera_connect(ui->lineEdit->text());
 
     disconnect(cameraThread, SIGNAL(Collect_complete(QImage)),this,SLOT(videoDisplay(QImage)));
     disconnect(modbusThread, SIGNAL(on_read_data(int, int)),this,SLOT(Camera_read_data(int, int)));
@@ -300,7 +302,9 @@ void CameraDemo::on_quit_clicked()
 {
     faces_flag = false;
     connect_flag = false;
-    emit Camera_connect(ui->lineEdit->text());
+
+    if(ui->connect->text()=="Disconnect")
+        emit Camera_connect(ui->lineEdit->text());
 
     disconnect(cameraThread, SIGNAL(Collect_complete(QImage)),this,SLOT(videoDisplay(QImage)));
     disconnect(modbusThread, SIGNAL(on_read_data(int, int)),this,SLOT(Camera_read_data(int, int)));
