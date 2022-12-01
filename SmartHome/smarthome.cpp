@@ -98,7 +98,7 @@ void SmartHome::init_DHT11()
                     char *data = cJSON_GetObjectItem(parray, "RE200B")->valuestring;//字符串
                     ui->state_PIR_data->setText(data);
                     if(pir_flag ==1){
-                        if(ui->state_PIR_data->text() == "abnormal")
+                        if(ui->state_PIR_data->text() == "abnormal!")
                             on_BUZZER_ON_clicked();
                         else
                             on_BUZZER_OFF_clicked();
