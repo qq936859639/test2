@@ -267,7 +267,7 @@ int HIDMICDEMO::hidmic_init()
         protocol_proc_init(audioService.sendMsg, audioService.recvMsg, audioService.businessProcCb, audioService.errProc);
         get_system_status();
         //    get_software_version();
-        //    sleep(1);
+            sleep(1);
         if (major_mic_id>5 || major_mic_id<0)//
         {
             qDebug()<<">>>>>您还未唤醒或设置主麦方向，请唤醒或设置后再进行录音操作";
