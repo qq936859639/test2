@@ -117,6 +117,14 @@ AICarDemo::AICarDemo(QWidget *parent, CameraThread *camerathread, ModbusThread *
     }
 
 //    on_connectType_currentIndexChanged(0);
+    hidmic = new HIDMICDEMO;
+    if(hidmic->hidmic_init()==0){
+        ui->speech->setDisabled(false);
+        hidmic_open_flag = 1;
+    }else{
+        ui->speech->setDisabled(true);
+        hidmic_open_flag = 0;
+    }
 }
 
 AICarDemo::~AICarDemo()
@@ -145,6 +153,9 @@ void AICarDemo::closeEvent(QCloseEvent *event)
     disconnect(this, SIGNAL(Car_radar(int,int,int)),this,SLOT(Read_Radar(int,int,int)));//获取雷达数据
     disconnect(modbusThread, SIGNAL(rplidar_read(int,int,int)),this,SLOT(Read_Radar(int,int,int)));
     modbusThread->modbus_rplidar_stopMotor();
+
+    if(hidmic_open_flag)
+        hidmic->hidmic_close();//关闭麦克风
 }
 void AICarDemo::Open_Radar()
 {
@@ -159,15 +170,15 @@ void AICarDemo::Read_Radar(int mi_data,int ul_data,int la_radar)
         int data = mi_data;
         if(Car_millimeter_radar == 1){
             if(0 < data && data < 30){
+                if(ul_play_flag == 0){
+                    QSound *success = new QSound("./mp3/radar_obstacles.wav", this);
+                    success->play();
+                    ul_play_flag = 1;
+                    video_play->start();
+                }
                 if(Car_END_flag==0 && Car_AD_flag > 0 && Car_state_flag == 0){
                     Car_Reset();
                     Car_state_flag = 1;
-                    if(ul_play_flag == 0){
-                        QSound *success = new QSound("./mp3/radar_obstacles.wav", this);
-                        success->play();
-                        ul_play_flag = 1;
-                        video_play->start();
-                    }
                 }
             }
             else{
@@ -191,16 +202,15 @@ void AICarDemo::Read_Radar(int mi_data,int ul_data,int la_radar)
         {
             //ui->ultrasound_data->setText(tr("数据无效"));
         }else if (240 < temp_data && temp_data<500){
+            if(ul_play_flag == 0){
+                QSound *success = new QSound("./mp3/ur_obstacles.wav", this);
+                success->play();
+                ul_play_flag = 1;
+                video_play->start();
+            }
             if(Car_END_flag==0 && Car_AD_flag < 0 && Car_state1_flag == 0){
                 Car_Reset();
                 Car_state1_flag = 1;
-
-                if(ul_play_flag == 0){
-                    QSound *success = new QSound("./mp3/ur_obstacles.wav", this);
-                    success->play();
-                    ul_play_flag = 1;
-                    video_play->start();
-                }
             }
         }else if(temp_data > 500){
             if(Car_AD_flag > 0){
@@ -1659,4 +1669,73 @@ void AICarDemo::portFind()
 //        }
     }
 
+}
+
+void AICarDemo::on_speech_pressed()
+{
+    ui->speech->setText("松开识别");
+    //开始录音-1.USB麦克或自带的麦克
+//    audio = new Audio;
+//    audio->startAudio("file_16k.pcm");
+
+    //开始录音-2.使用科大讯飞麦克阵列录音
+    hidmic->hidmic_start_record();
+}
+
+void AICarDemo::on_speech_released()
+{
+    //停止录音-1.USB麦克或自带的麦克
+    //audio->stopAudio();
+
+    //停止录音-2.使用科大讯飞麦克阵列
+    hidmic->hidmic_stop_record();
+    //修改按钮文字
+    ui->speech->setText("开始识别");
+
+    //开始识别
+    Speech m_speech;
+    //QString text = m_speech.speechIdentify("file_16k.pcm");//自带的麦克
+    QString text = m_speech.speechIdentify("./audio/mic_demo_vvui_deno.pcm");
+
+    if(text == "向左。"){
+        Car_Reset();
+        on_turnLeft_clicked();
+    }else if(text == "向右。"){
+        Car_Reset();
+        on_turnRight_clicked();
+    }else if(text.contains("加档")){
+        Car_Reset();
+        on_accelerate_clicked();
+    }else if(text.contains("加挡")){
+        Car_Reset();
+        on_accelerate_clicked();
+    }else if(text == "家长。"){
+        Car_Reset();
+        on_accelerate_clicked();
+    }else if(text.contains("前")){
+        Car_Reset();
+        on_accelerate_clicked();
+    }else if(text.contains("减档")){
+        Car_Reset();
+        on_decelerate_clicked();
+    }else if(text.contains("减挡")){
+        Car_Reset();
+        on_decelerate_clicked();
+    }else if(text.contains("后")){
+        Car_Reset();
+        on_decelerate_clicked();
+    }else if(text == "开灯。"){
+//        on_leftHead_clicked();
+//        on_rightHead_clicked();
+//        on_leftRear_clicked();
+//        on_rightRear_clicked();
+    }else if(text.contains("复位")){
+        on_Car_reset_clicked();
+    }else if(text.contains("停")){
+        Car_Reset();
+    }
+
+    ui->textEdit->setText(text);
+
+    ui->speech->setText("按住说话");
 }

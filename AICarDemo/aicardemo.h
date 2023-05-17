@@ -23,6 +23,12 @@
 #include <QSerialPort>
 
 //#include "rplidar/rplidar.h"
+
+//语音
+#include "SmartHome/BaiduSpeech/audio.h"
+#include "SmartHome/BaiduSpeech/speech.h"
+#include "MICDemo/hidmicdemo/hidmicdemo.h"
+
 using namespace std;
 using namespace cv;
 
@@ -97,6 +103,10 @@ private slots:
 
     void on_connectType_currentIndexChanged(int index);
 
+    void on_speech_pressed();
+
+    void on_speech_released();
+
 protected:
     void closeEvent(QCloseEvent *event);
 
@@ -151,6 +161,9 @@ private:
     void Close_Radar();
     quint8 Car_millimeter_radar=0;
     int ul_last_data;
+
+    HIDMICDEMO *hidmic;
+    quint8 hidmic_open_flag=0;
 };
 
 #endif // AICARDEMO_H
