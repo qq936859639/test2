@@ -125,6 +125,9 @@ AICarDemo::AICarDemo(QWidget *parent, CameraThread *camerathread, ModbusThread *
         ui->speech->setDisabled(true);
         hidmic_open_flag = 0;
     }
+
+//MQTT
+    SmartCar_MQTT_init();
 }
 
 AICarDemo::~AICarDemo()
@@ -427,6 +430,9 @@ void AICarDemo::Car_change_connet(bool data)
         Open_Radar();
         ui->frame->setVisible(false);
         save_ip();
+
+        ui->Key_SmartCar->setCheckable(true);
+        on_Key_SmartCar_clicked();
     }
 }
 void AICarDemo::get_ip()
@@ -1724,11 +1730,27 @@ void AICarDemo::on_speech_released()
     }else if(text.contains("后")){
         Car_Reset();
         on_decelerate_clicked();
-    }else if(text == "开灯。"){
-//        on_leftHead_clicked();
-//        on_rightHead_clicked();
-//        on_leftRear_clicked();
-//        on_rightRear_clicked();
+    }else if(text.contains("开灯")){
+        QString topic = m_publish;
+        QString data  = "{\"desired\":{\"LED\":\"on\"}}";
+        m_client->publish(topic,data.toUtf8());
+    }else if(text.contains("关灯")){
+        QString topic = m_publish;
+        QString data  = "{\"desired\":{\"LED\":\"off\"}}";
+        m_client->publish(topic,data.toUtf8());
+    }else if(text.contains("开门")){
+        QString topic = m_publish;
+        QString data  ="{\"desired\":{\"OCRelay\":\"on\"}}";
+        m_client->publish(topic,data.toUtf8());
+    }else if(text.contains("关门")){
+        QString topic = m_publish;
+        QString data  ="{\"desired\":{\"OCRelay\":\"off\"}}";
+        m_client->publish(topic,data.toUtf8());
+    }else if(text.contains("鸣笛")){
+        QString topic = m_publish;
+        QString data  ="{\"desired\":{\"BUZZER\":\"on\"}}";
+        m_client->publish(topic,data.toUtf8());
+        QTimer::singleShot(5000,this,SLOT(QTimer_Buzzer()));//延时5秒
     }else if(text.contains("复位")){
         on_Car_reset_clicked();
     }else if(text.contains("停")){
@@ -1738,4 +1760,222 @@ void AICarDemo::on_speech_released()
     ui->textEdit->setText(text);
 
     ui->speech->setText("按住说话");
+}
+
+void AICarDemo::SmartCar_MQTT_init()
+{
+    m_client = new QMqttClient(this);
+
+    // QFile 构造函数中打开文件
+    QFile *myFile;
+    QString filename="./data/baidu_mqtt.sh";
+    myFile=new QFile(filename);
+
+    // 只读打开文件
+    if(myFile->open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        QString buffer;
+        // 返回字节数，
+        buffer  = myFile->readLine();
+        if (!buffer.isNull())
+        {
+            m_client->setHostname(buffer.trimmed());
+        }
+        buffer  = myFile->readLine();
+
+        if (!buffer.isNull())
+        {
+            m_client->setPort(buffer.toInt());
+        }
+        buffer  = myFile->readLine();
+        if (!buffer.isNull())
+        {
+            m_client->setUsername(buffer.trimmed());
+        }
+        buffer  = myFile->readLine();
+        if (!buffer.isNull())
+        {
+            m_client->setPassword(buffer.trimmed());
+        }
+        buffer  = myFile->readLine();
+        if (!buffer.isNull())
+        {
+             m_subscribe = buffer.trimmed();
+//            m_client->subscribe(buffer.trimmed());
+        }
+        buffer  = myFile->readLine();
+        if (!buffer.isNull())
+        {
+            m_publish = buffer.trimmed();
+//            m_client->publish(buffer.trimmed());
+        }
+        myFile->close();
+    }
+
+    connect(m_client, &QMqttClient::disconnected, this, &AICarDemo::brokerDisconnected);
+    connect(m_client, &QMqttClient::messageReceived, this, [this](const QByteArray &message, const QMqttTopicName &topic) {
+        cJSON *proot,*parray;
+        proot = cJSON_Parse(message);
+        if(proot != NULL)
+        {
+            double buzzer_data;
+            if((parray = cJSON_GetObjectItem(proot, "reported")) != NULL)//判断是否有reported
+            {
+                if(cJSON_GetObjectItem(parray,"DHT11_Temp") != NULL)
+                {
+                    buzzer_data = cJSON_GetObjectItem(parray, "DHT11_Temp")->valuedouble;//字符串
+                    ui->state_DHT11_temp_data->setText(QString::number(buzzer_data,'f',1));
+                }
+                if(cJSON_GetObjectItem(parray,"DHT11_Humi") != NULL)
+                {
+                    buzzer_data = cJSON_GetObjectItem(parray, "DHT11_Humi")->valuedouble;//字符串
+                    ui->state_DHT11_humi_data->setText(QString::number(buzzer_data,'f',1));
+                }
+
+                if(cJSON_GetObjectItem(parray,"RE200B") != NULL)
+                {
+                    QString data = cJSON_GetObjectItem(parray, "RE200B")->valuestring;//字符串
+                    if(data == "abnormal!")
+                    {
+                        ui->state_PIR_data->setText("有人");
+                    }else{
+                        ui->state_PIR_data->setText("无人");
+                    }
+                }
+
+                if(cJSON_GetObjectItem(parray,"LED") != NULL)
+                {
+                    QString led_data = cJSON_GetObjectItem(parray, "LED")->valuestring;//字符串
+                    state_LED_data = led_data;
+                    if(led_data == "ledon")
+                    {
+                        ui->LED_data->setStyleSheet("QPushButton{border-image: url(:/image/res/image/car_led_on.png);}"
+                                                    "QPushButton:pressed{border-width:3px;"
+                                                    "border-image: url(:/image/res/image/car_led_on.png);}");
+                    }
+                    else{
+                        ui->LED_data->setStyleSheet("QPushButton{border-image: url(:/image/res/image/car_led_off.png);}"
+                                                    "QPushButton:pressed{border-width:3px;"
+                                                    "border-image: url(:/image/res/image/car_led_off.png);}");
+                    }
+                }
+                if(cJSON_GetObjectItem(parray,"BUZZER") != NULL)
+                {
+                    QString buzzer_data = cJSON_GetObjectItem(parray, "BUZZER")->valuestring;//字符串
+                    state_BUZZER_data = buzzer_data;
+                    if(buzzer_data == "buzzeron"){
+                        ui->BUZZER_data->setStyleSheet("QPushButton{border-image: url(:/image/res/image/buzzer_on.png);}"
+                                                    "QPushButton:pressed{border-width:3px;"
+                                                    "border-image: url(:/image/res/image/buzzer_on.png);}");
+                    }
+                    else{
+                        ui->BUZZER_data->setStyleSheet("QPushButton{border-image: url(:/image/res/image/buzzer_off.png);}"
+                                                    "QPushButton:pressed{border-width:3px;"
+                                                    "border-image: url(:/image/res/image/buzzer_off.png);}");
+                    }
+                }
+
+                if(cJSON_GetObjectItem(parray,"OCRelay") != NULL)
+                {
+                    QString ocr_data = cJSON_GetObjectItem(parray, "OCRelay")->valuestring;//字符串
+                    state_OCR_data = ocr_data;
+                    if(ocr_data == "OCRelay_On"){
+                        ui->OCR_data->setStyleSheet("QPushButton{border-image: url(:/image/res/image/car_door_on.png);}"
+                                                    "QPushButton:pressed{border-width:3px;"
+                                                    "border-image: url(:/image/res/image/car_door_on.png);}");
+
+                    }
+                    else{
+                        ui->OCR_data->setStyleSheet("QPushButton{border-image: url(:/image/res/image/car_door_off.png);}"
+                                                    "QPushButton:pressed{border-width:3px;"
+                                                    "border-image: url(:/image/res/image/car_door_off.png);}");
+
+                    }
+                }
+
+            }
+        }
+        cJSON_Delete(proot);
+    });
+
+}
+
+void AICarDemo::brokerDisconnected()
+{
+    ui->Key_SmartCar->setText(tr("开"));
+}
+
+void AICarDemo::on_Key_SmartCar_clicked()
+{
+    if (m_client->state() == QMqttClient::Disconnected) {
+        m_client->connectToHost();
+        ui->Key_SmartCar->setText(tr("关"));
+        QTimer::singleShot(5000,this,SLOT(QTimer_Subscribe()));//延时1秒订阅主题
+    } else {
+        m_client->disconnectFromHost();
+        ui->Key_SmartCar->setText(tr("开"));
+    }
+}
+
+void AICarDemo::on_Subscribe()
+{
+    auto subscription = m_client->subscribe(m_subscribe);
+    if (!subscription) {
+        QMessageBox::critical(this, QLatin1String("Error"), QLatin1String("Could not subscribe. Is there a valid connection?"));
+        return;
+    }
+}
+
+void AICarDemo::QTimer_Subscribe()
+{
+    on_Subscribe();
+}
+
+void AICarDemo::QTimer_Buzzer()
+{
+    QString topic = m_publish;
+    QString data  ="{\"desired\":{\"BUZZER\":\"off\"}}";
+    m_client->publish(topic,data.toUtf8());
+}
+
+void AICarDemo::on_LED_data_clicked()
+{
+    if(state_LED_data == "ledon"){
+        QString topic = m_publish;
+        QString data  = "{\"desired\":{\"LED\":\"off\"}}";
+        m_client->publish(topic,data.toUtf8());
+    }
+    else{
+        QString topic = m_publish;//百度LED主题地址
+        QString data  ="{\"desired\":{\"LED\":\"on\"}}";
+        m_client->publish(topic,data.toUtf8());
+    }
+}
+
+void AICarDemo::on_BUZZER_data_clicked()
+{
+    if(state_BUZZER_data == "buzzeron"){
+        QString topic = m_publish;
+        QString data  ="{\"desired\":{\"BUZZER\":\"off\"}}";
+        m_client->publish(topic,data.toUtf8());
+    }
+    else{
+        QString topic = m_publish;
+        QString data  ="{\"desired\":{\"BUZZER\":\"on\"}}";
+        m_client->publish(topic,data.toUtf8());
+    }
+}
+
+void AICarDemo::on_OCR_data_clicked()
+{
+    if(state_OCR_data == "OCRelay_On"){
+        QString topic = m_publish;
+        QString data  ="{\"desired\":{\"OCRelay\":\"off\"}}";
+        m_client->publish(topic,data.toUtf8());
+    }
+    else{
+        QString topic = m_publish;
+        QString data  ="{\"desired\":{\"OCRelay\":\"on\"}}";
+        m_client->publish(topic,data.toUtf8());
+    }
 }

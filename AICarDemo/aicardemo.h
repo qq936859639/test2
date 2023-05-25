@@ -29,6 +29,10 @@
 #include "SmartHome/BaiduSpeech/speech.h"
 #include "MICDemo/hidmicdemo/hidmicdemo.h"
 
+//MQTT
+#include <qmqttclient.h>
+#include "SmartHome/cjson/cJSON.h"
+
 using namespace std;
 using namespace cv;
 
@@ -107,6 +111,20 @@ private slots:
 
     void on_speech_released();
 
+    //MQTT
+    void SmartCar_MQTT_init();
+    void brokerDisconnected();
+    void on_Key_SmartCar_clicked();
+    void on_Subscribe();
+    void QTimer_Subscribe();
+    void QTimer_Buzzer();
+
+    void on_LED_data_clicked();
+
+    void on_BUZZER_data_clicked();
+
+    void on_OCR_data_clicked();
+
 protected:
     void closeEvent(QCloseEvent *event);
 
@@ -164,6 +182,14 @@ private:
 
     HIDMICDEMO *hidmic;
     quint8 hidmic_open_flag=0;
+
+    //MQTT
+    QMqttClient *m_client;
+    QString m_subscribe;
+    QString m_publish;
+    QString state_LED_data;
+    QString state_BUZZER_data;
+    QString state_OCR_data;
 };
 
 #endif // AICARDEMO_H

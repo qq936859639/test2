@@ -114,7 +114,7 @@
     </size>
    </property>
    <property name="currentIndex">
-    <number>2</number>
+    <number>1</number>
    </property>
    <property name="iconSize">
     <size>
@@ -889,10 +889,10 @@
     <widget class="QPushButton" name="speech">
      <property name="geometry">
       <rect>
-       <x>60</x>
-       <y>60</y>
-       <width>111</width>
-       <height>41</height>
+       <x>50</x>
+       <y>50</y>
+       <width>131</width>
+       <height>51</height>
       </rect>
      </property>
      <property name="styleSheet">
@@ -906,7 +906,7 @@
      <property name="geometry">
       <rect>
        <x>50</x>
-       <y>20</y>
+       <y>10</y>
        <width>131</width>
        <height>31</height>
       </rect>
@@ -916,6 +916,249 @@
        <pointsize>10</pointsize>
       </font>
      </property>
+    </widget>
+    <widget class="QGroupBox" name="groupBox_2">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>110</y>
+       <width>231</width>
+       <height>191</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>车内环境</string>
+     </property>
+     <widget class="QWidget" name="layoutWidget_2">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>70</y>
+        <width>211</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_13">
+       <item>
+        <widget class="QLabel" name="state_DHT11_temp">
+         <property name="text">
+          <string>温度:     </string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="state_DHT11_temp_data">
+         <property name="text">
+          <string>NULL</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="state_DHT11_temp_data_2">
+         <property name="text">
+          <string>℃</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="state_DHT11_humi">
+         <property name="text">
+          <string>湿度:     </string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="state_DHT11_humi_data">
+         <property name="text">
+          <string>NULL</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="state_DHT11_humi_data_2">
+         <property name="text">
+          <string>%</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QPushButton" name="Key_SmartCar">
+      <property name="geometry">
+       <rect>
+        <x>130</x>
+        <y>30</y>
+        <width>81</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>开</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="LED_data">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>110</y>
+        <width>40</width>
+        <height>35</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton{
+border-image: url(:/image/res/image/car_led_off.png);
+}
+
+QPushButton:pressed{
+border-width:3px;
+border-image: url(:/image/res/image/car_led_off.png);
+}</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="checkable">
+       <bool>false</bool>
+      </property>
+      <property name="checked">
+       <bool>false</bool>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="BUZZER_data">
+      <property name="geometry">
+       <rect>
+        <x>70</x>
+        <y>110</y>
+        <width>40</width>
+        <height>35</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>11</pointsize>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton{
+border-image: url(:/image/res/image/buzzer_off.png);
+}
+
+QPushButton:pressed{
+border-width:3px;
+border-image: url(:/image/res/image/buzzer_off.png);
+}</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="OCR_data">
+      <property name="geometry">
+       <rect>
+        <x>130</x>
+        <y>110</y>
+        <width>40</width>
+        <height>35</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton{
+border-image: url(:/image/res/image/car_door_off.png);
+}
+
+QPushButton:pressed{
+border-width:3px;
+border-image: url(:/image/res/image/car_door_off.png);
+}</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_2">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>150</y>
+        <width>61</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>阅读灯</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_3">
+      <property name="geometry">
+       <rect>
+        <x>70</x>
+        <y>150</y>
+        <width>41</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="layoutDirection">
+       <enum>Qt::LeftToRight</enum>
+      </property>
+      <property name="text">
+       <string>鸣笛</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_4">
+      <property name="geometry">
+       <rect>
+        <x>130</x>
+        <y>150</y>
+        <width>41</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>车门</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_5">
+      <property name="geometry">
+       <rect>
+        <x>180</x>
+        <y>150</y>
+        <width>41</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>人员</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="state_PIR_data">
+      <property name="geometry">
+       <rect>
+        <x>180</x>
+        <y>108</y>
+        <width>41</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>NULL</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
     </widget>
    </widget>
   </widget>
