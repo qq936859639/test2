@@ -33,6 +33,9 @@
 #include <qmqttclient.h>
 #include "SmartHome/cjson/cJSON.h"
 
+//GPS
+#include "GPSDemo/gpsdemo.h"
+
 using namespace std;
 using namespace cv;
 
@@ -125,6 +128,8 @@ private slots:
 
     void on_OCR_data_clicked();
 
+    void on_Car_GPSMap_clicked();
+
 protected:
     void closeEvent(QCloseEvent *event);
 
@@ -190,6 +195,9 @@ private:
     QString state_LED_data;
     QString state_BUZZER_data;
     QString state_OCR_data;
+
+    //GPS
+    GPSDemo *gps;
 };
 
 #endif // AICARDEMO_H

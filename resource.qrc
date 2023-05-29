@@ -52,5 +52,7 @@
         <file>image/car_led_on.png</file>
         <file>image/car_led_off.png</file>
         <file>image/car_door_off.png</file>
+        <file>image/car_gpsmap.png</file>
+        <file>image/car_gpsmap_off.png</file>
     </qresource>
 </RCC>

@@ -420,6 +420,8 @@ void AICarDemo::Car_change_connet(bool data)
         car_state->stop();
         Close_Radar();
         ui->frame->setVisible(true);
+
+        ui->Car_GPSMap->setStyleSheet("border-image:url(:/image/res/image/car_gpsmap_off.png);");
     }
     if(data == true){
         ui->connect->setText(tr("Disconnect"));
@@ -433,6 +435,8 @@ void AICarDemo::Car_change_connet(bool data)
 
         ui->Key_SmartCar->setCheckable(true);
         on_Key_SmartCar_clicked();
+
+        ui->Car_GPSMap->setStyleSheet("border-image:url(:/image/res/image/car_gpsmap.png);");
     }
 }
 void AICarDemo::get_ip()
@@ -1978,4 +1982,10 @@ void AICarDemo::on_OCR_data_clicked()
         QString data  ="{\"desired\":{\"OCRelay\":\"on\"}}";
         m_client->publish(topic,data.toUtf8());
     }
+}
+
+void AICarDemo::on_Car_GPSMap_clicked()
+{
+    gps = new GPSDemo(nullptr);
+    gps->show();
 }
