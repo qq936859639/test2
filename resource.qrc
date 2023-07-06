@@ -14,7 +14,6 @@
         <file>image/red_light.png</file>
         <file>image/yellow_light.png</file>
         <file>image/rgb_light_no.png</file>
-        <file>image/car_map.png</file>
         <file>image/gym.png</file>
         <file>image/mall.png</file>
         <file>image/home.png</file>
@@ -54,5 +53,6 @@
         <file>image/car_door_off.png</file>
         <file>image/car_gpsmap.png</file>
         <file>image/car_gpsmap_off.png</file>
+        <file>image/car_map.png</file>
     </qresource>
 </RCC>

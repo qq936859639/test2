@@ -43,6 +43,36 @@ AICarDemo::AICarDemo(QWidget *parent, CameraThread *camerathread, ModbusThread *
     scene->addLine(rightLine,mypen);
     scene->addLine(bottomLine,mypen);
 
+    /*防碰撞线 add cjf*/
+    QPen mypen_car(Qt::white);
+    scene->addLine(-200, -275, 250, -275, mypen_car);//上边界限
+    scene->addLine(-75, 30, 130, 30, mypen_car);//下边界限
+
+    scene->addLine(-75, -200, -75, -100, mypen_car);//停车场左边界限1
+    scene->addLine(-75, -30, -75, 30, mypen_car);//停车场左边界限2
+
+    scene->addLine(-90+220, -200, -90+220, -100, mypen_car);//停车场右边界限1
+    scene->addLine(-90+220, -30, -90+220, 30, mypen_car);//停车场右边界限2
+
+    scene->addLine(-75, -170, -30, -170, mypen_car);//停车场上边界限1
+    scene->addLine(30, -170, -90+220, -170, mypen_car);//停车场上边界限2
+
+    scene->addLine(-230, -100, -75, -100, mypen_car);//停车场左边上边界限1
+    scene->addLine(-220, -30, -75, -30, mypen_car);//停车场左边下边界限2
+    scene->addLine(130, -100, 300, -100, mypen_car);//停车场右边上边界限1
+    scene->addLine(130, -30, 300, -30, mypen_car);//停车场右边下边界限2
+
+    scene->addLine(-230, -200, -75, -200, mypen_car);//市政厅上边界限
+    scene->addLine(-230, -200, -230, -100, mypen_car);//市政厅左边界限
+
+    scene->addLine(130, -200, 280, -200, mypen_car);//小区上边界限
+    scene->addLine(280, -200, 300, -100, mypen_car);//小区右边界限
+
+    scene->addLine(-220, -30, -220, 110, mypen_car);//体育馆左边界限
+    scene->addLine(-220, 110, 300, 110, mypen_car);//体育馆下边界限
+
+    scene->addLine(300, -30, 300, 110, mypen_car);//商场右边界限
+    /*end*/
 
     ui->townhall->setCheckable(true);
     ui->mall->setCheckable(true);
@@ -112,9 +142,9 @@ AICarDemo::AICarDemo(QWidget *parent, CameraThread *camerathread, ModbusThread *
     connect(this, SIGNAL(Car_radar(int,int,int)),this,SLOT(Read_Radar(int,int,int)));//获取雷达数据
     connect(modbusThread, SIGNAL(rplidar_read(int,int,int)),this,SLOT(Read_Radar(int,int,int)));
 
-    if(ui->scene->text()=="场景关"){
-            on_scene_clicked();
-    }
+//    if(ui->scene->text()=="场景关"){
+//            on_scene_clicked();
+//    }
 
 //    on_connectType_currentIndexChanged(0);
     hidmic = new HIDMICDEMO;
@@ -162,8 +192,8 @@ void AICarDemo::closeEvent(QCloseEvent *event)
 }
 void AICarDemo::Open_Radar()
 {
-    on_radar_clicked();
-    on_ul_clicked();
+//    on_radar_clicked();
+//    on_ul_clicked();
     on_rplidar_clicked();
 }
 void AICarDemo::Read_Radar(int mi_data,int ul_data,int la_radar)
@@ -1988,4 +2018,32 @@ void AICarDemo::on_Car_GPSMap_clicked()
 {
     gps = new GPSDemo(nullptr);
     gps->show();
+}
+
+void AICarDemo::on_exit_clicked()
+{
+    if(ui->connect->text()=="Disconnect"){
+        Car_Reset();
+        emit Car_connect(ui->lineEdit->text());
+    }
+    Uart_Close();//关闭串口
+    disconnect(this, SIGNAL(Car_connect(QString)),modbusThread,SLOT(on_connect(QString)));
+    disconnect(modbusThread, SIGNAL(on_change_connet(bool)),this,SLOT(Car_change_connet(bool)));
+
+    disconnect(this, SIGNAL(Car_writeRead(int, quint16, quint16)),modbusThread,SLOT(on_writeRead(int, quint16, quint16)));
+
+    disconnect(this, SIGNAL(Car_read(int,quint16)),modbusThread,SLOT(on_read(int,quint16)));//only read
+    disconnect(modbusThread, SIGNAL(on_read_data(int, int)),this,SLOT(Car_read_data(int, int)));
+
+    disconnect(cameraThread, SIGNAL(Collect_complete(QImage)),this,SLOT(Car_videoDisplay(QImage)));
+    disconnect(AutoPilot,SIGNAL(timeout()),this,SLOT(AutoPilotSystem()));
+
+    pm->stop();
+    disconnect(this, SIGNAL(Car_radar(int,int,int)),this,SLOT(Read_Radar(int,int,int)));//获取雷达数据
+    disconnect(modbusThread, SIGNAL(rplidar_read(int,int,int)),this,SLOT(Read_Radar(int,int,int)));
+    modbusThread->modbus_rplidar_stopMotor();
+
+    if(hidmic_open_flag)
+        hidmic->hidmic_close();//关闭麦克风
+    AICarDemo::deleteLater();//关闭当前窗口
 }

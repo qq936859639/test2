@@ -130,6 +130,8 @@ private slots:
 
     void on_Car_GPSMap_clicked();
 
+    void on_exit_clicked();
+
 protected:
     void closeEvent(QCloseEvent *event);
 

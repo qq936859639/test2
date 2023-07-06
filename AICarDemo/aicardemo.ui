@@ -64,7 +64,7 @@
   <widget class="QLabel" name="Car_videoDisplay">
    <property name="geometry">
     <rect>
-     <x>780</x>
+     <x>760</x>
      <y>400</y>
      <width>200</width>
      <height>130</height>
@@ -934,7 +934,7 @@
        <rect>
         <x>10</x>
         <y>70</y>
-        <width>211</width>
+        <width>236</width>
         <height>31</height>
        </rect>
       </property>
@@ -1236,8 +1236,8 @@ border-image: url(:/image/res/image/car_door_off.png);
   <widget class="QPushButton" name="townhall">
    <property name="geometry">
     <rect>
-     <x>90</x>
-     <y>130</y>
+     <x>100</x>
+     <y>140</y>
      <width>150</width>
      <height>70</height>
     </rect>
@@ -1258,8 +1258,8 @@ border-image: url(:/image/res/image/car_door_off.png);
   <widget class="QPushButton" name="home">
    <property name="geometry">
     <rect>
-     <x>495</x>
-     <y>130</y>
+     <x>500</x>
+     <y>140</y>
      <width>121</width>
      <height>61</height>
     </rect>
@@ -1274,8 +1274,8 @@ border-image: url(:/image/res/image/car_door_off.png);
   <widget class="QPushButton" name="mall">
    <property name="geometry">
     <rect>
-     <x>490</x>
-     <y>385</y>
+     <x>480</x>
+     <y>380</y>
      <width>151</width>
      <height>71</height>
     </rect>
@@ -1294,7 +1294,7 @@ border-image: url(:/image/res/image/car_door_off.png);
    <property name="geometry">
     <rect>
      <x>290</x>
-     <y>385</y>
+     <y>380</y>
      <width>151</width>
      <height>71</height>
     </rect>
@@ -1315,8 +1315,8 @@ border-image: url(:/image/res/image/car_door_off.png);
   <widget class="QPushButton" name="gym">
    <property name="geometry">
     <rect>
-     <x>95</x>
-     <y>385</y>
+     <x>100</x>
+     <y>380</y>
      <width>151</width>
      <height>71</height>
     </rect>
@@ -1385,10 +1385,10 @@ border-image: url(:/image/res/image/car_door_off.png);
   <widget class="QFrame" name="frame">
    <property name="geometry">
     <rect>
-     <x>430</x>
-     <y>9</y>
+     <x>420</x>
+     <y>20</y>
      <width>301</width>
-     <height>341</height>
+     <height>251</height>
     </rect>
    </property>
    <property name="styleSheet">
@@ -1479,6 +1479,19 @@ border-image: url(:/image/res/image/car_door_off.png);
     <string>场景关</string>
    </property>
   </widget>
+  <widget class="QPushButton" name="exit">
+   <property name="geometry">
+    <rect>
+     <x>970</x>
+     <y>480</y>
+     <width>51</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>退出</string>
+   </property>
+  </widget>
   <zorder>graphicsView</zorder>
   <zorder>school</zorder>
   <zorder>connect</zorder>
@@ -1499,6 +1512,7 @@ border-image: url(:/image/res/image/car_door_off.png);
   <zorder>passengers</zorder>
   <zorder>frame</zorder>
   <zorder>scene</zorder>
+  <zorder>exit</zorder>
  </widget>
  <resources/>
  <connections/>
