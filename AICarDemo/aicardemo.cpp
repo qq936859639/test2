@@ -72,6 +72,7 @@ AICarDemo::AICarDemo(QWidget *parent, CameraThread *camerathread, ModbusThread *
     scene->addLine(-220, 110, 300, 110, mypen_car);//体育馆下边界限
 
     scene->addLine(300, -30, 300, 110, mypen_car);//商场右边界限
+    scene->deleteLater();
     /*end*/
 
     ui->townhall->setCheckable(true);
@@ -514,8 +515,6 @@ void AICarDemo::Car_Reset()
 void AICarDemo::on_Car_reset_clicked()
 {
     Car_Reset();
-
-    ui->scene->setDisabled(false);
 
     car->reset();
     car->resetTransform();  //car->resetMatrix();
@@ -976,18 +975,13 @@ void AICarDemo::Uart_WriteData()
 
 void AICarDemo::on_pushButton_clicked()
 {
-    if(ui->scene->text()=="场景开"){
-            on_scene_clicked();
-    }
-    ui->scene->setDisabled(true);
+    ui->car_pole_1->setVisible(true);
+    ui->car_pole_2->setVisible(true);
+    ui->car_pole_3->setVisible(true);
+    ui->red_light->setStyleSheet("");
 
-        ui->car_pole_1->setVisible(true);
-        ui->car_pole_2->setVisible(true);
-        ui->car_pole_3->setVisible(true);
-        ui->red_light->setStyleSheet("");
-
-        ui->green_light->setStyleSheet("");
-        ui->yellow_light->setStyleSheet("");
+    ui->green_light->setStyleSheet("");
+    ui->yellow_light->setStyleSheet("");
     ui->school_red_light->setStyleSheet("");
 
     ui->school_green_light->setStyleSheet("");
@@ -1339,8 +1333,6 @@ void AICarDemo::Car_Map_Mall(QPointF point)
         ui->school->setEnabled(true);
         ui->gym->setEnabled(true);
         ui->mall->setEnabled(true);
-
-        ui->scene->setDisabled(false);
     }
 }
 void AICarDemo::Car_Map_TownHall(QPointF point)
@@ -1521,7 +1513,6 @@ void AICarDemo::Car_Map_TownHall(QPointF point)
         ui->school->setEnabled(true);
         ui->gym->setEnabled(true);
         ui->mall->setEnabled(true);
-        ui->scene->setDisabled(false);
     }
 }
 
@@ -1634,43 +1625,6 @@ void AICarDemo::on_rplidar_clicked()
         Car_Reset();
         ui->rplidar->setText(tr("开"));
         pm->stop();
-    }
-}
-
-void AICarDemo::on_scene_clicked()
-{
-    if(ui->scene->text()=="场景关"){
-        ui->graphicsView->setStyleSheet("border-image:url(:/image/res/image/car_map_1.png);");
-
-        ui->passengers->setVisible(false);
-        ui->townhall->setVisible(false);
-        ui->school->setVisible(false);
-        ui->gym->setVisible(false);
-        ui->mall->setVisible(false);
-        ui->home->setVisible(false);
-
-        ui->car_pole_1->setVisible(false);
-        ui->car_pole_2->setVisible(false);
-        ui->car_pole_3->setVisible(false);
-
-        ui->school_rgy_light->setVisible(false);
-        ui->scene->setText(tr("场景开"));
-    }else{
-        ui->graphicsView->setStyleSheet("border-image:url(:/image/res/image/car_map.png);");
-
-        ui->passengers->setVisible(true);
-        ui->townhall->setVisible(true);
-        ui->school->setVisible(true);
-        ui->gym->setVisible(true);
-        ui->mall->setVisible(true);
-        ui->home->setVisible(true);
-
-        ui->car_pole_1->setVisible(true);
-        ui->car_pole_2->setVisible(true);
-        ui->car_pole_3->setVisible(true);
-
-        ui->school_rgy_light->setVisible(true);
-        ui->scene->setText(tr("场景关"));
     }
 }
 

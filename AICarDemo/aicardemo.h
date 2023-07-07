@@ -106,7 +106,6 @@ private slots:
     void on_radar_clicked();
 
     void Read_Radar(int mi_data,int ul_data,int la_radar);
-    void on_scene_clicked();
 
     void on_connectType_currentIndexChanged(int index);
 
