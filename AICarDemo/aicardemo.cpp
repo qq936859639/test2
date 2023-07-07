@@ -72,7 +72,6 @@ AICarDemo::AICarDemo(QWidget *parent, CameraThread *camerathread, ModbusThread *
     scene->addLine(-220, 110, 300, 110, mypen_car);//体育馆下边界限
 
     scene->addLine(300, -30, 300, 110, mypen_car);//商场右边界限
-    scene->deleteLater();
     /*end*/
 
     ui->townhall->setCheckable(true);
