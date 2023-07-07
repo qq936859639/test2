@@ -72,6 +72,10 @@ AICarDemo::AICarDemo(QWidget *parent, CameraThread *camerathread, ModbusThread *
     scene->addLine(-220, 110, 300, 110, mypen_car);//体育馆下边界限
 
     scene->addLine(300, -30, 300, 110, mypen_car);//商场右边界限
+
+    ui->car_pole_1->setVisible(false);
+    ui->car_pole_2->setVisible(false);
+    ui->car_pole_3->setVisible(false);
     /*end*/
 
     ui->townhall->setCheckable(true);
@@ -547,9 +551,9 @@ void AICarDemo::on_Car_reset_clicked()
     ui->faces_data->clear();
     AutoPilot->stop();
 
-//    ui->car_pole_1->setVisible(true);
-//    ui->car_pole_2->setVisible(true);
-//    ui->car_pole_3->setVisible(true);
+    ui->car_pole_1->setVisible(false);
+    ui->car_pole_2->setVisible(false);
+    ui->car_pole_3->setVisible(false);
 
 //    ui->passengers->setVisible(true);
 
