@@ -385,6 +385,7 @@ void AICarDemo::Close_Radar()
     }
     if(ui->rplidar->text()=="关")//激光雷达
     {
+        on_rplidar_clicked();
         pm->stop();
         ui->rplidar->setText(tr("开"));
     }

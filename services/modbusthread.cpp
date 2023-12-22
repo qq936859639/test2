@@ -9,11 +9,8 @@ ModbusThread::ModbusThread(QObject *parent)
 {
     on_connectType_currentIndexChanged(0);
 
-    rplidar_flag = true;
-    rplidar = new RPLIDAR();
-    if(rplidar->rplidar_open() != 0){
-        rplidar_flag = false;
-    }
+    rplidar_flag = false;
+    rplidar = new YDLIDAR();
 }
 ModbusThread::~ModbusThread()
 {
@@ -250,14 +247,23 @@ void ModbusThread::onStateChanged(int state)//连接状态发生改变时处理�
     }
 }
 void ModbusThread::modbus_rplidar_startMotor(){
+
+    if(rplidar->rplidar_open() == 0){
+        rplidar_flag = true;
+        ModbusThread::start();
+    }
+
     rplidar->rplidar_startMotor();
 }
 void ModbusThread::modbus_rplidar_stopMotor(){
+    rplidar_flag = false;
     rplidar->rplidar_stopMotor();
+
+    rplidar->rplidar_close();
 }
 void ModbusThread::run()
 {
-    while(rplidar_flag==true){
+    while(rplidar_flag == true){
         rplidar->rplidar_read();
         emit rplidar_read(-1,-1,rplidar->rplidar_ranges_flag);
     }

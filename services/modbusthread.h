@@ -11,7 +11,8 @@
 #include <QStatusBar>
 #include <QUrl>
 
-#include "AICarDemo/rplidar/rplidar.h"
+//#include "AICarDemo/rplidar/rplidar.h"
+#include "AICarDemo/ydlidar/ydlidar.h"
 
 #define HOST_NAME "192.168.88.132:8232"      //云台IP地址(ESP32)
 
@@ -40,7 +41,7 @@ public:
     ~ModbusThread();
     bool isConnected;
 
-    RPLIDAR *rplidar;
+    YDLIDAR *rplidar;
     bool rplidar_flag = false;
 
     void modbus_rplidar_startMotor();

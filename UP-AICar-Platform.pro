@@ -20,6 +20,7 @@ SOURCES += main.cpp\
         AICarDemo/aicardemo.cpp \
         AICarDemo/car/car.cpp \
         AICarDemo/rplidar/rplidar.cpp \
+        AICarDemo/ydlidar/ydlidar.cpp \
         CameraDemo/camerademo.cpp \
         GPSDemo/gps_bd/gps.c \
         KeyboardDemo/keyboarddemo.cpp \
@@ -54,6 +55,8 @@ HEADERS  += mainwindow.h \
     AICarDemo/rplidar/rplidar_driver.h \
     AICarDemo/rplidar/rplidar_protocol.h \
     AICarDemo/rplidar/rptypes.h \
+    AICarDemo/ydlidar/CYdLidar.h \
+    AICarDemo/ydlidar/ydlidar.h \
     CameraDemo/camerademo.h \
     GPSDemo/gps_bd/gps.h \
     KeyboardDemo/keyboarddemo.h \
@@ -144,11 +147,16 @@ INCLUDEPATH += $$PWD/lib/iflytek/arm64
 DEPENDPATH += $$PWD/lib/iflytek/arm64
 #--end
 LIBS += -lvulkan -lglslang -lSPIRV -lMachineIndependent -lOGLCompiler -lOSDependent -lGenericCodeGen
-#激光雷达库
+#激光雷达库(思岚A1M8)
 unix:!macx: LIBS += -L$$PWD/lib/rplidar/arm64/ -lrplidar_sdk
 INCLUDEPATH += $$PWD/lib/rplidar/arm64
 DEPENDPATH += $$PWD/lib/rplidar/arm64
 unix:!macx: PRE_TARGETDEPS += $$PWD/lib/rplidar/arm64/
+#激光雷达库(亚博智能X3)
+unix:!macx: LIBS += -L$$PWD/lib/ydlidar/arm64/ -lydlidar_sdk
+INCLUDEPATH += $$PWD/AICarDemo/ydlidar/
+DEPENDPATH += $$PWD/lib/ydlidar/arm64
+unix:!macx: PRE_TARGETDEPS += $$PWD/lib/ydlidar/arm64/
 }else{
 
 #--科大讯飞
@@ -164,10 +172,15 @@ unix:!macx: LIBS += -L$$PWD/lib/lpr/x64/ -lmlpr -lncnn
 INCLUDEPATH += $$PWD/lpr/include/ncnn
 DEPENDPATH += $$PWD/lib/lpr/x64
 unix:!macx: PRE_TARGETDEPS += $$PWD/lib/lpr/x64/
-#激光雷达库
+#激光雷达库(思岚A1M8)
 unix:!macx: LIBS += -L$$PWD/lib/rplidar/x64/ -lrplidar_sdk
 INCLUDEPATH += $$PWD/lib/rplidar/x64
 DEPENDPATH += $$PWD/lib/rplidar/x64
 unix:!macx: PRE_TARGETDEPS += $$PWD/lib/rplidar/x64/
+#激光雷达库(亚博智能X3)
+unix:!macx: LIBS += -L$$PWD/lib/ydlidar/x64/ -lydlidar_sdk
+INCLUDEPATH += $$PWD/AICarDemo/ydlidar/
+DEPENDPATH += $$PWD/lib/ydlidar/x64
+unix:!macx: PRE_TARGETDEPS += $$PWD/lib/ydlidar/x64/
 }
 
